@@ -1,0 +1,21 @@
+#Taken from Wikidata examples at https://query.wikidata.org/
+#List of computer files formats
+#added before 2016-10
+
+SELECT DISTINCT ?idExtension ?extension ?mediaType ?idExtensionLabel 
+WHERE
+{
+	?idExtension wdt:P31 wd:Q235557
+	; wdt:P1195 ?extension .
+	OPTIONAL { ?idExtension wdt:P1163 ?mediaType }
+	SERVICE wikibase:label { bd:serviceParam wikibase:language "en" }
+}
+ORDER BY ?extension ?mediaTypeSELECT DISTINCT ?idExtension ?extension ?mediaType ?idExtensionLabel
+WHERE
+{
+	?idExtension wdt:P31 wd:Q235557
+	; wdt:P1195 ?extension .
+	OPTIONAL { ?idExtension wdt:P1163 ?mediaType }
+	SERVICE wikibase:label { bd:serviceParam wikibase:language "en" }
+}
+ORDER BY ?extension ?mediaType
