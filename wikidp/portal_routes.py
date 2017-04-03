@@ -11,17 +11,14 @@
 #
 """ Flask application routes for Wikidata portal. """
 from flask import Flask
-from wikidata import get_formats_generator
+from wikidata import wikidata_test
 app = Flask(__name__)
 
 @app.route("/")
-def hello():
+def home():
     """ Home route. """
-    formats = get_formats_generator()
-    format_list = []
-    for file_format in formats:
-        format_list.append(str(file_format))
-    return "\n".join(format_list)
+    text = wikidata_test()
+    return text
 
 if __name__ == "__main__":
     app.run()
