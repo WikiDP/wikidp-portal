@@ -23,7 +23,7 @@ def wikidata_test():
     item = pywikibot.ItemPage(REPO, "Q26085352")
     item_dict = item.get() #Get the item dictionary
     clm_dict = item_dict["claims"] # Get the claim dictionary
-    print(clm_dict)
+    return str(clm_dict)
 
 def get_formats_generator():
     """ Convenience method to return the list of file formats using the SPARQL
