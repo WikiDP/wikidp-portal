@@ -20,9 +20,30 @@ THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 
 def wikidata_test():
     """ Simple Proof of Concept test that prints an item. """
-    item = pywikibot.ItemPage(REPO, "Q26085352")
+    # item = pywikibot.ItemPage(REPO, "Q26085352")
+    item = pywikibot.ItemPage(REPO, "Q178051")
     item_dict = item.get() #Get the item dictionary
     clm_dict = item_dict["claims"] # Get the claim dictionary
+    return str(clm_dict)
+
+def printer(dictionary, name):
+    out = "%s:\n\n" % (name.upper())
+    for key in dictionary:
+        out += (str(key)+': '+', '.join(dictionary[key])+'\n')
+    return out
+def printPage(qID = 'Q178051'):
+    try:
+        item = pywikibot.ItemPage(REPO, str(qID))
+        print (item.exists())
+        item_dict = item.get() #Get the item dictionary
+        if item.claims:
+            if 'P31' in item.claims: # instance of
+                print(item.claims['P31'][0].getTarget())
+        clm_dict = str(printer(item_dict["aliases"],"aliases" ))
+        # clm_dict = str(printer(item_dict["claims"],"claims" ))
+        clm_dict += str([item_dict["aliases"]] + [item_dict["claims"]]) # Get the claim dictionary
+    except:
+        clm_dict = "INVALID QID"
     return str(clm_dict)
 
 def get_formats_generator():
