@@ -1,31 +1,37 @@
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html>
-    <head>
-        <title>Group Searching</title>
-    </head>
-    <body><form action="" method="post">
-            {{ form.csrf }}
- 
-            <div class="input text">
-                {{ form.name.label }} {{ form.name }}
-            </div>
- 
-            <div class="input submit">
-                <input type="submit" value="Submit" />
-            </div>
-        </form>
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <ul>
-                    {% for message in messages %}
-                        <li>{{ message[1] }}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-        {% endwith %}
-        
-    </body>
-</html>
-
-
+{% extends "page.html" %}
+{% block title %}Home{% endblock %}
+{% block page_content %}
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+    <div class="jumbotron media">
+      <div class="media-left">
+        <img alt="Portal logo." title="portal logo" src="{{ url_for('static', filename='img/logo.jpg') }}" />
+      </div>
+      <div class="media-body">
+        <h1 class="media-heading">WikiDP Prototype Portal Home</h1>
+        <p>
+          Test listing of formats from Wikidata
+        </p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-2"></div>
+      <div class="col-md-8">
+        <h2>Formats</h2>
+        <table class="table table-striped">
+          <tr>
+            <th>QID</th>
+            <th>Name</th>
+            <th>Media Types</th>
+          </tr>
+          {% for format in formats %}
+          <tr>
+            <td>{{ format.qid }}</td>
+            <td>{{ format.name }}</td>
+            <td>{{ ' | '.join(format.media_types) }}</td>
+          </tr>
+          {% endfor %}
+        </table>
+      </div>
+      <div class="col-md-2"></div>
+    </div>
+{% endblock page_content %}
