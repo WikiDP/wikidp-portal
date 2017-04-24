@@ -31,15 +31,16 @@ def printer(dictionary, name):
     for key in dictionary:
         out += (str(key)+': '+', '.join(dictionary[key])+'\n')
     return out
-def printPage(qID = 'Q178051'):
+
+def print_page(q_id='Q178051'):
     try:
-        item = pywikibot.ItemPage(REPO, str(qID))
-        print (item.exists())
+        item = pywikibot.ItemPage(REPO, str(q_id))
+        print(item.exists())
         item_dict = item.get() #Get the item dictionary
         if item.claims:
             if 'P31' in item.claims: # instance of
                 print(item.claims['P31'][0].getTarget())
-        clm_dict = str(printer(item_dict["aliases"],"aliases" ))
+        clm_dict = str(printer(item_dict["aliases"], "aliases"))
         # clm_dict = str(printer(item_dict["claims"],"claims" ))
         clm_dict += str([item_dict["aliases"]] + [item_dict["claims"]]) # Get the claim dictionary
     except:
