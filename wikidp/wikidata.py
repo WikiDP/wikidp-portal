@@ -27,6 +27,7 @@ def wikidata_test():
     return str(clm_dict)
 
 def printer(dictionary, name):
+    """Print formatting for a dictionary."""
     out = "%s:\n\n" % (name.upper())
     for key in dictionary:
         out += (str(key)+': '+', '.join(dictionary[key])+'\n')

@@ -12,19 +12,19 @@
 """ Flask application routes for Wikidata portal. """
 import re
 
-from flask import flash, Flask, render_template, request
+from flask import flash, render_template, request
 import wtforms
-from wikidata import printPage
+from wikidp.wikidata import print_page
+from wikidp import APP
 
-APP = Flask(__name__)
-APP.config.from_object(__name__)
-APP.config['SECRET_KEY'] = '7d441f27d441f27567d441f2b6176a'
 class ReusableForm(wtforms.Form):
+    """Valdiators for application forms."""
     name = wtforms.TextField('Name:', validators=[wtforms.validators.required()])
 
 
 @APP.route("/", methods=['GET', 'POST'])
 def home():
+    """Default landing page."""
     form = ReusableForm(request.form)
 
     print(form.errors)
@@ -35,25 +35,16 @@ def home():
         if form.validate():
             # Save the comment here.
             for q_id in item_list:
-                flash(q_id + ':  \n' + printPage(q_id))
+                flash(q_id + ':  \n' + print_page(q_id))
         else:
             flash('All the form fields are required. ')
     return render_template('home.html', form=form)
 
-# @app.route("/", methods=['GET', 'POST'])
-# def home():
-#     """ Home route. """
-#     name = wtforms.TextField('Name:')
-#     # text = wikidata_test()
-#     text = printPage()
-#     return flask.render_template('home.html') + text
-
-#     return text
 @APP.route("/search/<string:name>/")
 def search(name):
     """ search route. """
     # text = wikidata_test()
-    return render_template('temp.html', name=name, output=printPage(name))
+    return render_template('temp.html', name=name, output=print_page(name))
 
 if __name__ == "__main__":
     APP.run()
