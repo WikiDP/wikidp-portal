@@ -15,16 +15,14 @@
 import logging
 
 from flask import Flask
-from wikidp.config import configure_app
-from wikidp.const import ConfKey
 # Load the application
 APP = Flask(__name__)
 
+from wikidp.config import configure_app
+from wikidp.const import ConfKey
 # Get the appropriate config
 configure_app(APP)
-
 # Configure logging across all modules
-
 logging.basicConfig(filename=APP.config[ConfKey.LOG_FILE], level=logging.DEBUG,
                     format=APP.config[ConfKey.LOG_FORMAT])
 logging.info("Started Wiki-DP Portal app.")
@@ -32,4 +30,4 @@ logging.debug("Configured logging.")
 
 # Import the application routes
 logging.info("Setting up application routes")
-import wikidp.portal_routes
+import wikidp.controller

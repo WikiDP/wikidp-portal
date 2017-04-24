@@ -10,14 +10,15 @@
 # about the terms of this license.
 #
 """ Flask application routes for Wikidata portal. """
-
+from flask import render_template
 from wikidp import APP
-from wikidp.wikidata import test_query
+from wikidp.model import FileFormat
 
 @APP.route("/")
-def home():
-    test_query()
-    return "Hello"
+def list_extensions():
+    """Displays a list of extensions and media types."""
+    formats = FileFormat.list_formats()
+    return render_template('home.html', formats=formats)
 
 if __name__ == "__main__":
     APP.run()
