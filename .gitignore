@@ -95,3 +95,8 @@ ENV/
 
 # mkdocs documentation
 /site
+
+# Application odds and ends
+apicache/
+throttle.ctrl
+user-config.py
