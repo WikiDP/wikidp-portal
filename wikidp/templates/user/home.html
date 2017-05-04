@@ -1,0 +1,166 @@
+
+{% extends "page.html" %}
+{% block title %}Home{% endblock %}
+{% block page_content %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+    <div class="jumbotron media">
+      <div class="media-left">
+        <img alt="Portal logo." title="portal logo" src="{{ url_for('static', filename='img/logo.jpg') }}" />
+      </div>
+      <div class="media-body">
+        <h1 class="media-heading">WikiDP Prototype Portal User's Home</h1>
+        <p>
+          Test pulling information from input QID's from Wikidata
+        </p>
+      </div>
+    </div>
+
+
+
+
+    <div class="row">
+
+      <div class=""></div>
+      <div class="">
+        <h2 id="item">{{ qid[1] }}<a target="_blank" href="https://wikidata.org/wiki/property:{{qid[0]}}" class="p_or_q_id"> ({{ qid[0] }})</a></h2>
+        <p>{{details['description']}}</p>
+        <div class="panel panel-default alts">
+          
+          <div data-toggle="collapse" data-target="#altTable" class="panel-heading">Alternate Options</div>
+          <div id="altTable" class="collapse">
+
+
+            <table  class="table alternates table-responsive table-hover" id="options">
+              {% for option in options %}
+              <tr class="clickable-row" href="google.com">
+                <td>{{ option[1] }}<a target="_blank" href="https://wikidata.org/wiki/property:{{option[0]}}" class="p_or_q_id"> ({{ option[0] }})</a></td>
+              </tr>
+              {% endfor %}
+            </table>
+          </div>
+        </div>
+      </div>
+      <div></div>
+      <div class="">
+        <div class="panel panel-default outer-section">
+          <div data-toggle="collapse" data-target="#propTable" class="panel-heading">Properties</div>
+          <div id="propTable" class="collapse">
+            <table class="table table-responsive table-striped table-hover">
+              {% for pid in properties %}
+              <tr>
+                <td>{{ pid }}</td>
+              </tr>
+              {% endfor %}
+            </table>
+          </div>
+        </div>
+      </div>
+      <div> 
+
+      </div>
+      
+    </div>
+
+
+         
+    <div class="panel panel-default outer-section">
+      <div data-toggle="collapse" data-target="#preview-section" class="panel-heading">
+        Preview of {{qid[1]}} 
+      </div>
+      <div id="preview-section" class="collapse">
+        <div class="panel panel-default claims-section  col-lg-9 col-md-9 col-sm-9">
+          <table  class="table claims-table table-responsive table-striped table-hover">
+            <span class="tbl-cat">Claims </span>
+            {% for clm in details['claims']%} 
+            <tr>
+              <td class="invert-col">{{ clm[1] }} <a target="_blank" href="https://wikidata.org/wiki/property:{{clm[0]}}" class="p_or_q_id"> ({{ clm[0] }})</a>
+              </td>
+              <td>
+              {% for sub in details['claims'][clm] %}
+                <span class="detail-row"> 
+                  {% if clm[2] == 2%}
+                    {%if sub[0][0] == 'Q'%}
+                      {{ sub[1] }} <a target="_blank" href="https://wikidata.org/wiki/{{sub[0]}}" class="p_or_q_id"> ({{ sub[0] }})</a> 
+                    {%elif sub[0][0] == 'P'%}
+                      {{ sub[1] }} <a target="_blank" href="https://wikidata.org/wiki/property:{{sub[0]}}" class="p_or_q_id"> ({{ sub[0] }})</a> 
+                    {%endif%}
+                  {% elif clm[2] == 1%}
+                    {{ sub }}
+                    {%endif%}
+                    {% if (clm[0],sub[0]) in details['refs'] %}
+                      <table class="reference-table  table-responsive table-striped table-hover"> 
+                        {%for x in details['refs'][(clm[0],sub[0])] %}
+                        <tr>
+                          <td>{{ x[1] }}
+                          <a target="_blank" href="https://wikidata.org/wiki/property:{{sub[0]}}" class="p_or_q_id"> ({{ x[0] }})</a></td>
+                          <td>{{x[2]}}</td>
+                        </tr>
+                      {% endfor %}</table>
+                    {%endif%}
+                  </br>
+                </span> 
+              {% endfor %}
+              </td>
+            </tr>
+            {% endfor %}
+          </table>
+        </div>
+        <div class="panel panel-default col-lg-3 col-md-3 col-sm-3"> 
+        <span class="tbl-cat">External Links </span>
+        <table class="ex-links-table  table-responsive table-striped table-hover">
+          {%for p in details['ex-ids']%}
+          <tr>
+            <td> {{p[1]}}<a target="_blank" href="https://wikidata.org/wiki/property:{{p[0]}}" class="p_or_q_id"> ({{ p[0] }})</a>
+            </td>
+            <td> <a target="_blank" href="{{p[3]}}">{{p[2]}}</a></td>
+          </tr>
+          {%endfor%}
+        </table>
+      </div>
+      <div class="panel panel-default col-lg-3 col-md-3 col-sm-3"> 
+        <span class="tbl-cat">Other Details </span>
+        <table class="details-table  table-responsive table-striped table-hover">
+          {%if details['aliases'] != []%}
+          <tr>
+            <td>Aliases</td>
+            <td>
+            {%for p in details['aliases']%}
+              {{p}}
+            {%endfor%}
+            </td>
+          </tr>
+          {%endif%}
+          {%if details['description'] != []%}
+          <tr>
+            <td>Description</td>
+            <td>
+            {{details['description']}}
+            </td>
+          </tr>
+          {%endif%}
+        </table>
+        
+      </div>
+      </div>
+    
+       
+    </div>
+    <script type="text/javascript">
+    $('#options').on('click', '.clickable-row', function(event) {
+
+  
+          $(this).addClass("active").siblings().removeClass("active");
+          var str = $(".active").text().trim();
+          var n = str.search(/Q[0-9]/);
+          var end = str.length - 1;
+          var id = str.substring(n, end);
+          var str = str.substring(0, n-1);
+          $('#item').html("<a href='../user/"+id+"'>"+str+"<span class='p_or_q_id'>"+id+"</span></a>");
+      });
+    </script>
+
+
+{% endblock page_content %}
+ 
+

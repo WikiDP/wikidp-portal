@@ -1,0 +1,27 @@
+.table.table-striped.alternates{
+    max-height: 10%;
+    overflow: auto;
+}
+.panel.panel-default.alts{
+	max-height: 10%;
+    overflow: auto;
+}
+.p_or_q_id{
+	font-size: 60%;
+}
+.reference-table{
+	font-size: 80%;
+}
+.tbl-cat{
+	font-size: 110%;
+	font-weight: bold;
+	color: #004f84;
+}
+./*invert-col{
+	background-color: #7c7c7c;
+	color: white;
+	font-weight: bold;
+}*/
+body {
+	background-color: #f9fdff;
+}

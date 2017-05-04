@@ -20,5 +20,9 @@ setup(
         'flask',
         'wikidataintegrator',
         'wtforms',
+        'requests==2.13.0',
+        'lxml==3.7.3',
+        'simplejson==3.10.0'
+
     ],
 )
