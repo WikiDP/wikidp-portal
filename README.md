@@ -23,7 +23,7 @@ where `<username>` and `<password>` are your username and password. **NOTE** *th
     pip install -e .
     flask run
     
-    Point your browser to 127.0.0.1:5000 and you should see the prototype of the portal.
+Point your browser to http://127.0.0.1:5000 and you should see the prototype of the portal.
 
 Troubleshooting
 --------------
