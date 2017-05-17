@@ -68,12 +68,21 @@ def search_result(string):
 	options = wdi_core.WDItemEngine.get_wd_search_results(string)
 	if options == []: return ("n/a", "Could Not Find Item"), [], {}, {}
 	item, counts = item_detail_parse(options[0])
-	options = [(opt, qid_label(opt)) for opt in options]
+	options = [(opt, qid_label(opt), item_detail_parse(opt)) for opt in options]
 	return options[0], options, item, counts
 
 def item_detail_parse(qid):
-	item = wdi_core.WDItemEngine(wd_item_id=qid).wd_json_representation
-	sub = {'claims':{}, 'refs':{}, 'sitelinks':{}, 'aliases':[], 'ex-ids':{}, 'description':[]}
+	# print (qid, " "),
+	try:
+		item = wdi_core.WDItemEngine(wd_item_id=qid)
+	except:
+		print ("Error reading: ", qid)
+		return None, None
+	lab = item.get_label()
+	# print (lab)
+	item = item.wd_json_representation
+	
+	sub = {'label': [qid, lab], 'claims':{}, 'refs':{}, 'sitelinks':{}, 'aliases':[], 'ex-ids':{}, 'description':[], 'categories':[]}
 	counts = {}
 	# print (item['claims'], '\n\n')
 	try:
@@ -136,21 +145,27 @@ def item_detail_parse(qid):
 					sub['claims'][(clm, label, size)] = [val]
 				if refNum > 0:
 					sub['refs'][(clm, val[0])] = ref
+			if clm in ['P31', 'P279']: sub['categories']+= [val]
 			count += 1
 		counts[(clm, label)] = count
 	# print (sub['ex-ids'])
 	sub['claims'] = collections.OrderedDict(sorted(sub['claims'].items()))
-	sub['claims'] = collections.OrderedDict(sorted(sub['claims'].items(), key=sorting) )
-	# print (sub['description'])
+	sub['claims'] = collections.OrderedDict(sorted(sub['claims'].items(), key=dict_sorting_by_length) )
+	sub['categories'] = sorted(sorted(sub['categories']), key=list_sorting_by_length)
 	# for x in sub['description']: print(x)
+	
 	return sub, counts
 
+def list_sorting_by_length(elem):
+	return len(elem[0])
 
-def sorting(elem):
-
+def dict_sorting_by_length(elem):
 	return len(elem[0][0])
-# item_detail_parse("Q7593")
+# search_result("Debian")
 
+# item_detail_parse("Q7593")
+# ('P31', 'Instance of', 2)
+# ('P279', 'Subclass of', 2)
 
 	# page = requests.get("http://wikidata.org/wiki/Property:"+pid)
 	# title = html.fromstring(page.content).xpath('//title/text()')

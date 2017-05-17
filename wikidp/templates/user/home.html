@@ -2,6 +2,7 @@
 {% extends "page.html" %}
 {% block title %}Home{% endblock %}
 {% block page_content %}
+{% set t = 0 %}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <!-- Main jumbotron for a primary marketing message or call to action -->
     <div class="jumbotron media">
@@ -23,18 +24,18 @@
 
       <div class=""></div>
       <div class="">
-        <h2 id="item">{{ qid[1] }}<a target="_blank" href="https://wikidata.org/wiki/property:{{qid[0]}}" class="p_or_q_id"> ({{ qid[0] }})</a></h2>
-        <p>{{details['description']}}</p>
+        <h2 id="item">{{ qid[1] }} <a target="_blank" href="https://wikidata.org/wiki/{{qid[0]}}" class="p_or_q_id"> ({{ qid[0] }})</a></h2>
+        <p id="description">{{details['description']}}</p>
         <div class="panel panel-default alts">
           
           <div data-toggle="collapse" data-target="#altTable" class="panel-heading">Alternate Options</div>
           <div id="altTable" class="collapse">
 
 
-            <table  class="table alternates table-responsive table-hover" id="options">
+            <table  class="table alternates table-responsive table-hover" id="options-list">
               {% for option in options %}
-              <tr class="clickable-row" href="google.com">
-                <td>{{ option[1] }}<a target="_blank" href="https://wikidata.org/wiki/property:{{option[0]}}" class="p_or_q_id"> ({{ option[0] }})</a></td>
+              <tr class="clickable-row opt" href="google.com">
+                <td>{{ option[1] }}<a target="_blank" href="https://wikidata.org/wiki/{{option[0]}}" class="p_or_q_id"> ({{ option[0] }})</a></td>
               </tr>
               {% endfor %}
             </table>
@@ -60,24 +61,27 @@
 
       </div>
       
-    </div>
+    
 
 
-         
-    <div class="panel panel-default outer-section">
-      <div data-toggle="collapse" data-target="#preview-section" class="panel-heading">
-        Preview of {{qid[1]}} 
+        
+
+{% for o in options%}
+<div class="panel panel-default outer-section prev {{o[0]}}">
+
+      <div data-toggle="collapse" data-target="#{{o[0]}}-section" class="panel-heading">
+        Preview of {{o[1]}}
       </div>
-      <div id="preview-section" class="collapse">
-        <div class="panel panel-default claims-section  col-lg-9 col-md-9 col-sm-9">
+      <div id="{{o[0]}}-section" class="collapse">
+       <div class="panel panel-default claims-section  col-lg-9 col-md-9 col-sm-9">
           <table  class="table claims-table table-responsive table-striped table-hover">
             <span class="tbl-cat">Claims </span>
-            {% for clm in details['claims']%} 
+            {% for clm in o[2][0]['claims']%} 
             <tr>
               <td class="invert-col">{{ clm[1] }} <a target="_blank" href="https://wikidata.org/wiki/property:{{clm[0]}}" class="p_or_q_id"> ({{ clm[0] }})</a>
               </td>
               <td>
-              {% for sub in details['claims'][clm] %}
+              {% for sub in o[2][0]['claims'][clm] %}
                 <span class="detail-row"> 
                   {% if clm[2] == 2%}
                     {%if sub[0][0] == 'Q'%}
@@ -88,9 +92,9 @@
                   {% elif clm[2] == 1%}
                     {{ sub }}
                     {%endif%}
-                    {% if (clm[0],sub[0]) in details['refs'] %}
+                    {% if (clm[0],sub[0]) in o[2][0]['refs'] %}
                       <table class="reference-table  table-responsive table-striped table-hover"> 
-                        {%for x in details['refs'][(clm[0],sub[0])] %}
+                        {%for x in o[2][0]['refs'][(clm[0],sub[0])] %}
                         <tr>
                           <td>{{ x[1] }}
                           <a target="_blank" href="https://wikidata.org/wiki/property:{{sub[0]}}" class="p_or_q_id"> ({{ x[0] }})</a></td>
@@ -109,7 +113,7 @@
         <div class="panel panel-default col-lg-3 col-md-3 col-sm-3"> 
         <span class="tbl-cat">External Links </span>
         <table class="ex-links-table  table-responsive table-striped table-hover">
-          {%for p in details['ex-ids']%}
+          {%for p in o[2][0]['ex-ids']%}
           <tr>
             <td> {{p[1]}}<a target="_blank" href="https://wikidata.org/wiki/property:{{p[0]}}" class="p_or_q_id"> ({{ p[0] }})</a>
             </td>
@@ -117,47 +121,72 @@
           </tr>
           {%endfor%}
         </table>
-      </div>
-      <div class="panel panel-default col-lg-3 col-md-3 col-sm-3"> 
+        </br>
         <span class="tbl-cat">Other Details </span>
-        <table class="details-table  table-responsive table-striped table-hover">
-          {%if details['aliases'] != []%}
+        <table class="o[2][0]-table  table-responsive table-striped table-hover">
+          {%if o[2][0]['aliases'] != []%}
           <tr>
             <td>Aliases</td>
             <td>
-            {%for p in details['aliases']%}
+            {%for p in o[2][0]['aliases']%}
               {{p}}
             {%endfor%}
             </td>
           </tr>
           {%endif%}
-          {%if details['description'] != []%}
+          {%if o[2][0]['description'] != []%}
           <tr>
             <td>Description</td>
-            <td>
-            {{details['description']}}
+            <td id="sub_description">
+            {{o[2][0]['description']}}
             </td>
           </tr>
           {%endif%}
         </table>
         
       </div>
+      
+
+
+
+
       </div>
-    
-       
-    </div>
+
+</div>
+{%endfor%}
+
+  </div><span id="end"></span>
+      <span id="end2"></span>
     <script type="text/javascript">
-    $('#options').on('click', '.clickable-row', function(event) {
+    $('.opt').addClass("active");
+    $(".prev").hide();
+    $("."+'{{qid[0]}}').show();
+    $('#options-list').on('click', '.clickable-row', function(event) {
 
   
           $(this).addClass("active").siblings().removeClass("active");
+          var row_index = $(this).index();
           var str = $(".active").text().trim();
           var n = str.search(/Q[0-9]/);
           var end = str.length - 1;
           var id = str.substring(n, end);
           var str = str.substring(0, n-1);
-          $('#item').html("<a href='../user/"+id+"'>"+str+"<span class='p_or_q_id'>"+id+"</span></a>");
+
+          var des = $("."+id).find('#sub_description').text();
+          {% set t = 0 %}
+          var out = '{{options[t]}}';
+          $('#item').html(str+"<span class='p_or_q_id'><a target='_blank'  href='https://wikidata.org/wiki/"+id+"'>("+id+")</a></span>");
+          $('#description').html(des);
+          $('#end').html(Number(row_index));
+          
+          $(".prev").hide();
+          $("."+id).show();
+
+
+
       });
+
+    
     </script>
 
 
