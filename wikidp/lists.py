@@ -10,7 +10,8 @@ propLabels = {
 	# aliases
 	# claims
 	# descriptions
-
+	
+propertyValuesFileFormats = ["P31", "2748", "P3266", "P1163", "P1195", "P856" ]
 
 # # TO DO:
 # External Identifiers
