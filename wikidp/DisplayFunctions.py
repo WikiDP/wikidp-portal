@@ -3,23 +3,37 @@ import pywikibot
 import pickle
 import collections
 from lxml import html
+import wikidp.lists as LIST
 import requests
 import urllib.request, json
 LANG = 'en'
-def url_formatter(pid, value):
+urlCache, pidCache, qidCache = None, None, None
 
- 	urls = pickle.load(open("wikidp/caches/url-formats", "rb"))
+def load_caches():
+	global urlCache, pidCache, qidCache
+	urlCache = pickle.load(open("wikidp/caches/url-formats", "rb"))
+	pidCache = pickle.load(open("wikidp/caches/property-labels", "rb"))
+	qidCache = pickle.load(open("wikidp/caches/item-labels", "rb"))
+def save_caches():
+	global urlCache, pidCache, qidCache
+	pickle.dump( urlCache, open( "wikidp/caches/url-formats", "wb" ) )
+	pickle.dump( pidCache, open( "wikidp/caches/property-labels", "wb" ) )
+	pickle.dump( qidCache, open( "wikidp/caches/item-labels", "wb" ) )
+
+def url_formatter(pid, value):
+ 	global urlCache
  	value = value.strip()
- 	if pid in urls: base = urls[pid]
+ 	if pid in urlCache: base = urlCache[pid]
  	else: 
+ 		print("url try again")
  		try:
  			url = urllib.request.urlopen("https://www.wikidata.org/wiki/Special:EntityData/%s.json"%(pid))
  			base = json.loads(url.read().decode())['entities'][pid]['claims']['P1630'][0]['mainsnak']['datavalue']['value'] 
- 			caching_label(pid, base,"url-formats" )
+ 			urlCache[pid] = base
  		except: return "Error: Could not find url format."
  	base = base.replace("$1", value)
- 	# print(base)
  	return base
+
 def caching_label(id, label, fileName):
 	url = "wikidp/caches/"+fileName
 	props = pickle.load(open(url, "rb"))
@@ -29,32 +43,46 @@ def caching_label(id, label, fileName):
 	# print ("succesfully cached: ", label, '\n->', out)
 
 def prop_label(pid):
-	props = pickle.load(open("wikidp/caches/property-labels", "rb"))
-	if pid in props: return props[pid]
+	global pidCache 
+	if pid in pidCache: return pidCache[pid]
 	else: 
 		try:
 			page = requests.get("http://wikidata.org/wiki/Property:"+pid)
 			title = html.fromstring(page.content).xpath('//title/text()')
 			title = title[0][:-10].title()
-			caching_label(pid, title, "props-labels")
+			pidCache[pid] = title
 			return title
 		except: return "Unknown Property Label"
+def image_url(title):
+	try:
+		
+		url = urllib.request.urlopen("https://commons.wikimedia.org/w/api.php?action=query&prop=imageinfo&iiprop=url&titles=File:%s&format=json"%(title.replace(" ", "_")))
+		base = json.loads(url.read().decode())["query"]["pages"]
+		for x in base:
+			out = base[x]["imageinfo"][0]["url"]
+		return out
+	except: return "Error reading image url:"+title
+
+# image_url("Debian-8-desktop-background.png")
 def qid_label(qid):
-	labels = pickle.load(open("wikidp/caches/item-labels", "rb"))
-	if qid in labels: return labels[qid]
+	global qidCache 
+	if qid in qidCache: return qidCache[qid]
 	else:
 		try:
 			item = pywikibot.ItemPage(pywikibot.Site('wikidata', 'wikidata').data_repository(), qid)
 			item.get()
 			label = item.labels[LANG]
-			caching_label(qid, label, "item-labels")
+			print ("pid try again")
+			qidCache[qid] = label
+			
 			return label
 		except:
 			try:
 				page = requests.get("http://wikidata.org/wiki/"+qid)
 				title = html.fromstring(page.content).xpath('//title/text()')
 				title = title[0][:-10]
-				caching_label(qid, title, "item-labels")
+				print ("pid try again")
+				qidCache[qid] = title
 				return title
 			except:
 				return "Error Reading QID: "+qid
@@ -78,11 +106,13 @@ def item_detail_parse(qid):
 	except:
 		print ("Error reading: ", qid)
 		return None, None
+	load_caches()
 	lab = item.get_label()
 	# print (lab)
 	item = item.wd_json_representation
 	
-	sub = {'label': [qid, lab], 'claims':{}, 'refs':{}, 'sitelinks':{}, 'aliases':[], 'ex-ids':{}, 'description':[], 'categories':[]}
+	sub = {'label': [qid, lab], 'claims':{}, 'refs':{}, 'sitelinks':{}, 'aliases':[], 'ex-ids':{}, 'description':[], 'categories':[], 'properties':[]}
+
 	counts = {}
 	# print (item['claims'], '\n\n')
 	try:
@@ -146,14 +176,35 @@ def item_detail_parse(qid):
 				if refNum > 0:
 					sub['refs'][(clm, val[0])] = ref
 			if clm in ['P31', 'P279']: sub['categories']+= [val]
+			if clm == "P18": 
+				titles = sub["claims"][(clm, label, size)]
+				num = len(titles)
+				x = 0
+				while x < num:
+					titles[x] = image_url(titles[x])
+					x += 1
+				sub["claims"][(clm, label, size)] = titles
+				# print(sub["claims"][(clm, label, size)])
 			count += 1
-		counts[(clm, label)] = count
+		counts[clm] = count
+	
 	# print (sub['ex-ids'])
 	sub['claims'] = collections.OrderedDict(sorted(sub['claims'].items()))
 	sub['claims'] = collections.OrderedDict(sorted(sub['claims'].items(), key=dict_sorting_by_length) )
 	sub['categories'] = sorted(sorted(sub['categories']), key=list_sorting_by_length)
-	# for x in sub['description']: print(x)
+	propList = LIST.Properties()
 	
+	for prop in propList:
+		instance = [[prop, prop_label(prop)]]
+		try:
+			instance[0] += [counts[prop]]
+		except:
+			instance[0] += [0]
+		# print(instance)
+		sub['properties'] += instance
+	# print (sub['properties'])
+	# for x in sub['description']: print(x)
+	save_caches()
 	return sub, counts
 
 def list_sorting_by_length(elem):

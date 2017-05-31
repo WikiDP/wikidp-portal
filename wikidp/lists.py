@@ -3,9 +3,7 @@ def Properties():
 	return propertyValues
 	# file formats**, software, refs, quals
 
-propLabels = {
-	"P31": "instance of"
-}
+
 	# sitelinks
 	# aliases
 	# claims
@@ -13,8 +11,11 @@ propLabels = {
 
 
 # # TO DO:
-# External Identifiers
+
 # Categories of alternates
 # Collapsable [Item Preview]
 # Home/Unsearched output
-# Image
+# Better parsing of refs
+# Refs of external links 
+# details 
+# Does not work on: Q1324793
