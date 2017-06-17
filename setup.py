@@ -22,7 +22,10 @@ setup(
         'wtforms',
         'requests==2.13.0',
         'lxml==3.7.3',
-        'simplejson==3.10.0'
+        'simplejson==3.10.0',
+        'pywikibot'
 
     ],
 )
+
+#TO DO: If using python3.6, I had to run 'install certificates.command' inside the directory in order to load url's 

@@ -26,7 +26,7 @@ def list_extensions():
 
 @APP.route("/user")
 def user_home(qid = False, stringSearch = True):
-    """Displays a list of extensions and media types."""
+    """Main page for viewing, selecting, and updating items"""
     global options
     details = {}
     properties = Properties()
@@ -44,7 +44,7 @@ def user_home(qid = False, stringSearch = True):
 
 @APP.route("/user", methods=['POST'])
 def user_home_searched():
-    """Displays a list of extensions and media types."""
+    """Routing after the user searches an item in a form"""
     global options
     stringSearch = True
     if request.form['searchType'] == 'QID':
@@ -56,10 +56,11 @@ def user_home_searched():
 
 @APP.route("/user/<qid>")
 def selected_item(qid):
-	qid = qid.strip()
+    """If the item ID is already known, the user can enter in the url"""
+    qid = qid.strip()
 	# print (qid)
-	properties = Properties()
-	return user_home(qid, stringSearch=False)
+    properties = Properties()
+    return user_home(qid, stringSearch=False)
 	# return render_template('user/home.html', qid = qid, options=options, properties=properties, details={})
     # do something with folder_name
  
