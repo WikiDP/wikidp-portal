@@ -1,7 +1,7 @@
 from wikidataintegrator import wdi_core
 import pywikibot
 import pickle
-import collections
+from collections import OrderedDict
 from lxml import html
 import wikidp.lists as LIST
 import requests
@@ -13,7 +13,8 @@ urlCache, pidCache, qidCache = None, None, None
 
 
 def search_result(string):
-	"""Uses wikidataintegrator to generate a list of similar items based on a text search and returns a list of dictionaries containing details about each item"""
+	"""Uses wikidataintegrator to generate a list of similar items based on a text search
+	and returns a list of dictionaries containing details about each item"""
 	options = wdi_core.WDItemEngine.get_wd_search_results(string)
 	if options == []: 
 		return ("n/a", "Could Not Find Item"), [], {}, {}
@@ -22,7 +23,8 @@ def search_result(string):
 	return options[0], options, None, None
 
 def item_detail_parse(qid):
-	"""Uses the JSON representaion of wikidataintegrator to parse the item ID specified (qid) and returns a new dictionary of previewing information and a dictionary of property counts"""
+	"""Uses the JSON representaion of wikidataintegrator to parse the item ID specified (qid)
+	and returns a new dictionary of previewing information and a dictionary of property counts"""
 	try:
 		item = wdi_core.WDItemEngine(wd_item_id=qid)
 	except:
@@ -33,7 +35,9 @@ def item_detail_parse(qid):
 	label = item.get_label()
 	qidCache[qid] = label
 	item = item.wd_json_representation
-	outputDict = {'label': [qid, label], 'claims':{}, 'refs':{}, 'sitelinks':{}, 'aliases':[], 'ex-ids':{}, 'description':[], 'categories':[], 'properties':[]}
+	outputDict = {'label': [qid, label], 'claims':{}, 'refs':{},
+	'sitelinks':{}, 'aliases':[], 'ex-ids':{}, 'description':[], 
+	'categories':[], 'properties':[]}
 	countDict = {}
 	try:
 		outputDict['aliases'] = [x['value'] for x in item['aliases'][LANG]]
@@ -47,60 +51,10 @@ def item_detail_parse(qid):
 		count = 0
 		label = pid_label(claim)
 		for jsonDetails in item['claims'][claim]:
-			reference = []
-			refNum = 0
-			pattern = ' '
-			if jsonDetails['references'] != []:
-				refNum = len(jsonDetails['references'][0]['snaks-order'])
-				order = jsonDetails['references'][0]['snaks-order']
-				for snak in order:
-					pid = jsonDetails['references'][0]['snaks'][snak][0]['property']
-					reference += [(pid, pid_label(pid),jsonDetails['references'][0]['snaks'][snak][0]['datavalue']['value'] )]
-			val = ["error at the "]
-			size = 1 
-			if 'datavalue' not in jsonDetails['mainsnak']:
-				# print ("~~skipping~~~\n", qid,'\n', jsonDetails, '\n~~~~~~~~~~~~~~~')
-				pass
-			elif jsonDetails['mainsnak']['datavalue']['type'] == 'string':
-				val = jsonDetails['mainsnak']['datavalue']['value']
-			elif jsonDetails['mainsnak']['datavalue']['type'] == 'wikibase-entityid':
-				if jsonDetails['mainsnak']['datavalue']['value']['entity-type'] == 'item':
-					val = jsonDetails['mainsnak']['datavalue']['value']['id']
-					val = [val, qid_label(val)]
-					size = 2
-				elif jsonDetails['mainsnak']['datavalue']['value']['entity-type'] == 'property':
-					val = 'P'+str(jsonDetails['mainsnak']['datavalue']['value']['numeric-id'])
-					val = [val, pid_label(val)]
-					size = 2
-				else: val = [val[0]+"entity-type level"]
-			elif jsonDetails['mainsnak']['datavalue']['type'] == 'time':
-				val = [jsonDetails['mainsnak']['datavalue']['value']['time']]
-			else: 
-				val = [val[0] + "type level " + jsonDetails['mainsnak']['datavalue']['type']]
-			try: 
-				if jsonDetails['mainsnak']['datatype'] == 'external-id':
-					outputDict['ex-ids'][(claim, label, val, url_formatter(claim, val))] += [val]
-				else:
-					outputDict['claims'][(claim, label,  size)] += [val]
-				if refNum > 0:
-					outputDict['refs'][(claim, val[0])] = reference
-			except:
-				if jsonDetails['mainsnak']['datatype'] == 'external-id':
-					# print(jsonDetails)
-					outputDict['ex-ids'][(claim, label, val, url_formatter(claim, val))] = [val]
-				else:
-					outputDict['claims'][(claim, label, size)] = [val]
-				if refNum > 0:
-					outputDict['refs'][(claim, val[0])] = reference
-			if claim in ['P31', 'P279']: outputDict['categories']+= [val]
-			if claim in ["P18", "P154"]: 
-				original = jsonDetails['mainsnak']['datavalue']['value']
-				outputDict["claims"][(claim, label, size)] += [image_url(original)]
-				outputDict["claims"][(claim, label, size)].remove(original)
-			count += 1
+			count = parse_claims(claim, label, jsonDetails, count, outputDict)
 		countDict[claim] = count
-	outputDict['claims'] = collections.OrderedDict(sorted(outputDict['claims'].items()))
-	outputDict['claims'] = collections.OrderedDict(sorted(outputDict['claims'].items(), key=dict_sorting_by_length) )
+	outputDict['claims'] = OrderedDict(sorted(outputDict['claims'].items()))
+	outputDict['claims'] = OrderedDict(sorted(outputDict['claims'].items(), key=dict_sorting_by_length) )
 	outputDict['categories'] = sorted(sorted(outputDict['categories']), key=list_sorting_by_length)
 	propList = LIST.Properties()
 	for prop in propList:
@@ -112,6 +66,67 @@ def item_detail_parse(qid):
 		outputDict['properties'] += instance
 	save_caches()
 	return outputDict, countDict
+
+def parse_claims(claim, label, jsonDetails, count, outputDict):
+	"""Uses the jsonDetails dictionary of a single claim and outputs the parsed data into the outputDict"""
+	#Parsing references
+	reference = []
+	refNum = 0
+	if jsonDetails['references'] != []:
+		refList = jsonDetails['references'][0]
+		for snak in refList['snaks-order']:
+			pid = refList['snaks'][snak][0]['property']
+			reference += [(pid, pid_label(pid), refList['snaks'][snak][0]['datavalue']['value'] )]
+			refNum += 1
+	
+	val = ["error at the "]
+	size = 1 
+	#Parsing the statements & values by data taype
+	if 'datavalue' in jsonDetails['mainsnak']:
+		dataType = jsonDetails['mainsnak']['datavalue']['type']
+		dataValue = jsonDetails['mainsnak']['datavalue']['value']
+		if dataType == 'string':
+			val = dataValue
+		elif dataType == 'wikibase-entityid':
+			if dataValue['entity-type'] == 'item':
+				val = dataValue['id']
+				val = [val, qid_label(val)]
+				size = 2
+			elif dataValue['entity-type'] == 'property':
+				val = 'P'+str(dataValue['numeric-id'])
+				val = [val, pid_label(val)]
+				size = 2
+			else: val = [val[0]+"entity-type level"]				
+		elif dataType == 'time':
+			val = [dataValue['time']]
+		else: 
+			val = [val[0] + "type level " + dataType]
+	try: 
+		dataType = jsonDetails['mainsnak']['datatype']
+		if dataType == 'external-id':
+			outputDict['ex-ids'][(claim, label, val, url_formatter(claim, val))] += [val]
+		else:
+			outputDict['claims'][(claim, label,  size)] += [val]
+		if refNum > 0:
+			outputDict['refs'][(claim, val[0])] = reference
+	except:
+		if dataType == 'external-id':
+			# print(jsonDetails)
+			outputDict['ex-ids'][(claim, label, val, url_formatter(claim, val))] = [val]
+		else:
+			outputDict['claims'][(claim, label, size)] = [val]
+		if refNum > 0:
+			outputDict['refs'][(claim, val[0])] = reference
+	#Determining the 'category' of the item from the 'instance of' and 'subclass of' properties
+	if claim in ['P31', 'P279']: 
+		outputDict['categories']+= [val]
+	#In the event the value is a image file, it converts the title to the image's url
+	elif claim in ["P18", "P154"]: 
+		original = jsonDetails['mainsnak']['datavalue']['value']
+		outputDict["claims"][(claim, label, size)] += [image_url(original)]
+		outputDict["claims"][(claim, label, size)].remove(original)
+	count += 1
+	return count
 
 def load_caches():
 	"""Uses pickle to load all caching files as global variables"""
@@ -172,15 +187,16 @@ def pid_label(pid):
 			return "Unknown Property Label"
 
 def url_formatter(pid, value):
-	"""Inputs property identifier (P###) for a given url type, lookes up that pid's url format (P1630) and creates a url with the value using the format"""
+	"""Inputs property identifier (P###) for a given url type, lookes up that 
+	pid's url format (P1630) and creates a url with the value using the format"""
 	global urlCache
 	value = value.strip()
 	if pid in urlCache: base = urlCache[pid]
 	else:
 		try:
 			url = urllib.request.urlopen("https://www.wikidata.org/wiki/Special:EntityData/%s.json"%(pid))
-			base = json.loads(url.read().decode())['entities'][pid]['claims']['P1630'][0]['mainsnak']['datavalue']['value'] 
-			urlCache[pid] = base
+			base = json.loads(url.read().decode()) 
+			urlCache[pid] = base['entities'][pid]['claims']['P1630'][0]['mainsnak']['datavalue']['value']
  			# print("Adding url format to cache {",pid,"}: ", base)
 		except:
  			# print ("Error: Could not find url format. ->", pid, value) 
@@ -192,15 +208,17 @@ def image_url(title):
 	"""Converts the title of an image to the url location of that file it describes"""
 	# TO DO: Url's do not work with non-ascii characters
 	#    For example, the title of the image for Q267193 [Submlime Text] is "Скриншот sublime text 2.png"
+	title = title.replace(" ", "_")
+	url = "https://commons.wikimedia.org/w/api.php?action=query&prop=imageinfo&iiprop=url&titles=File:%s&format=json"%(title)
 	try:
-		url = urllib.request.urlopen("https://commons.wikimedia.org/w/api.php?action=query&prop=imageinfo&iiprop=url&titles=File:%s&format=json"%(title.replace(" ", "_")))
+		url = urllib.request.urlopen(url)
 		base = json.loads(url.read().decode())["query"]["pages"]
 		for x in base:
 			out = base[x]["imageinfo"][0]["url"]
 		return out
 	except:
 		# print("Error reading image url: "+title)
-		return "Error reading image url: "+title
+		return "https://commons.wikimedia.org/wiki/File:"+title
 
 def list_sorting_by_length(elem):
 	"""Auxiliary sorting key function at the list level"""
@@ -216,7 +234,6 @@ def caching_label(id, label, fileName):
 	props = pickle.load(open(url, "rb"))
 	props[id] = label
 	pickle.dump( props, open( url, "wb" ) )
-	# out = pickle.load(open("wikidp/caches/property-labels", "rb"))
 	# print ("succesfully cached: ", label, '\n->', out)
 
 load_caches()
