@@ -12,7 +12,7 @@
 """Configuration for WikiDP portal Flask app."""
 import os
 
-# TODO: template these values for flexible install
+# Template these values for flexible install
 HOST = 'localhost'
 LOG_ROOT = '/tmp/'
 
