@@ -38,6 +38,12 @@ html, body
 }
 .reference-table{
 	font-size: 80%;
+	
+}
+.reference-table td{
+	padding-left: 4%;
+	color: black;
+	text-align: left;
 }
 .tbl-cat{
 	font-size: 110%;

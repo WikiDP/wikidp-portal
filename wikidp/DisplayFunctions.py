@@ -2,7 +2,7 @@ from collections import OrderedDict
 import json
 import pickle
 import urllib.request
-
+import datetime
 from lxml import html
 import pywikibot
 import requests
@@ -77,33 +77,15 @@ def parse_claims(claim, label, json_details, count, output_dict):
         ref_list = json_details['references'][0]
         for snak in ref_list['snaks-order']:
             pid = ref_list['snaks'][snak][0]['property']
-            reference += [(pid, pid_label(pid), ref_list['snaks'][snak][0]['datavalue']['value'])]
+            reference += [(pid, pid_label(pid), parse_by_datatype(ref_list['snaks'][snak][0]['datavalue']['value']))]
             ref_num += 1
-
     val = ["error at the "]
     size = 1
     #Parsing the statements & values by data taype
     if 'datavalue' in json_details['mainsnak']:
         data_type = json_details['mainsnak']['datavalue']['type']
         data_value = json_details['mainsnak']['datavalue']['value']
-        if data_type == 'string':
-            val = data_value
-        elif data_type == 'wikibase-entityid':
-            if data_value['entity-type'] == 'item':
-                val = data_value['id']
-                val = [val, qid_label(val)]
-                size = 2
-            elif data_value['entity-type'] == 'property':
-                val = 'P'+str(data_value['numeric-id'])
-                val = [val, pid_label(val)]
-                size = 2
-            else:
-                val = [val[0]+"entity-type level"]
-        elif data_type == 'time':
-            val = [data_value['time']]
-        else:
-            val = [val[0] + "type level " + data_type]
-
+        val, size = get_value_of_claim(data_type, data_value)
     try:
         data_type = json_details['mainsnak']['datatype']
         if data_type == 'external-id':
@@ -114,7 +96,6 @@ def parse_claims(claim, label, json_details, count, output_dict):
             output_dict['refs'][(claim, val[0])] = reference
     except:
         if data_type == 'external-id':
-            # print(json_details)
             output_dict['ex-ids'][(claim, label, val, url_formatter(claim, val))] = [val]
         else:
             output_dict['claims'][(claim, label, size)] = [val]
@@ -131,6 +112,46 @@ def parse_claims(claim, label, json_details, count, output_dict):
     count += 1
     return count
 
+def parse_by_datatype(data):
+	"""Checks the datatype of the current data value to determine how to return as a string or ID-label tuple"""
+	data_type = type(data)
+	if data_type is list:
+		pass
+	elif data_type is set:
+		pass
+	elif data_type is dict:
+		keys = data.keys()
+		if 'text' in keys:
+			data = data['text']
+		elif 'time' in keys:
+			data = time_formatter(data['time'])
+		elif 'entity-type' in keys:
+			if 'id' in keys:
+				data = id_to_label_list(data['id'])
+	return data
+
+def get_value_of_claim(data_type, data_value):
+    """Uses a data type to determine how to format the value in the dictionary"""
+    val, size = ["error at the "], 1
+    if data_type == 'string':
+        return data_value, 1
+    elif data_type == 'wikibase-entityid':
+        if data_value['entity-type'] == 'item':
+            val = data_value['id']
+            val = [val, qid_label(val)]
+            size = 2
+        elif data_value['entity-type'] == 'property':
+            val = 'P'+str(data_value['numeric-id'])
+            val = [val, pid_label(val)]
+            size = 2
+        else:
+            val = [val[0]+"entity-type level"]
+    elif data_type == 'time':
+        val = time_formatter(data_value['time'])
+    else:
+        val = [val[0] + "type level " + data_type]
+    return val, size
+
 def load_caches():
     """Uses pickle to load all caching files as global variables"""
     global URL_CACHE, PID_CACHE, QID_CACHE
@@ -144,6 +165,12 @@ def save_caches():
     pickle.dump(URL_CACHE, open("wikidp/caches/url-formats", "wb"))
     pickle.dump(PID_CACHE, open("wikidp/caches/property-labels", "wb"))
     pickle.dump(QID_CACHE, open("wikidp/caches/item-labels", "wb"))
+
+def id_to_label_list(id):
+	"""Takes in an id (P## or Q##) and returns a list of that entity's label and id"""
+	if id[0].lower() == 'p':
+		return [id, pid_label(id)]
+	else: return [id, qid_label(id)]
 
 def qid_label(qid):
     """Converts item identifier (Q###) to a label and updates the cache"""
@@ -188,6 +215,13 @@ def pid_label(pid):
         except:
             print("Error finding property label: ", pid)
             return "Unknown Property Label"
+
+def time_formatter(time):
+	"""Converts wikidata's time json to a human readable string"""
+	try: 
+		return datetime.datetime.strptime(time, '+%Y-%m-%dT%H:%M:%SZ').strftime("%A, %B %-d, %Y")
+	except:
+		return time
 
 def url_formatter(pid, value):
     """Inputs property identifier (P###) for a given url type, lookes up that
@@ -246,7 +280,7 @@ load_caches()
 # Testing function calls/data structure references:
 # -------------------------------------------------
 # search_result("Debian")
-# item_detail_parse("Q7593")
 # item_detail_parse("Q131346")
 # ('P31', 'Instance of', 2)
 # ('P279', 'Subclass of', 2)
+# item_detail_parse("Q7593")

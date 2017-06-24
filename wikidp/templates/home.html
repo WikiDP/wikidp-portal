@@ -101,11 +101,25 @@
                             <tr>
                               <td>
                                 {{ x[1] }}
-                                <a target="_blank" href="https://wikidata.org/wiki/property:{{sub[0]}}" class="p_or_q_id">
+                                <a target="_blank" href="https://wikidata.org/wiki/property:{{x[0]}}" class="p_or_q_id">
                                   ({{ x[0] }})
                                 </a>
                               </td>
-                              <td>{{x[2]}}</td>
+                              <td>
+                                {% if x[2] is string %}
+                                  {{x[2]}}
+                                {% else %}
+                                  <a target="_blank"
+                                    {% if x[2][0][0] == 'Q' %}
+                                      href="https://wikidata.org/wiki/{{x[2][0]}}"
+                                    {% else %}
+                                      href="https://wikidata.org/wiki/property:{{x[2][0]}}"     
+                                    {% endif %}
+                                  class="">
+                                    {{x[2][1]}} 
+                                  </a>
+                                {% endif %} 
+                              </td>
                             </tr>
                           {% endfor %}
                         </table>
