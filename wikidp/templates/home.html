@@ -3,15 +3,17 @@
 {% block title %}Home{% endblock %}
 {% block page_content %}
 {% set t = 0 %}
-<link rel="styleshet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+<link rel="styleshet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <!-- Main jumbotron for a primary marketing message or call to action -->
     <div class="jumbotron media">
-      <div class="media-left">
+      <!-- <div class="media-left">
         <img alt="Portal logo." title="portal logo" src="{{ url_for('static', filename='img/logo.jpg') }}" />
-      </div>
+      </div> -->
       <div class="media-body">
-        <h1 class="media-heading">WikiDP Portal Home</h1>
+      <img alt="Portal logo." title="portal logo" src="{{ url_for('static', filename='img/WikiData_Logo.png') }}" />
+      <br/>
+        <h1 class="media-heading">Portal Home</h1>
         <p>
           Search for text or QID to see results here.
         </p>
@@ -30,12 +32,12 @@
     </p>
     <div class="panel panel-default alts">
       <div data-toggle="collapse" data-target="#altTable" class="panel-heading">
-        Alternate Options
+        Alternate Options <i class="fa fa-chevron-down" aria-hidden="true"></i>
       </div>
       <div id="altTable" class="collapse">
         <table  class="table alternates table-responsive table-hover" id="options-list">
           {% for option in options %}
-            <tr class="clickable-row opt" href="google.com">
+            <tr class="clickable-row opt">
               <td>
                 <span data-toggle="tooltip" data-placement="right" title="{{option[2][0]['description']}}">
                   {{option[1]}}
@@ -55,7 +57,7 @@
   <div class="row">
     <div class="panel panel-default outer-section prev {{o[0]}}">
       <div data-toggle="collapse" data-target="#{{o[0]}}-section" class="panel-heading">
-        Preview of {{o[1]}}
+        Preview of {{o[1]}} 
       </div>
       <div id="{{o[0]}}-section" class="collapse prev-claims">
         <div class="panel panel-default claims-section  col-lg-9 col-md-9 col-sm-9">
@@ -270,7 +272,7 @@
       var des = $("."+id).find('#sub_description').text();
       {% set t = 0 %}
       var out = '{{options[t]}}';
-      $('.item').html(str+"<span class='p_or_q_id'><a target='_blank'  href='https://wikidata.org/wiki/"+id+"'>("+id+")</a></span>");
+      $('.item').html(str+"<span ><a class='p_or_q_id' target='_blank'  href='https://wikidata.org/wiki/"+id+"'>("+id+")</a></span>");
       $('.hoveritem').html("<span  data-toggle='tooltip' data-placement='top' title='"+id+"'>"+str+"</span>")
       $('#description').html(des);
       $('#end').html(Number(row_index));
