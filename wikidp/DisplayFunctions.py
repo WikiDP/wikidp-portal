@@ -13,15 +13,22 @@ import wikidp.lists as LIST
 LANG = 'en'
 URL_CACHE, PID_CACHE, QID_CACHE = None, None, None
 
-
-def search_result(string):
+def search_result_list(string):
     """Uses wikidataintegrator to generate a list of similar items based on a text search
-    and returns a list of dictionaries containing details about each item"""
+    and returns a list of (qid, Label, description, aliases) dictionaries"""
     options = wdi_core.WDItemEngine.get_wd_search_results(string)
-    if options == []:
-        return ("n/a", "Could Not Find Item"), [], {}, {}
-    options = [(opt, qid_label(opt), item_detail_parse(opt)) for opt in options]
-    return options[0], options, None, None
+    if len(options) > 10:
+    	options = options[:10]
+    output = []
+    for opt in options:
+	    try:
+	    	opt = wdi_core.WDItemEngine(wd_item_id=opt)
+	    	opt = {"id": opt.wd_item_id, "label": opt.get_label().replace("'", "&#39;"), "description": opt.get_description().replace("'","&#39;"),  "aliases": opt.get_aliases()} 
+	    	output.append(opt)
+	    # skip those that wdi can not process
+	    except Exception as e:
+	    	print (e)
+    return output
 
 def item_detail_parse(qid):
     """Uses the JSON representaion of wikidataintegrator to parse the item ID specified (qid)
@@ -38,7 +45,7 @@ def item_detail_parse(qid):
     item = item.wd_json_representation
     output_dict = {'label': [qid, label], 'claims':{}, 'refs':{},
                    'sitelinks':{}, 'aliases':[], 'ex-ids':{}, 'description':[],
-                   'categories':[], 'properties':[]}
+                   'categories':[], 'properties':[], 'prop-counts':{}}
     count_dict = {}
     try:
         output_dict['aliases'] = [x['value'] for x in item['aliases'][LANG]]
@@ -59,14 +66,16 @@ def item_detail_parse(qid):
     output_dict['categories'] = sorted(sorted(output_dict['categories']), key=list_sorting_by_length)
     prop_list = LIST.properties()
     for prop in prop_list:
-        instance = [[prop, pid_label(prop)]]
+        instance = [prop, pid_label(prop), 0]
         try:
-            instance[0] += [count_dict[prop]]
+            instance[2] = count_dict[prop]
         except:
-            instance[0] += [0]
-            output_dict['properties'] += instance
+        	pass
+        output_dict['properties'] += [instance]
     save_caches()
-    return output_dict, count_dict
+    output_dict['prop-counts'] = count_dict
+    print ( '\n NOW', output_dict, '\n NEXT', count_dict)
+    return output_dict
 
 def parse_claims(claim, label, json_details, count, output_dict):
     """Uses the json_details dictionary of a single claim and outputs the parsed data into the output_dict"""
@@ -279,7 +288,8 @@ load_caches()
 
 # Testing function calls/data structure references:
 # -------------------------------------------------
-# search_result("Debian")
+# search_result_list("Debian")
+# search_result_list("google")
 # item_detail_parse("Q131346")
 # ('P31', 'Instance of', 2)
 # ('P279', 'Subclass of', 2)

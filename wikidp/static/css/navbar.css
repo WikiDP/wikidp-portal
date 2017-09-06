@@ -1,0 +1,72 @@
+nav.navbar.navbar-inverse.navbar-fixed-top{
+    background: #1e262d;
+    border: none;
+}
+.container>.navbar-header {
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+}
+nav.navbar a.navbar-brand{
+    color: #455b6d;
+    font-weight: bold;
+}
+nav.navbar a.navbar-brand:hover {
+    color: #e3f1fd;
+}
+#navbar div.input-group{
+	border-bottom: 1px solid white;
+}
+#navbar input.form-control, #navbar div.input-group button {
+    background: none;
+    color: white;
+    border: none;
+    text-shadow: none;
+    border-radius: 0;
+    box-shadow: none;
+    font-weight: 100;
+}
+#navbar div.input-group button  {
+
+    color: #2e698c;
+    
+}
+#navbar div.input-group button#search-btn{
+    font-size: 19px;
+    padding: 0;
+    color: white;
+}
+#navbar div.input-group button#search-reset{
+    font-size: 10px;
+    padding-bottom: 0;
+}
+#navbar ul li a{
+	
+    color: white;
+    font-weight: 500;
+    text-transform: lowercase;
+
+}
+a.navbar-brand {
+    font-size: 20px;
+    text-align: center;
+    line-height: .5;
+}
+form.navbar-form.navbar-right {
+    margin-right: 0px;
+}
+span#nav-header-subtitle {
+    font-size: 8px;
+}
+nav.navbar .container {
+    padding: 0;
+    width: 100%;
+}
+nav.navbar .container img {
+    opacity: .7;
+    background: rgb(116, 173, 208);
+    height: 51px;
+    margin-right: 20px;
+    box-shadow: inset 0px 0px 13px 1px rgb(32, 73, 97);
+    /*left: -15px;*/
+    position: relative;
+}

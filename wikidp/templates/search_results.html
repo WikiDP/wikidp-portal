@@ -1,0 +1,63 @@
+{% extends "page.html" %}
+{% block title %}Search Results{% endblock %}
+{% block page_content %}
+<!-- <link rel="styleshet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"> -->
+<link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+<div class="welcome-div">
+	
+	<div id="searchbar_container">
+		<form action="/search" method="POST" role="search">
+		<input class="welcome-searchbar" type="" name="userInput" placeholder="try a new search...">
+		<button type="submit">
+		<span class="glyphicon glyphicon-search"></span> </button>
+		</form>
+	</div>
+	<div class="search-results-div">
+		<ul id="search-option-list">
+		{% for option in options %}
+		<li class="option-li" id="li-{{option['id']}}" data-qid="{{option['id']}}"  data-label="{{option['label']}}" data-description="{{option['description']}}" onclick="selectResult($(this).data('qid'))">
+			<span class="search-result-label">{{option['label']}}<span class="search-result-id"> ({{option['id']}})</span> 
+			</span>
+			<br>
+			&mdash;<span class="search-result-description"> {{option['description']}} </span>&mdash;
+			<br>
+			{% if option['aliases'] != [] %}
+				<span class="search-result-aliases"><b>also referred to as:</b> {{option['aliases'][0]}}
+					{% for alias in option['aliases'][1:] %}
+						<b>/</b> {{alias}} 
+					{% endfor %}
+				</span>
+			{% endif %}
+		</li>
+
+		{% endfor %}
+		</ul>
+	</div>
+</div>
+
+    
+<script type="text/javascript">
+	function selectResult(qid){
+		var list = $('li.option-li')
+		var options = []
+		for (i = 0; i < list.length; i++){
+			// console.log($(list[i]).data('qid'), $(list[i]).data('label'))
+			options.push([$(list[i]).data('qid'), $(list[i]).data('label'), $(list[i]).data('description') ]) 
+		}
+		options = JSON.stringify(options)
+		// console.log(options)
+		// console.log(qid)
+		var form = $('<form action="/preview" method="post">' +
+  						'<input type="text" name="qid" value="' + qid + '" />' +
+  						'<input type="text" name="optionList" '+"value='"+options+"' />" +
+  					'</form>');
+		$('body').append(form);
+		form.submit();
+		// return $.post("/preview", {qid:qid})
+	}
+
+</script>
+
+    {% endblock page_content %}
