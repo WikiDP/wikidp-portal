@@ -18,16 +18,16 @@ def search_result_list(string):
     and returns a list of (qid, Label, description, aliases) dictionaries"""
     options = wdi_core.WDItemEngine.get_wd_search_results(string)
     if len(options) > 10:
-    	options = options[:10]
+        options = options[:10]
     output = []
     for opt in options:
-	    try:
-	    	opt = wdi_core.WDItemEngine(wd_item_id=opt)
-	    	opt = {"id": opt.wd_item_id, "label": opt.get_label().replace("'", "&#39;"), "description": opt.get_description().replace("'","&#39;"),  "aliases": opt.get_aliases()} 
-	    	output.append(opt)
-	    # skip those that wdi can not process
-	    except Exception as e:
-	    	print (e)
+        try:
+            opt = wdi_core.WDItemEngine(wd_item_id=opt)
+            opt = {"id": opt.wd_item_id, "label": opt.get_label().replace("'", "&#39;"), "description": opt.get_description().replace("'","&#39;"),  "aliases": opt.get_aliases()} 
+            output.append(opt)
+        # skip those that wdi can not process
+        except Exception as e:
+            print (e)
     return output
 
 def item_detail_parse(qid):
@@ -37,7 +37,7 @@ def item_detail_parse(qid):
         item = wdi_core.WDItemEngine(wd_item_id=qid)
     except:
         print("Error reading: ", qid)
-        return None, None
+        return None
     load_caches()
     global QID_CACHE
     label = item.get_label()
@@ -60,7 +60,8 @@ def item_detail_parse(qid):
         label = pid_label(claim)
         for json_details in item['claims'][claim]:
             count = parse_claims(claim, label, json_details, count, output_dict)
-            count_dict[claim] = count
+            if count > 0:
+                count_dict[claim] = count
     output_dict['claims'] = OrderedDict(sorted(output_dict['claims'].items()))
     output_dict['claims'] = OrderedDict(sorted(output_dict['claims'].items(), key=dict_sorting_by_length))
     output_dict['categories'] = sorted(sorted(output_dict['categories']), key=list_sorting_by_length)
@@ -70,74 +71,81 @@ def item_detail_parse(qid):
         try:
             instance[2] = count_dict[prop]
         except:
-        	pass
+            pass
         output_dict['properties'] += [instance]
     save_caches()
     output_dict['prop-counts'] = count_dict
-    print ( '\n NOW', output_dict, '\n NEXT', count_dict)
+    # print ( '\n NOW', output_dict, '\n NEXT', count_dict)
     return output_dict
 
 def parse_claims(claim, label, json_details, count, output_dict):
     """Uses the json_details dictionary of a single claim and outputs the parsed data into the output_dict"""
     #Parsing references
-    reference = []
-    ref_num = 0
-    if json_details['references'] != []:
-        ref_list = json_details['references'][0]
-        for snak in ref_list['snaks-order']:
-            pid = ref_list['snaks'][snak][0]['property']
-            reference += [(pid, pid_label(pid), parse_by_datatype(ref_list['snaks'][snak][0]['datavalue']['value']))]
-            ref_num += 1
-    val = ["error at the "]
-    size = 1
-    #Parsing the statements & values by data taype
-    if 'datavalue' in json_details['mainsnak']:
-        data_type = json_details['mainsnak']['datavalue']['type']
-        data_value = json_details['mainsnak']['datavalue']['value']
-        val, size = get_value_of_claim(data_type, data_value)
+    # print (claim, '\n', label,'\n', json_details, '\n', count, '\n', output_dict)
     try:
-        data_type = json_details['mainsnak']['datatype']
-        if data_type == 'external-id':
-            output_dict['ex-ids'][(claim, label, val, url_formatter(claim, val))] += [val]
-        else:
-            output_dict['claims'][(claim, label, size)] += [val]
-        if ref_num > 0:
-            output_dict['refs'][(claim, val[0])] = reference
-    except:
-        if data_type == 'external-id':
-            output_dict['ex-ids'][(claim, label, val, url_formatter(claim, val))] = [val]
-        else:
-            output_dict['claims'][(claim, label, size)] = [val]
-        if ref_num > 0:
-            output_dict['refs'][(claim, val[0])] = reference
-    #Determining the 'category' of the item from the 'instance of' and 'subclass of' properties
-    if claim in ['P31', 'P279']:
-        output_dict['categories'] += [val]
-        #In the event the value is a image file, it converts the title to the image's url
-    elif claim in ["P18", "P154"]:
-        original = json_details['mainsnak']['datavalue']['value']
-        output_dict["claims"][(claim, label, size)] += [image_url(original)]
-        output_dict["claims"][(claim, label, size)].remove(original)
-    count += 1
+        if json_details['mainsnak']['snaktype'] == 'novalue':
+            return 0
+        reference = []
+        ref_num = 0
+        if json_details['references'] != []:
+            ref_list = json_details['references'][0]
+            for snak in ref_list['snaks-order']:
+                pid = ref_list['snaks'][snak][0]['property']
+                reference += [(pid, pid_label(pid), parse_by_datatype(ref_list['snaks'][snak][0]['datavalue']['value']))]
+                ref_num += 1
+        val = ["error at the "]
+        size = 1
+        #Parsing the statements & values by data taype
+        if 'datavalue' in json_details['mainsnak']:
+            data_type = json_details['mainsnak']['datavalue']['type']
+            data_value = json_details['mainsnak']['datavalue']['value']
+            val, size = get_value_of_claim(data_type, data_value)
+        try:
+            data_type = json_details['mainsnak']['datatype']
+            if data_type == 'external-id':
+                output_dict['ex-ids'][(claim, label, val, url_formatter(claim, val))] += [val]
+            else:
+                output_dict['claims'][(claim, label, size)] += [val]
+            if ref_num > 0:
+                output_dict['refs'][(claim, val[0])] = reference
+        except:
+            if data_type == 'external-id':
+                # print (json_details)
+                output_dict['ex-ids'][(claim, label, val, url_formatter(claim, val))] = [val]
+            else:
+                output_dict['claims'][(claim, label, size)] = [val]
+            if ref_num > 0:
+                output_dict['refs'][(claim, val[0])] = reference
+        #Determining the 'category' of the item from the 'instance of' and 'subclass of' properties
+        if claim in ['P31', 'P279']:
+            output_dict['categories'] += [val]
+            #In the event the value is a image file, it converts the title to the image's url
+        elif claim in ["P18", "P154"]:
+            original = json_details['mainsnak']['datavalue']['value']
+            output_dict["claims"][(claim, label, size)] += [image_url(original)]
+            output_dict["claims"][(claim, label, size)].remove(original)
+        count += 1
+    except Exception as e:
+        print (e)
     return count
 
 def parse_by_datatype(data):
-	"""Checks the datatype of the current data value to determine how to return as a string or ID-label tuple"""
-	data_type = type(data)
-	if data_type is list:
-		pass
-	elif data_type is set:
-		pass
-	elif data_type is dict:
-		keys = data.keys()
-		if 'text' in keys:
-			data = data['text']
-		elif 'time' in keys:
-			data = time_formatter(data['time'])
-		elif 'entity-type' in keys:
-			if 'id' in keys:
-				data = id_to_label_list(data['id'])
-	return data
+    """Checks the datatype of the current data value to determine how to return as a string or ID-label tuple"""
+    data_type = type(data)
+    if data_type is list:
+        pass
+    elif data_type is set:
+        pass
+    elif data_type is dict:
+        keys = data.keys()
+        if 'text' in keys:
+            data = data['text']
+        elif 'time' in keys:
+            data = time_formatter(data['time'])
+        elif 'entity-type' in keys:
+            if 'id' in keys:
+                data = id_to_label_list(data['id'])
+    return data
 
 def get_value_of_claim(data_type, data_value):
     """Uses a data type to determine how to format the value in the dictionary"""
@@ -176,10 +184,10 @@ def save_caches():
     pickle.dump(QID_CACHE, open("wikidp/caches/item-labels", "wb"))
 
 def id_to_label_list(id):
-	"""Takes in an id (P## or Q##) and returns a list of that entity's label and id"""
-	if id[0].lower() == 'p':
-		return [id, pid_label(id)]
-	else: return [id, qid_label(id)]
+    """Takes in an id (P## or Q##) and returns a list of that entity's label and id"""
+    if id[0].lower() == 'p':
+        return [id, pid_label(id)]
+    else: return [id, qid_label(id)]
 
 def qid_label(qid):
     """Converts item identifier (Q###) to a label and updates the cache"""
@@ -226,16 +234,17 @@ def pid_label(pid):
             return "Unknown Property Label"
 
 def time_formatter(time):
-	"""Converts wikidata's time json to a human readable string"""
-	try: 
-		return datetime.datetime.strptime(time, '+%Y-%m-%dT%H:%M:%SZ').strftime("%A, %B %-d, %Y")
-	except:
-		return time
+    """Converts wikidata's time json to a human readable string"""
+    try: 
+        return datetime.datetime.strptime(time, '+%Y-%m-%dT%H:%M:%SZ').strftime("%A, %B %-d, %Y")
+    except:
+        return time
 
 def url_formatter(pid, value):
     """Inputs property identifier (P###) for a given url type, lookes up that
     pid's url format (P1630) and creates a url with the value using the format"""
     global URL_CACHE
+    # print (value)
     value = value.strip()
     if pid in URL_CACHE:
         base = URL_CACHE[pid]
