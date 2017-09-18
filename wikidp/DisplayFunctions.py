@@ -22,8 +22,7 @@ def search_result_list(string):
     output = []
     for opt in options:
         try:
-            opt = wdi_core.WDItemEngine(wd_item_id=opt)
-            opt = {"id": opt.wd_item_id, "label": opt.get_label().replace("'", "&#39;"), "description": opt.get_description().replace("'","&#39;"),  "aliases": opt.get_aliases()} 
+            opt = qid_to_basic_details(opt)
             output.append(opt)
         # skip those that wdi can not process
         except Exception as e:
@@ -67,12 +66,12 @@ def item_detail_parse(qid):
     output_dict['categories'] = sorted(sorted(output_dict['categories']), key=list_sorting_by_length)
     prop_list = LIST.properties()
     for prop in prop_list:
-        instance = [prop, pid_label(prop), 0]
+        instance = [prop[0], pid_label(prop[0]), 0, prop[1]]
         try:
-            instance[2] = count_dict[prop]
+            instance[2] = count_dict[prop[0]]
         except:
             pass
-        output_dict['properties'] += [instance]
+        output_dict['properties'].append(instance) 
     save_caches()
     output_dict['prop-counts'] = count_dict
     # print ( '\n NOW', output_dict, '\n NEXT', count_dict)
@@ -91,7 +90,7 @@ def parse_claims(claim, label, json_details, count, output_dict):
             ref_list = json_details['references'][0]
             for snak in ref_list['snaks-order']:
                 pid = ref_list['snaks'][snak][0]['property']
-                reference += [(pid, pid_label(pid), parse_by_datatype(ref_list['snaks'][snak][0]['datavalue']['value']))]
+                reference.append((pid, pid_label(pid), parse_by_datatype(ref_list['snaks'][snak][0]['datavalue']['value'])))
                 ref_num += 1
         val = ["error at the "]
         size = 1
@@ -103,9 +102,9 @@ def parse_claims(claim, label, json_details, count, output_dict):
         try:
             data_type = json_details['mainsnak']['datatype']
             if data_type == 'external-id':
-                output_dict['ex-ids'][(claim, label, val, url_formatter(claim, val))] += [val]
+                output_dict['ex-ids'][(claim, label, val, url_formatter(claim, val))].append(val) 
             else:
-                output_dict['claims'][(claim, label, size)] += [val]
+                output_dict['claims'][(claim, label, size)].append(val)
             if ref_num > 0:
                 output_dict['refs'][(claim, val[0])] = reference
         except:
@@ -118,11 +117,11 @@ def parse_claims(claim, label, json_details, count, output_dict):
                 output_dict['refs'][(claim, val[0])] = reference
         #Determining the 'category' of the item from the 'instance of' and 'subclass of' properties
         if claim in ['P31', 'P279']:
-            output_dict['categories'] += [val]
+            output_dict['categories'].append(val)
             #In the event the value is a image file, it converts the title to the image's url
         elif claim in ["P18", "P154"]:
             original = json_details['mainsnak']['datavalue']['value']
-            output_dict["claims"][(claim, label, size)] += [image_url(original)]
+            output_dict["claims"][(claim, label, size)].append(image_url(original))
             output_dict["claims"][(claim, label, size)].remove(original)
         count += 1
     except Exception as e:
@@ -292,6 +291,11 @@ def caching_label(label_id, label, file_name):
     props[label_id] = label
     pickle.dump(props, open(url, "wb"))
     # print ("succesfully cached: ", label, '\n->', out)
+
+def qid_to_basic_details(qid):
+    """Input item qid and returns a tuple: (qid, label, description) using WikiDataIntegrator"""
+    opt = wdi_core.WDItemEngine(wd_item_id=qid)
+    return {"id": opt.wd_item_id, "label": opt.get_label().replace("'", "&#39;"), "description": opt.get_description().replace("'","&#39;"),  "aliases": opt.get_aliases()} 
 
 load_caches()
 

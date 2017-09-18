@@ -4,9 +4,9 @@
 <!-- <link rel="styleshet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"> -->
 <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-<table id="panel-frame">
-	<tr>
-		<td id="sidebar-frame">
+<div id="panel-frame" data-qid="{{selected['label'][0]}}">
+	
+		<div id="sidebar-frame">
 			<div id="sidebar-div">
 				<!-- selected item -->
 				<div class="selected-item-div">
@@ -30,19 +30,23 @@
 				<!-- property overview -->
 				<div class="property-overview-div">
 					<div class="sidebar-header">property checklist</div>
+					<div id="sidebar-property-scroller"> 
 					<ul id="sidebar-property-list" value="">
 						{% for property in selected['properties'] %}
-							{% if property[2] == 0%}
-								<li class="sidebar-property-li">
-									{{property[1]}} {{property[0]}} (0)
-								</li>
-							{% else %}
-								<li class="sidebar-property-li property-ok">
-									{{property[1]}} {{property[0]}} ({{property[2]}}) 
-								</li>
-							{% endif %}
-						{% endfor %}
-					</ul>
+  							{% if property[2] == 0%}
+  								<li class="sidebar-property-li">
+                    <span title="{{property[1]}} ({{property[0]}})" data-content-start="{{property[1]}} ({{property[0]}}) " 
+      data-content-end=  ""></span>: 0
+  									 
+  								</li>
+  							{% else %}
+  								<li class="sidebar-property-li property-ok">
+  									<span title="{{property[1]}} ({{property[0]}})" data-content-start="{{property[1]}} ({{property[0]}}) " 
+      data-content-end=  ""></span>: {{property[2]}}
+  								</li>
+  							{% endif %}
+  						{% endfor %}
+					</ul></div>
 				</div>
 
 				<!-- action buttons-->
@@ -55,25 +59,27 @@
 						<li class="sidebar-action-li preview-on" id="preview-action">
 							preview
 						</li>
-						<li class="sidebar-action-li" id="contribute-action">
+						<li class="sidebar-action-li" id="contribute-action" onclick="">
 							contribute
 						</li>
 					</ul>
 				</div>
 
 			</div>
-		</td>
+		</div>
 
 
 
-		<td id="content-frame">
+		<div id="content-frame">
 			
 		<!-- preview page specific -->
 			<div id="preview-div">
 			<div id="header-text">
 				<span id="preview-item-name">{{selected['label'][1]}}<a class="wd-id" href="https://wikidata.org/wiki/{{selected['label'][0]}}" target="_blank"> ({{selected['label'][0]}})</a></span>
 				<br>
-				<span id="preview-item-description">{{selected['description']}}</span>
+				{% if selected['description'] != []%}
+        <span id="preview-item-description">{{selected['description']}}</span>
+        {% endif %}
 			</div>
 				<div id="claims-div">
 				<div class="table-header-div">
@@ -218,8 +224,8 @@
 				</div>
 			</div>
 		<!-- end preview page specific -->
-		</td>
-	</tr>
+		</div>
+	
 
 </table>
 
@@ -243,6 +249,25 @@ $('body').append(form);
 form.submit();
 		// return $.post("/preview", {qid:qid})
 	});
+
+	$('li#contribute-action').click(function(){
+		var list = $('option.item-option')
+		var options = []
+		for (i = 0; i < list.length; i++){
+		console.log($(list[i]).data('qid'), $(list[i]).data('label'))
+			options.push([$(list[i]).data('qid').replace("'","&#39;"), $(list[i]).data('label').replace("'","&#39;"), $(list[i]).data('description').replace("'","&#39;") ]) 
+		}
+		options = JSON.stringify(options)
+		console.log(options)
+		console.log($('div#panel-frame').data('qid'))
+
+var form = $('<form action="/contribute" method="post">' +
+  '<input type="text" name="qid" value="' + $('div#panel-frame').data('qid') + '" />' +
+  '<input type="text" name="optionList" '+"value='"+options+"' />" +
+  '</form>');
+$('body').append(form);
+form.submit();
+	})
 
 </script>
 

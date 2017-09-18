@@ -42,6 +42,12 @@ def preview_selected_page():
     previewItem = DF.item_detail_parse(request.form['qid'])
     return render_template('preview-item.html', selected=previewItem, options=options)
 
+@APP.route("/contribute", methods=['POST'])
+def contribute_selected_page():
+    options = json.loads(request.form['optionList'])
+    previewItem = DF.item_detail_parse(request.form['qid'])
+    return render_template('contribute.html', selected=previewItem, options=options)
+
 @APP.route("/<qid>")
 def selected_item(qid):
     """If the item ID is already known, the user can enter in the url, not yet functioning"""
@@ -62,6 +68,21 @@ def api_load_item():
     # print (output)
     return json.dumps(output)
 
+@APP.route("/api-get-qid-label", methods=['POST'])
+def api_get_qid_label():
+    """User posts a item-id and returns json of (id, label, description, aliases)"""
+    logging.debug("Processing user POST request.")
+    qid = request.form['qid'] 
+    output = DF.qid_to_basic_details(qid)
+    return json.dumps(output)
+
+@APP.route("/api-lookup-item", methods=['POST'])
+def api_lookup_item():
+    """User posts a string and returns list of json of (id, label, description, aliases)"""
+    logging.debug("Processing user POST request.")
+    string = request.form['string'].strip()
+    output = DF.search_result_list(string)
+    return json.dumps(output)
 
 if __name__ == "__main__":
     APP.run()
