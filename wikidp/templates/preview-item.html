@@ -78,7 +78,7 @@
 				<span id="preview-item-name">{{selected['label'][1]}}<a class="wd-id" href="https://wikidata.org/wiki/{{selected['label'][0]}}" target="_blank"> ({{selected['label'][0]}})</a></span>
 				<br>
 				{% if selected['description'] != []%}
-        <span id="preview-item-description">{{selected['description']}}</span>
+        <span id="preview-item-description" title="{{selected['description']}}">{{selected['description']}}</span>
         {% endif %}
 			</div>
 				<div id="claims-div">
@@ -116,7 +116,7 @@
                       {% elif clm[2] == 1%}
                         {% if clm[0] == 'P18' or clm[0] == 'P154' %}
                           <a target="_blank" href="{{sub}}">
-                            <img src="{{sub}}" style="border:0;" width="80%">
+                            <img class="property-image" src="{{sub}}" style="border:0;" width="80%">
                           </a>
                         {% else %}
                           {{ sub }}
@@ -230,6 +230,16 @@
 </table>
 
 <script type="text/javascript">
+	$(document).ready(function(){
+		$('img.property-image').fadeIn(4000)
+	})
+	function pageTransition(form){
+  $('div.page-container').fadeOut(500, function(
+  ){
+  $('body').append(form);
+form.submit();
+})
+}
 	$('select#option-select').change(function(){
 		var list = $('option.item-option')
 		var options = []
@@ -244,9 +254,8 @@
 var form = $('<form action="/preview" method="post">' +
   '<input type="text" name="qid" value="' + $(this).val() + '" />' +
   '<input type="text" name="optionList" '+"value='"+options+"' />" +
-  '</form>');
-$('body').append(form);
-form.submit();
+  '</form>').hide(0);
+pageTransition(form)
 		// return $.post("/preview", {qid:qid})
 	});
 
@@ -264,9 +273,8 @@ form.submit();
 var form = $('<form action="/contribute" method="post">' +
   '<input type="text" name="qid" value="' + $('div#panel-frame').data('qid') + '" />' +
   '<input type="text" name="optionList" '+"value='"+options+"' />" +
-  '</form>');
-$('body').append(form);
-form.submit();
+  '</form>').hide(0);
+pageTransition(form)
 	})
 
 </script>

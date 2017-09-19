@@ -19,6 +19,9 @@ body {
     /*margin-top: 50px;*/
     padding: 0;
 }
+input{
+    letter-spacing: 3px;
+}
 .row-div {
     display: flex;
 }
@@ -31,6 +34,8 @@ div.page-container {
     padding: 0;
     position: absolute;
     top: 50px;
+    display: none;
+
 }
 a.wd-id:hover {
     opacity: 1;
@@ -68,6 +73,7 @@ a.wd-id {
 	    font-weight: 100;
 	    padding: 8px;
 	    color: #d4d4d4;
+        opacity: .5;
 	}
 
 	div#searchbar_container{
@@ -82,13 +88,15 @@ a.wd-id {
 	    padding: 8px;
 	    color: #d4d4d4;
 	    box-shadow: inset 0 0 14px 0px rgba(22, 28, 33, 0.61);
+        opacity: .5
 	}
 	div#searchbar_container:focus, div#searchbar_container:hover{
 		 outline: none;
-	    border: 1px solid rgba(255, 255, 255, 0.16);
+	    opacity: 1;
 	}
 	input.welcome-searchbar:focus, input.welcome-searchbar:hover {
 	    outline: none;
+        opacity: 1;
 	}
 
 	div#searchbar_container button{
@@ -209,6 +217,7 @@ div#sidebar-frame select#option-select {
 div#content-frame {
     width: 85%;
     height: 100%;
+    padding-top: 20px;
     color: white;
 }
 
@@ -364,8 +373,15 @@ div#preview-div {
 }
 
 div#header-text {
-	height: 100px;
+    height: 100px;
+    width: calc(100%);
+    padding: 0px 10%;
+    white-space: nowrap;
+    word-break: break-word;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
+
 span#preview-item-name {
     font-size: 40px;
     font-weight: 300;
@@ -434,6 +450,9 @@ div#preview-div tr {
 #preview-div .reference-table tr {
     border-top: none;
     background: none;
+}
+img.property-image{
+    display: none;
 }
 /*end preview page*/
 
@@ -626,6 +645,21 @@ li.lookup-result-li div.result-sub{
     letter-spacing: 1px;
     line-height: 1.2;
     position: relative;
+}
+div.result-main:hover{
+    cursor: pointer;
+}
+button.clipboardBtn:hover {
+    opacity: 1;
+    cursor: alias;
+}
+
+button.clipboardBtn {
+    background: none;
+    border: none;
+    padding: 0;
+    opacity: .5;
+    margin: 0;
 }
 span.result-label {
     font-size: 15px;

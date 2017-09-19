@@ -8,7 +8,7 @@
 <div class="welcome-div">
 	
 	<div id="searchbar_container">
-		<form action="/search" method="POST" role="search">
+		<form action="/search" method="POST" role="search" id="searchAgain">
 		<input class="welcome-searchbar" type="" name="userInput" placeholder="try a new search...">
 		<button type="submit">
 		<span class="glyphicon glyphicon-search"></span> </button>
@@ -39,6 +39,16 @@
 
     
 <script type="text/javascript">
+	$("form#searchAgain").submit(function(){
+    $('div.search-results-div').fadeOut(500);
+});
+	function pageTransition(form){
+  $('div.page-container').fadeOut(500, function(
+  ){
+  $('body').append(form);
+form.submit();
+})
+}
 	function selectResult(qid){
 		var list = $('li.option-li')
 		var options = []
@@ -52,9 +62,8 @@
 		var form = $('<form action="/preview" method="post">' +
   						'<input type="text" name="qid" value="' + qid + '" />' +
   						'<input type="text" name="optionList" '+"value='"+options+"' />" +
-  					'</form>');
-		$('body').append(form);
-		form.submit();
+  					'</form>').hide(0);
+		pageTransition(form);
 		// return $.post("/preview", {qid:qid})
 	}
 

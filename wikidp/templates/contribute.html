@@ -4,6 +4,7 @@
 <!-- <link rel="styleshet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"> -->
 <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script src="../static/js/clipboard.min.js"></script>
 <div id="panel-frame" class="contribute-page"  data-qid="{{selected['label'][0]}}">
 
 		<div id="sidebar-frame">
@@ -77,7 +78,7 @@
         <span id="preview-item-name">{{selected['label'][1]}}<a class="wd-id" href="https://wikidata.org/wiki/{{selected['label'][0]}}" target="_blank"> ({{selected['label'][0]}})</a></span>
         <br>
         {% if selected['description'] != []%}
-        <span id="preview-item-description">{{selected['description']}}</span>
+        <span id="preview-item-description" title="{{selected['description']}}">{{selected['description']}}</span>
         {% endif %}
       </div>
       <div id="statement-creation-frame">
@@ -125,136 +126,133 @@
 </div>
 
 <script type="text/javascript">
-
-  function initializeClaim(type){
-    $('select#create-claim-property option.default').prop('disabled', true)
-  console.log('...initialing data-type: '+type)
-  var div = $('div#create-claim-value-div')
-  div.empty()
-  switch(type){
-    case 'string':
-        console.log('STRING');
-        div.append($('<input/>').attr({'placeholder':'enter value here', 'id':'claim-value'}));
-        bindAddButton();
-        break;
-    case 'ex-id':
-        console.log('EXID');
-        
-        div.append($('<input/>').attr({'placeholder':'enter value here', 'id':'claim-value'}));
-        bindAddButton()
-        break;
-    case 'item':
-        console.log('ITEM');
-        div.append('Q',$('<input/>').attr({'placeholder':'1234', 'id':'claim-value', 'type':'number'}))
-        bindAddButton()
-        break;
-    case 'url':
-        console.log('URL');
-        div.append('https://',$('<input/>').attr({'placeholder':'www.website.com/', 'id':'claim-value', 'type':'url'}))
-        bindAddButton()
-        break;
-    default:
-        console.log('NONE OF THE ABOVE');
-
-        break;
-      }
-
+function pageTransition(form){
+  $('div.page-container').fadeOut(500, function(){
+    $('body').append(form);
+    form.submit();
+  })
 }
 
-
-
-	$('select#option-select').change(function(){
-		var list = $('option.item-option')
-		var options = []
-		for (i = 0; i < list.length; i++){
-		console.log($(list[i]).data('qid'), $(list[i]).data('label'))
-			options.push([$(list[i]).data('qid').replace("'","&#39;"), $(list[i]).data('label').replace("'","&#39;"), $(list[i]).data('description').replace("'","&#39;") ]) 
-		}
-		options = JSON.stringify(options)
-		console.log(options)
-		console.log($(this).val())
-
-var form = $('<form action="/preview" method="post">' +
-  '<input type="text" name="qid" value="' + $(this).val() + '" />' +
-  '<input type="text" name="optionList" '+"value='"+options+"' />" +
-  '</form>');
-$('body').append(form);
-form.submit();
-		// return $.post("/preview", {qid:qid})
-	});
-
-  $('li#preview-action').click(function(){
-    var list = $('option.item-option')
-    var options = []
-    for (i = 0; i < list.length; i++){
-    console.log($(list[i]).data('qid'), $(list[i]).data('label'))
-      options.push([$(list[i]).data('qid').replace("'","&#39;"), $(list[i]).data('label').replace("'","&#39;"), $(list[i]).data('description').replace("'","&#39;") ]) 
+function initializeClaim(type){
+  $('select#create-claim-property option.default').prop('disabled', true)
+  console.log('...initialing data-type: '+type);
+  var div = $('div#create-claim-value-div').fadeOut(400, function(){
+    div.empty();
+    switch(type){
+      case 'string':
+          console.log('STRING');
+          div.append($('<input/>').attr({'placeholder':'enter value here', 'id':'claim-value'}));
+          bindAddButton();
+          break;
+      case 'ex-id':
+          console.log('EXID');
+          div.append($('<input/>').attr({'placeholder':'enter value here', 'id':'claim-value'}));
+          bindAddButton();
+          break;
+      case 'item':
+          console.log('ITEM');
+          div.append('Q',$('<input/>').attr({'placeholder':'1234', 'id':'claim-value', 'type':'number'}));
+          bindAddButton();
+          break;
+      case 'url':
+          console.log('URL');
+          div.append('https://',$('<input/>').attr({'placeholder':'www.website.com/', 'id':'claim-value', 'type':'url'}))
+          bindAddButton();
+          break;
+      default:
+          console.log('NONE OF THE ABOVE');
+          break;
     }
-    options = JSON.stringify(options)
-    console.log(options)
-    console.log($('div#panel-frame').data('qid'))
+    div.fadeIn('slow');
+  });
+}
 
-var form = $('<form action="/preview" method="post">' +
-  '<input type="text" name="qid" value="' + $('div#panel-frame').data('qid') + '" />' +
-  '<input type="text" name="optionList" '+"value='"+options+"' />" +
-  '</form>');
-$('body').append(form);
-form.submit();
-  })
+$('select#option-select').change(function(){
+	var list = $('option.item-option')
+	var options = []
+	for (i = 0; i < list.length; i++){
+		// console.log($(list[i]).data('qid'), $(list[i]).data('label'));
+		options.push([$(list[i]).data('qid').replace("'","&#39;"), $(list[i]).data('label').replace("'","&#39;"), $(list[i]).data('description').replace("'","&#39;") ]) 
+	}
+	options = JSON.stringify(options);
+	console.log(options);
+	console.log($(this).val());
+  var form = $('<form action="/preview" method="post">' +
+    '<input type="text" name="qid" value="' + $(this).val() + '" />' +
+    '<input type="text" name="optionList" '+"value='"+options+"' />" +
+    '</form>');
+  $('body').append(form);
+  pageTransition(form);
+	// return $.post("/preview", {qid:qid})
+});
 
+$('li#preview-action').click(function(){
+  var list = $('option.item-option')
+  var options = []
+  for (i = 0; i < list.length; i++){
+    // console.log($(list[i]).data('qid'), $(list[i]).data('label'))
+    options.push([$(list[i]).data('qid').replace("'","&#39;"), $(list[i]).data('label').replace("'","&#39;"), $(list[i]).data('description').replace("'","&#39;") ]) 
+  }
+  options = JSON.stringify(options);
+  // console.log(options);
+  // console.log($('div#panel-frame').data('qid'));
+  var form = $('<form action="/preview" method="post">' +
+    '<input type="text" name="qid" value="' + $('div#panel-frame').data('qid') + '" />' +
+    '<input type="text" name="optionList" '+"value='"+options+"' />" +
+    '</form>').hide(0);
+  pageTransition(form);
 
-  $('select#create-claim-property').change(function(){
-    initializeClaim($(':selected', this).data('type'))
-  })
+})
 
+$('select#create-claim-property').change(function(){
+  initializeClaim($(':selected', this).data('type'));
+});
 
 function bindAddButton(){
-
   $('div#create-claim-value-div').append(' ',
-        $('<button/>').attr({'id':'addClaimButton', 'class':'off'}).prop("disabled",true).html('add claim')
-        )
-  $('input#claim-value').on('input', function(){
+    $('<button/>').attr({'id':'addClaimButton', 'class':'off'}).prop("disabled",true).html('add claim')
+  );
+  $('input#claim-value').on('input', function(event){
     if($('button#addClaimButton.on').length == 0){
-      $('button#addClaimButton.off').addClass('on').removeClass('off').prop("disabled",false).attr({'onclick':'claimFormValidation()'})
-
-
-      console.log('go')
-      
+      $('button#addClaimButton.off').addClass('on').removeClass('off').prop("disabled",false).attr({'onclick':'claimFormValidation()'});
     }
-
-  console.log('typing')
-})
+    // TO DO: Let the user submit by enter, below this code does not perform quite as expected
+    // else if(event.keyCode == 13){
+    //   $('button#addClaimButton').click()
+    //  $('button#addClaimButton').click().prop("disabled", true)
+    // }
+  });
 }
 
 function createBasicClaim(pid, pidLabel, value, type) {
-// NEED LEVEL1 VALIDATION HERE
-
-  $('ul#added-claims').prepend(`
+// TODO: NEED LEVEL1 VALIDATION HERE
+  var listTemplate = $(`
     <li class="added-claim-li ${type}">
     <div class="row-div">
      <div class="added-property-div">
-
         ${pidLabel} <a class="wd-id" href="https://wikidata.org/wiki/Property:${pid}" target="_blank"> (${pid})</a></span>
      </div>
      <div class="added-value-div">
           ${value}
      </div></div>
-    </li>`)
-$('button#addClaimButton').remove()
-bindAddButton()
-  // body...
+    </li>`).hide(0)
+  $('ul#added-claims').prepend(listTemplate);
+  $('ul#added-claims').scrollTop(0);
+  listTemplate.slideDown(750);
+  $('button#addClaimButton').remove();
+  bindAddButton();
 }
+
 function createItemClaim(pid, pidLabel, item, type) {
-// NEED LEVEL1 VALIDATION HERE
+  // TODO: NEED LEVEL1 VALIDATION HERE
   var description = item.description
   if (!description.length){
-        description = 'this item has no description'
-      }
-  $('ul#added-claims').prepend(`
+    description = 'this item has no description';
+  }
+  var listTemplate = $(`
     <li class="added-claim-li ${type}">
     <div class="row-div">
-     <div class="added-property-div">
-
+      <div class="added-property-div">
         ${pidLabel} <a class="wd-id" href="https://wikidata.org/wiki/Property:${pid}" target="_blank"> (${pid})</a></span>
      </div>
      <div class="added-value-div">
@@ -263,26 +261,30 @@ function createItemClaim(pid, pidLabel, item, type) {
           <span class="sub-aka"><b>Also Referred To As:</b> ${item.aliases}</span>
           </div>
      </div></div>
-    </li>`)
-$('button#addClaimButton').remove()
-bindAddButton()
-  // body...
+    </li>`).hide(0)
+  $('ul#added-claims').scrollTop(0);
+  $('ul#added-claims').prepend(listTemplate);
+  listTemplate.slideDown(750);
+  $('button#addClaimButton').remove();
+  bindAddButton();
 }
+
 function validateItem(pid, pidLabel, qid, type){
   $.post("/api-get-qid-label", {qid:qid}, function(response){
-    console.log(response)
-    response = JSON.parse(response)
-    console.log('HERE')
-    createItemClaim(pid, pidLabel, response, type)
+    response = JSON.parse(response);
+    console.log(response);
+    createItemClaim(pid, pidLabel, response, type);
   }).fail(function(error){
-    console.log(error)
+    console.log(error);
   })
 }
+
 function lookupItem(string){
+  var list = $('ul#lookup-results-list').hide(1000);
   $.post("/api-lookup-item", {string:string}, function(response){
     response = JSON.parse(response)
     console.log(response)
-    var list = $('ul#lookup-results-list').empty()
+    list.empty()
     for (var opt = 0; opt < response.length; opt++){
       var item = response[opt]
       var qid = item.id
@@ -293,6 +295,7 @@ function lookupItem(string){
       list.append(`
         <li class="lookup-result-li">
           <div class="result-main" id="result-main-${qid}" data-qid="${qid}"> 
+            <button data-clipboard-text="${qid}" class="pull-left clipboardBtn" id="clipboardBtn-${qid}" data-qid="${qid}"><i class="fa fa-clipboard"></i> </button>
             <span class="result-label">${item.label}</span></br>
             ${qid} <span class="glyphicon glyphicon-menu-down"></span>
           </div>
@@ -301,15 +304,23 @@ function lookupItem(string){
           <span class="sub-aka"><b>Also Referred To As:</b> ${item.aliases}</span>
           </div>
         </li>
-        `)
-
+        `);
+      var btn = document.getElementById('clipboardBtn-'+qid);
+      // Thanks to https://clipboardjs.com/ for this object below
+      var clipboard = new Clipboard(btn);
+      clipboard.on('success', function(e) {
+        console.log(e);
+      });
+      clipboard.on('error', function(e) {
+        console.log(e);
+      });
     }
     $('div.result-main').click(function(){
-        var id = $(this).data('qid')
-        console.log('calling--> ', id)
-        $('div#result-sub-'+id).slideToggle('slow');
-      })
-    console.log('HERE')
+      var id = $(this).data('qid');
+      console.log('calling--> ', id);
+      $('div#result-sub-'+id).slideToggle('slow');
+    })
+    list.fadeIn(1000);
     // createItemClaim(pid, pidLabel, response, type)
   }).fail(function(error){
     console.log(error)
@@ -334,21 +345,14 @@ function claimFormValidation(){
       console.log('form validated');
       createBasicClaim(pid, select.val(), value, type);
       break;
-
-
-
   }
-
 }
+
 $("input#lookup-input").keyup(function(event){
     if(event.keyCode == 13){
-        // $("#id_of_button").click();
-        lookupItem(this.value)
+      lookupItem(this.value)
     }
 });
+
 </script>
-
-
-    
-
     {% endblock page_content %}
