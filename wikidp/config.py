@@ -29,7 +29,7 @@ class BaseConfig(object):
 class DevConfig(BaseConfig):
     """Developer level config, with debug logging and long log format."""
     DEBUG = True
-    LOG_FORMAT = '[%(levelname)-8s %(filename)-15s:%(lineno)-5d %(funcName)-30s] %(message)s'
+    LOG_FORMAT = '[%(asctime)s %(levelname)-8s %(filename)-15s:%(lineno)-5d %(funcName)-30s] %(message)s'
 
 CONFIGS = {
     "dev": 'wikidp.config.DevConfig',
