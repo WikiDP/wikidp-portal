@@ -22,6 +22,11 @@ def welcome():
     """Landing Page for first time"""
     return render_template('welcome.html')
 
+@APP.route("/about")
+def about():
+    """Rendering the about page"""
+    return render_template('about.html')
+
 @APP.route("/browse")
 def list_extensions():
     """Displays a list of extensions and media types."""

@@ -401,6 +401,10 @@ div#claims-div {
     height: calc(100% - 100px);
     position: relative;
 }
+div#claims-div img.property-image {
+    max-width: 80%;
+    width: inherit;
+}
 div#claims-scroller{
     height: calc(100% - 30px);
     width: 100%;
@@ -687,3 +691,15 @@ span.sub-aka{
     font-weight: 400;
 }
 /*End Contribute Page*/
+
+/*About Page*/
+div.about-page {
+    margin: 0 auto;
+    letter-spacing: 2px;
+    font-weight: 300;
+    font-size: 15px;
+}
+div.about-page .center{
+    text-align: center;
+}
+/*End About Page*/
