@@ -13,7 +13,7 @@
 import logging
 from flask import render_template, request, json
 from wikidp import APP
-from wikidp.model import FileFormat
+from wikidp.model import FileFormat, PuidSearchResult
 from wikidp.lists import properties
 import wikidp.DisplayFunctions as DF
 
@@ -33,9 +33,17 @@ def list_extensions():
     formats = FileFormat.list_formats()
     return render_template('browse.html', formats=formats)
 
+@APP.route("/puid/<string:puid>")
+def search_puid(puid):
+    """Displays a list of extensions and media types."""
+    puid = puid.replace('_', '/')
+    logging.debug("Searching for PUID: %s", puid)
+    results = PuidSearchResult.search_puid(puid)
+    return render_template('puid_results.html', results=results, puid=puid)
 
 @APP.route("/search", methods=['POST'])
 def search_results_page():
+    """Displays the most likely results of a users search."""
     # print (request.form['userInput'].strip())
     options = DF.search_result_list(request.form['userInput'].strip())
     # print (options)
@@ -43,15 +51,17 @@ def search_results_page():
 
 @APP.route("/preview", methods=['POST'])
 def preview_selected_page():
+    """Show a preview of a selected search result."""
     options = json.loads(request.form['optionList'])
-    previewItem = DF.item_detail_parse(request.form['qid'])
-    return render_template('preview-item.html', selected=previewItem, options=options)
+    preview_item = DF.item_detail_parse(request.form['qid'])
+    return render_template('preview-item.html', selected=preview_item, options=options)
 
 @APP.route("/contribute", methods=['POST'])
 def contribute_selected_page():
+    """Handles a user's contributed statements."""
     options = json.loads(request.form['optionList'])
-    previewItem = DF.item_detail_parse(request.form['qid'])
-    return render_template('contribute.html', selected=previewItem, options=options)
+    preview_item = DF.item_detail_parse(request.form['qid'])
+    return render_template('contribute.html', selected=preview_item, options=options)
 
 @APP.route("/<qid>")
 def selected_item(qid):
@@ -65,7 +75,7 @@ def selected_item(qid):
 def api_load_item():
     """Routing after the user searches an item in a form"""
     logging.debug("Processing user POST request.")
-    qid = request.form['qid'] 
+    qid = request.form['qid']
     if qid in [None, ""]:
         qid = "None"
         return "error, item not found"
@@ -77,7 +87,7 @@ def api_load_item():
 def api_get_qid_label():
     """User posts a item-id and returns json of (id, label, description, aliases)"""
     logging.debug("Processing user POST request.")
-    qid = request.form['qid'] 
+    qid = request.form['qid']
     output = DF.qid_to_basic_details(qid)
     return json.dumps(output)
 
