@@ -16,6 +16,7 @@ from wikidp import APP
 from wikidp.model import FileFormat, PuidSearchResult
 from wikidp.lists import properties
 import wikidp.DisplayFunctions as DF
+import re
 
 @APP.route("/")
 def welcome():
@@ -44,15 +45,28 @@ def search_puid(puid):
 @APP.route("/search", methods=['POST'])
 def search_results_page():
     """Displays the most likely results of a users search."""
-    # print (request.form['userInput'].strip())
-    options = DF.search_result_list(request.form['userInput'].strip())
-    # print (options)
+    _input = request.form['userInput'].strip()
+    # Check if searching with PUID
+    try:
+        if re.search("[x-]?fmt/\d+", _input) != None:
+            result = PuidSearchResult.search_puid( _input)
+            for res in result:
+                item = DF.qid_to_basic_details(res.format)
+                options = [[res.format, res.label, item['description']]]
+                # load other options in case user was not searching by PUID
+                options += [[ x['id'], x['label'], x['description']] for x in DF.search_result_list(_input)]
+                previewItem = DF.item_detail_parse(res.format)
+                return render_template('preview-item.html', selected=previewItem, options=options)
+    except Exception as e:
+        logging.debug("Error Searching for PUID: %s", str(e))
+    options = DF.search_result_list(_input)
     return render_template('search_results.html', options=options)
 
 @APP.route("/preview", methods=['POST'])
 def preview_selected_page():
     """Show a preview of a selected search result."""
     options = json.loads(request.form['optionList'])
+    print (options)
     preview_item = DF.item_detail_parse(request.form['qid'])
     return render_template('preview-item.html', selected=preview_item, options=options)
 
