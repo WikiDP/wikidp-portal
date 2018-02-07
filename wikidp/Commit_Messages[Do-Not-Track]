@@ -1,7 +1,0 @@
-Feat: Styled and animated the UI
-- Added a box-shadow on the navbar to add some depth to the page
-- removed the link to the browse page
-- added more navigation links 
-- animated the user actions
-- animated AJAX calls on the contribute page
-
