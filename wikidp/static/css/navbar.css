@@ -83,7 +83,7 @@ a.navbar-brand {
 
 form.navbar-form.navbar-right {
     /* margin-right: 0px; */
-     display: none; 
+     display: none;
     position: absolute;
     background: #13181d;
     height: 100%;
@@ -157,4 +157,3 @@ a.effect-underline:hover:after {
     -webkit-transform: scale(1);
     transform: scale(1);
 }
-

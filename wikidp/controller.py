@@ -28,6 +28,11 @@ def about():
     """Rendering the about page"""
     return render_template('about.html')
 
+@APP.route("/reports")
+def reports():
+    """Rendering the reports page"""
+    return render_template('reports.html')
+
 @APP.route("/browse")
 def list_extensions():
     """Displays a list of extensions and media types."""
