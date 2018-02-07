@@ -58,6 +58,7 @@ Where the `-e` switch tells pip to monitor the directory and recompile changes. 
 
 Again there's a helper script for this: `(venv) $ ./setup.sh`.
 
+
 ### Running the application
 The following steps need to be followed for every new terminal session.
 
@@ -81,6 +82,8 @@ There's a script that you can use for this in the project root, `run.sh`. You'll
 export WIKIDP_BOT_USER='<username>'
 export WIKIDP_BOT_PASSWORD='<password>'
 ````
+    
+Point your browser to http://127.0.0.1:5000 and you should see the prototype of the portal.
 
 Troubleshooting
 --------------
