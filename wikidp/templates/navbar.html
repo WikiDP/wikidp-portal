@@ -15,7 +15,7 @@
         <div class="outer-list-div">
           <ul class="nav navbar-nav">
             <li><a href="/about" class="effect-underline">about</a></li>
-            <li><a href="#" class="effect-underline">reports</a></li>
+            <li><a href="/reports" class="effect-underline">reports</a></li>
             <li><a href="#" class="effect-underline">news</a></li>
             <li><a href="#" class="effect-underline">support</a></li>
           </ul>
@@ -54,7 +54,7 @@ $("form#navbarSearch").submit(function(){
   $('div.page-container').fadeOut(500);
   $('form.navbar-form.navbar-right').fadeOut('slow');
 
-    
+
 });
 $('div.side-icon-div i#searchToggle').on('click', function(){
   var icon = $(this);
@@ -64,7 +64,7 @@ $('div.side-icon-div i#searchToggle').on('click', function(){
       icon.fadeOut('slow', function(){
         icon.removeClass('fa-search');
         icon.addClass('fa-times-circle-o');
-        icon.fadeIn('slow'); 
+        icon.fadeIn('slow');
       });
     });
   }
@@ -77,8 +77,8 @@ $('div.side-icon-div i#searchToggle').on('click', function(){
         icon.fadeIn('slow')
       });
     });
-  }    
+  }
 })
-   
+
 
 </script>
