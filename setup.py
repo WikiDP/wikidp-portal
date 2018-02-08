@@ -20,7 +20,7 @@ setup(
         'flask==0.12.2',
         'wikidataintegrator==0.0.481',
         'lxml==3.7.3',
-        'pywikibot'
+        'pywikibot==3.0.20180204'
         #
         # carl@openpreservation.org removed these dependencies as almost certainly
         # unused on 2nd Oct 2017, commenting for safety.
