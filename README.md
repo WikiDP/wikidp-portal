@@ -97,3 +97,5 @@ If you see something like:
     For more information see http://flask.pocoo.org/docs/latest/quickstart/
 
 You need to set the FLASK_APP environment variable, see Quick Start above.
+
+This code is released under the GPLv3 license. 
