@@ -1,4 +1,5 @@
 from collections import OrderedDict
+import logging
 import json
 import pickle
 import urllib.request
@@ -9,6 +10,7 @@ import requests
 from wikidataintegrator import wdi_core
 
 import wikidp.lists as LIST
+logging.debug("Finished includes")
 # Global Variables:
 LANG = 'en'
 URL_CACHE, PID_CACHE, QID_CACHE = None, None, None
@@ -171,9 +173,26 @@ def get_value_of_claim(data_type, data_value):
 def load_caches():
     """Uses pickle to load all caching files as global variables"""
     global URL_CACHE, PID_CACHE, QID_CACHE
-    URL_CACHE = pickle.load(open("wikidp/caches/url-formats", "rb"))
-    PID_CACHE = pickle.load(open("wikidp/caches/property-labels", "rb"))
-    QID_CACHE = pickle.load(open("wikidp/caches/item-labels", "rb"))
+    logging.debug("Loading format caches")
+
+    try:
+        with open("wikidp/caches/url-formats", "rb") as f:
+            URL_CACHE = pickle.load(f)
+    except FileNotFoundError:
+        logging.exception("No URL Formats Wiki File.")
+
+    logging.debug("Loading property caches")
+    try:
+        with open("wikidp/caches/property-labels", "rb") as f:
+            PID_CACHE = pickle.load(f)
+    except FileNotFoundError:
+        logging.exception("No URL Formats Wiki File.")
+    logging.debug("Loading label caches")
+    try:
+        with open("wikidp/caches/item-labels", "rb") as f:
+            QID_CACHE = pickle.load(f)
+    except FileNotFoundError:
+        logging.exception("No URL Formats Wiki File.")
 
 def save_caches():
     """Uses pickle to save global variables to caching files in order to update"""
