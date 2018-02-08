@@ -1,0 +1,77 @@
+{% extends "page.html" %}
+{% block title %}Home{% endblock %}
+{% block page_content %}
+<!-- <link rel="styleshet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"> -->
+<link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<div class="reports-page" id="content-frame">
+  <div id="header-text">
+    <span id="preview-item-name" class="reports-header">Reports</span>
+    <br>
+    <span id="preview-item-description">Need a description summarizing the purpose of the queries
+    . Lorem ipsum dolor sit amet, consectetur adipisicing elit. Repudiandae, unde!</span>
+  </div>
+  <div class="reports-section" id="queries">
+    <div class="reports-section-header">
+      Wikidata Queries
+    </div>
+    <ul>
+      <li>
+        <div class="query-title" onclick="$(this).next().animate({height: 'toggle', opacity: 'toggle',}, 'slow')">
+          Number of software titles recorded
+        </div>
+        <div class="wd-iframe-container" hidden>
+          <iframe src="https://query.wikidata.org/embed.html#SELECT%20DISTINCT%20%3Fapp%20%3FappLabel%20%0AWHERE%20%7B%0A%20%20%3Fapp%20wdt%3AP31%2Fwdt%3AP279*%20wd%3AQ7397.%0A%0A%20%20SERVICE%20wikibase%3Alabel%20%7B%20bd%3AserviceParam%20wikibase%3Alanguage%20%22en%22.%20%7D%0A%7D" referrerpolicy="origin" sandbox="allow-scripts allow-same-origin allow-popups"></iframe>
+        </div>
+      </li>
+      <li>
+        <div class="query-title" onclick="$(this).next().animate({height: 'toggle', opacity: 'toggle',}, 'slow')">
+          Number of file formats recorded
+        </div>
+        <div class="wd-iframe-container" hidden>
+          <iframe src="https://query.wikidata.org/#SELECT%20DISTINCT%20%3Fapp%20%3FappLabel%20%0AWHERE%20%7B%0A%20%20%3Fapp%20wdt%3AP31%2Fwdt%3AP279%2A%20wd%3AQ235557.%0A%0A%20%20SERVICE%20wikibase%3Alabel%20%7B%20bd%3AserviceParam%20wikibase%3Alanguage%20%22en%22.%20%7D%0A%7D" referrerpolicy="origin" sandbox="allow-scripts allow-same-origin allow-popups"></iframe>
+        </div>
+      </li>
+      <li>
+        <div class="query-title" onclick="$(this).next().animate({height: 'toggle', opacity: 'toggle',}, 'slow')">
+          Number of PRONOM Unique Identifiers recorded
+        </div>
+        <div class="wd-iframe-container" hidden>
+          <iframe src="https://query.wikidata.org/#SELECT%20DISTINCT%20%3Fformat%20%3FformatLabel%20%3Fpuid%0AWHERE%20%7B%0A%20%20%3Fformat%20wdt%3AP2748%20%3Fpuid%20.%0A%20%20SERVICE%20wikibase%3Alabel%20%7B%0A%09%09bd%3AserviceParam%20wikibase%3Alanguage%20%22en%22%20.%0A%7D%0A%20%20%7D" referrerpolicy="origin" sandbox="allow-scripts allow-same-origin allow-popups"></iframe>
+        </div>
+      </li>
+      <li>
+        <div class="query-title" onclick="$(this).next().animate({height: 'toggle', opacity: 'toggle',}, 'slow')">
+          Number of file signatures described
+        </div>
+        <div class="wd-iframe-container" hidden>
+          <iframe src="https://query.wikidata.org/#SELECT%20%3Fitem%20%3FitemLabel%20%3FvalueLabel%0A%7B%0A%09%3Fitem%20wdt%3AP4152%20%3Fvalue%20.%0A%09SERVICE%20wikibase%3Alabel%20%7B%20bd%3AserviceParam%20wikibase%3Alanguage%20%22en%2Cen%22%20%20%7D%20%20%20%20%0A%7D" referrerpolicy="origin" sandbox="allow-scripts allow-same-origin allow-popups"></iframe>
+        </div>
+      </li>
+      <li>
+        <div class="query-title" onclick="$(this).next().animate({height: 'toggle', opacity: 'toggle',}, 'slow')">
+          Number of emulators recorded
+        </div>
+        <div class="wd-iframe-container" hidden>
+          <iframe src="https://query.wikidata.org/#SELECT%20%3Femulator%20%3FemulatorLabel%0AWHERE%20%7B%0A%20%20%3Femulator%20wdt%3AP31%2Fwdt%3AP279%2A%20wd%3AQ202871%20.%20%20%20%20%20%20%20%20%20%0A%20%20SERVICE%20wikibase%3Alabel%20%7B%0A%09%09bd%3AserviceParam%20wikibase%3Alanguage%20%22en%22%20.%0A%7D%0A%20%20%7D" referrerpolicy="origin" sandbox="allow-scripts allow-same-origin allow-popups"></iframe>
+        </div>
+      </li>
+      <li>
+        <div class="query-title" onclick="$(this).next().animate({height: 'toggle', opacity: 'toggle',}, 'slow')">
+          Number of file systems recorded
+        </div>
+        <div class="wd-iframe-container" hidden>
+          <iframe src="https://query.wikidata.org/#SELECT%20%3Fitem%20%3FitemLabel%20%0AWHERE%20%0A%7B%0A%20%20%3Fitem%20wdt%3AP31%2Fwdt%3AP279%2A%20wd%3AQ174989.%0A%20%20SERVICE%20wikibase%3Alabel%20%7B%20bd%3AserviceParam%20wikibase%3Alanguage%20%22%5BAUTO_LANGUAGE%5D%2Cen%22.%20%7D%0A%7D" referrerpolicy="origin" sandbox="allow-scripts allow-same-origin allow-popups"></iframe>
+        </div>
+      </li>
+    </ul></div>
+</div>
+  <script type="text/javascript">
+
+    $("form").submit(function(){
+    $('div.page-container').fadeOut(500);
+});
+
+  </script>
+
+    {% endblock page_content %}

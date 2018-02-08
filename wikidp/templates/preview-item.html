@@ -1,0 +1,285 @@
+{% extends "page.html" %}
+{% block title %}Preview {% endblock %}
+{% block page_content %}
+<!-- <link rel="styleshet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"> -->
+<link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<div id="panel-frame" data-qid="{{selected['label'][0]}}">
+	
+		<div id="sidebar-frame">
+			<div id="sidebar-div">
+				<!-- selected item -->
+				<div class="selected-item-div">
+					<div class="sidebar-header">selected item</div>
+					<select id="option-select" value="">
+					{% for option in options %}
+					{% if option[0] != selected['label'][0] %}
+
+					<option class="item-option" data-qid="{{option[0]}}"  data-label="{{option[1]}}" data-description="{{option[2]}}" title="{{option[2]}}" value="{{option[0]}}">
+						{{option[1]}}<span class="select-item-id"> ({{option[0]}})</span>
+					</option>
+					{% else %}
+					<option class="item-option" data-qid="{{option[0]}}"  data-label="{{option[1]}}" data-description="{{option[2]}}" title="{{option[2]}}" value="{{option[0]}}" selected="true">
+						{{option[1]}}<span class="select-item-id"> ({{option[0]}})</span>
+					</option>
+					{% endif %}
+					{% endfor %}
+					</select>
+				</div>
+
+				<!-- property overview -->
+				<div class="property-overview-div">
+					<div class="sidebar-header">property checklist</div>
+					<div id="sidebar-property-scroller"> 
+					<ul id="sidebar-property-list" value="">
+						{% for property in selected['properties'] %}
+  							{% if property[2] == 0%}
+  								<li class="sidebar-property-li">
+                    <span title="{{property[1]}} ({{property[0]}})" data-content-start="{{property[1]}} ({{property[0]}}) " 
+      data-content-end=  ""></span>: 0
+  									 
+  								</li>
+  							{% else %}
+  								<li class="sidebar-property-li property-ok">
+  									<span title="{{property[1]}} ({{property[0]}})" data-content-start="{{property[1]}} ({{property[0]}}) " 
+      data-content-end=  ""></span>: {{property[2]}}
+  								</li>
+  							{% endif %}
+  						{% endfor %}
+					</ul></div>
+				</div>
+
+				<!-- action buttons-->
+				<div class="actions-div">
+					<div class="sidebar-header">actions</div>
+					<ul id="sidebar-action-list" value="">
+						<li class="sidebar-action-li" id="explore-action">
+							explore
+						</li>
+						<li class="sidebar-action-li preview-on" id="preview-action">
+							preview
+						</li>
+						<li class="sidebar-action-li" id="contribute-action" onclick="">
+							contribute
+						</li>
+					</ul>
+				</div>
+
+			</div>
+		</div>
+
+
+
+		<div id="content-frame">
+			
+		<!-- preview page specific -->
+			<div id="preview-div">
+			<div id="header-text">
+				<span id="preview-item-name">{{selected['label'][1]}}<a class="wd-id" href="https://wikidata.org/wiki/{{selected['label'][0]}}" target="_blank"> ({{selected['label'][0]}})</a></span>
+				<br>
+				{% if selected['description'] != []%}
+        <span id="preview-item-description" title="{{selected['description']}}">{{selected['description']}}</span>
+        {% endif %}
+			</div>
+				<div id="claims-div">
+				<div class="table-header-div">
+					<span class="tbl-cat">
+              Current Data About {{selected['label'][1]}}
+            </span></div>
+            <div id="claims-scroller">
+
+							<table  class="table claims-table table-responsive table-striped table-hover">
+            
+            {% for clm in selected['claims']%}
+              <tr>
+                <td class="invert-col">
+                  {{ clm[1] }}
+                  <a target="_blank" href="https://wikidata.org/wiki/property:{{clm[0]}}" class="p_or_q_id">
+                    ({{clm[0]}})
+                  </a>
+                </td>
+                <td>
+                  {% for sub in selected['claims'][clm] %}
+                    <span class="detail-row">
+                      {% if clm[2] == 2%}
+                        {% if sub[0][0] == 'Q' %}
+                          {{ sub[1] }}
+                          <a target="_blank" href="https://wikidata.org/wiki/{{sub[0]}}" class="p_or_q_id">
+                            ({{ sub[0] }})
+                          </a>
+                        {% elif sub[0][0] == 'P' %}
+                          {{ sub[1] }}
+                          <a target="_blank" href="https://wikidata.org/wiki/property:{{sub[0]}}" class="p_or_q_id">
+                            ({{sub[0]}})
+                          </a>
+                        {% endif %}
+                      {% elif clm[2] == 1%}
+                        {% if clm[0] == 'P18' or clm[0] == 'P154' %}
+                          <a target="_blank" href="{{sub}}">
+                            <img class="property-image" src="{{sub}}" style="border:0;" width="80%">
+                          </a>
+                        {% else %}
+                          {{ sub }}
+                        {% endif %}
+                      {%endif%}
+                      {% if (clm[0],sub[0]) in selected['refs'] %}
+                        <table class="reference-table  table-responsive table-striped table-hover">
+                          {%for x in selected['refs'][(clm[0],sub[0])] %}
+                            <tr>
+                              <td>
+                                {{ x[1] }}
+                                <a target="_blank" href="https://wikidata.org/wiki/property:{{x[0]}}" class="p_or_q_id">
+                                  ({{ x[0] }})
+                                </a>
+                              </td>
+                              <td>
+                                {% if x[2] is string %}
+                                  {{x[2]}}
+                                {% else %}
+                                  <a target="_blank"
+                                    {% if x[2][0][0] == 'Q' %}
+                                      href="https://wikidata.org/wiki/{{x[2][0]}}"
+                                    {% else %}
+                                      href="https://wikidata.org/wiki/property:{{x[2][0]}}"     
+                                    {% endif %}
+                                  class="">
+                                    {{x[2][1]}} 
+                                  </a>
+                                {% endif %} 
+                              </td>
+                            </tr>
+                          {% endfor %}
+                        </table>
+                      {%endif%}
+                      </br>
+                    </span>
+                  {% endfor %}
+                </td>
+              </tr>
+            {% endfor %}
+          </table>
+
+
+</div>
+
+				</div>
+				<div id="other-info-div">
+				<div class="table-header-div">
+				<span class="tbl-cat">
+            other details
+          </span></div>
+          <div id="other-info-scroller">
+          <table class="selected-table table-responsive table-striped table-hover">
+            {%if selected['aliases'] != []%}
+              <tr>
+                <td>
+                  Aliases
+                </td>
+                <td>
+                  {%for p in selected['aliases']%}
+                    {{p}}
+                  {%endfor%}
+                </td>
+              </tr>
+            {%endif%}
+            {%if selected['description'] != []%}
+              <tr>
+                <td>
+                  Description
+                </td>
+                <td id="sub_description">
+                  {{selected['description']}}
+                </td>
+              </tr>
+            {%endif%}
+          </table>
+          {%if selected['aliases'] != []%}
+          <br>
+
+					<span class="tbl-cat">External Links </span>
+          <table class="ex-links-table  table-responsive table-striped table-hover">
+            {%for p in selected['ex-ids']%}
+              <tr>
+                <td>
+                  {{p[1]}}
+                  <a target="_blank" href="https://wikidata.org/wiki/property:{{p[0]}}" class="p_or_q_id">
+                    ({{ p[0] }})
+                  </a>
+                </td>
+                <td>
+                  {%if p[3] != 'unavailable'%}
+                    <a target="_blank" href="{{p[3]}}">
+                      {{p[2]}}
+                    </a>
+                  {%else%}
+                    {{p[2]}}
+                  {%endif%}
+                </td>
+              </tr>
+            {%endfor%}
+          </table>
+          {%endif%}
+          </div>
+          
+				</div>
+			</div>
+		<!-- end preview page specific -->
+		</div>
+	
+
+</table>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('img.property-image').fadeIn(4000)
+	})
+	function pageTransition(form){
+  $('div.page-container').fadeOut(500, function(
+  ){
+  $('body').append(form);
+form.submit();
+})
+}
+	$('select#option-select').change(function(){
+		var list = $('option.item-option')
+		var options = []
+		for (i = 0; i < list.length; i++){
+		console.log($(list[i]).data('qid'), $(list[i]).data('label'))
+			options.push([$(list[i]).data('qid').replace("'","&#39;"), $(list[i]).data('label').replace("'","&#39;"), $(list[i]).data('description').replace("'","&#39;") ]) 
+		}
+		options = JSON.stringify(options)
+		console.log(options)
+		console.log($(this).val())
+
+var form = $('<form action="/preview" method="post">' +
+  '<input type="text" name="qid" value="' + $(this).val() + '" />' +
+  '<input type="text" name="optionList" '+"value='"+options+"' />" +
+  '</form>').hide(0);
+pageTransition(form)
+		// return $.post("/preview", {qid:qid})
+	});
+
+	$('li#contribute-action').click(function(){
+		var list = $('option.item-option')
+		var options = []
+		for (i = 0; i < list.length; i++){
+		console.log($(list[i]).data('qid'), $(list[i]).data('label'))
+			options.push([$(list[i]).data('qid').replace("'","&#39;"), $(list[i]).data('label').replace("'","&#39;"), $(list[i]).data('description').replace("'","&#39;") ]) 
+		}
+		options = JSON.stringify(options)
+		console.log(options)
+		console.log($('div#panel-frame').data('qid'))
+
+var form = $('<form action="/contribute" method="post">' +
+  '<input type="text" name="qid" value="' + $('div#panel-frame').data('qid') + '" />' +
+  '<input type="text" name="optionList" '+"value='"+options+"' />" +
+  '</form>').hide(0);
+pageTransition(form)
+	})
+
+</script>
+
+
+    
+
+    {% endblock page_content %}

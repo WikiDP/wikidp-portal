@@ -17,15 +17,17 @@ setup(
     packages=['wikidp'],
     include_package_data=True,
     install_requires=[
-        'flask',
-        'wikidataintegrator',
-        'wtforms',
-        'requests==2.13.0',
+        'flask==0.12.2',
+        'wikidataintegrator==0.0.481',
         'lxml==3.7.3',
-        'simplejson==3.10.0',
-        'pywikibot'
-
+        'pywikibot==3.0.20180204'
+        #
+        # carl@openpreservation.org removed these dependencies as almost certainly
+        # unused on 2nd Oct 2017, commenting for safety.
+        # 'wtforms',
+        # 'requests==2.13.0',
+        # 'simplejson==3.10.0',
     ],
 )
 
-#TO DO: If using python3.6, I had to run 'install certificates.command' inside the directory in order to load url's 
+#TO DO: If using python3.6, I had to run 'install certificates.command' inside the directory in order to load url's

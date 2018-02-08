@@ -5,11 +5,132 @@ html, body
     height: 100%;
 }
 
+nav.navbar.navbar-inverse.navbar-fixed-top{
+    background: rgb(59, 131, 174);
+    box-shadow: 1px 4px 10px black;
+}
+nav.navbar a.navbar-brand{
+	color: rgba(46, 106, 142, 0.78);
+    font-weight: bold;
+}
+#navbar div.input-group{
+	border-bottom: 1px solid white;
+}
+#navbar input.form-control, #navbar div.input-group button {
+    background: none;
+    color: white;
+    border: none;
+    text-shadow: none;
+    border-radius: 0;
+    box-shadow: none;
+    font-weight: 100;
+}
+#navbar div.input-group button  {
 
+    color: #2e698c;
+    
+}
+#navbar div.input-group button#search-btn{
+    font-size: 19px;
+    padding: 0;
+    color: white;
+}
+#navbar div.input-group button#search-reset{
+    font-size: 10px;
+    padding-bottom: 0;
+}
+#navbar ul li a{
+	
+    color: white;
+    font-weight: 500;
+    text-transform: lowercase;
+
+}
+div.jumbotron img{
+    width: 40%;
+}
+div.jumbotron h1{
+    font-size: 68px;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: #494949;
+    line-height: .8;
+}
+h2{
+    color: #a2a2a2;
+    font-weight: 300;
+    font-size: 50px;
+}
+p#description{
+    font-size: 20px;
+    margin: 0;
+    padding-bottom: 20px;
+    font-style: italic;
+    color: rgba(162, 162, 162, 0.47);
+    letter-spacing: 1.5px;
+}
+a.p_or_q_id {
+    font-size: 53%;
+    font-weight: 400;
+    color: rgb(154, 30, 33);
+    letter-spacing: 0.5px;
+    opacity: .5;
+}
+a.p_or_q_id:hover{
+	opacity: 1;
+}
+div.jumbotron p{
+    font-size: 19px;
+    padding-top: 10px;
+    color: #494949;
+}
+nav.navbar .container {
+    width: 100%;
+}
+nav.navbar .container img {
+    opacity: .7;
+    background: rgb(116, 173, 208);
+    height: 51px;
+    margin-right: 20px;
+    box-shadow: inset 0px 0px 13px 1px rgb(32, 73, 97);
+    left: -15px;
+    position: relative;
+}
+div.panel.panel-default .panel-heading{
+    background: rgba(85, 175, 133, 0.3);
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #8da79a;
+}
+body{
+	background: #e9f0f5;
+	font-weight: 200;
+}
+
+div.container.page-container{
+	padding-left: 40px;
+	padding-right: 40px;
+	padding-bottom: 40px;
+	border-radius: 10px;
+	background: white;
+	box-shadow: inset 0 0 15px 0px rgb(0, 0, 0);
+}
+div.container div.jumbotron{
+    background: none;
+    border-radius: 0;
+    border-bottom: 1px solid #3b83ae;
+    color: #3b83ae;
+    text-align: center;
+        padding-top: 0;
+}
 .prev-claims{
     max-height: 250px;
     overflow: scroll;
     
+}
+.panel.panel-default.outer-section {
+	max-width: 750px;
+	margin: 15px auto;
 }
 .makeClaim{
 	margin: 0px;
@@ -32,12 +153,18 @@ html, body
 	max-height: 10%;
     overflow: auto;
 }*/
-
+r
 .p_or_q_id{
 	font-size: 60%;
 }
 .reference-table{
 	font-size: 80%;
+	
+}
+.reference-table td{
+	padding-left: 4%;
+	color: black;
+	text-align: left;
 }
 .tbl-cat{
 	font-size: 110%;
