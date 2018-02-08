@@ -1,0 +1,26 @@
+{% extends "page.html" %}
+{% block title %}Home{% endblock %}
+{% block page_content %}
+<!-- <link rel="styleshet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"> -->
+<link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+<div class="welcome-div">
+	<div class="greeting-message"><img alt="Portal logo." title="portal logo" src="{{ url_for('static', filename='img/WikiData_Logo.png') }}" /> </div>
+	<div id="searchbar_container">
+		<form action="/search" method="POST" role="search">
+		<input class="welcome-searchbar" type="" name="userInput" placeholder="search for file formats, software applications, software environments, etc ....">
+		<button type="submit">
+		<span class="glyphicon glyphicon-search"></span> </button>
+		</form>
+	</div>
+</div>
+
+  <script type="text/javascript">
+
+  	$("form").submit(function(){
+    $('div.page-container').fadeOut(500);
+});
+  </script>  
+
+    {% endblock page_content %}

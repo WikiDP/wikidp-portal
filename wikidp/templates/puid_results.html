@@ -1,0 +1,41 @@
+{% extends "page.html" %}
+{% block title %}PUID Results{% endblock %}
+{% block page_content %}
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+    <div class="jumbotron media">
+      <div class="media-left">
+        <img alt="Portal logo." title="portal logo" src="{{ url_for('static', filename='img/logo.jpg') }}" />
+      </div>
+      <div class="media-body">
+        <h1 class="media-heading">WikiDP Formats matching search PUID {{ puid }}</h1>
+        <p>
+          Test search by PUID on Wikidata
+        </p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-2"></div>
+      <div class="col-md-8">
+        <h2>Formats</h2>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Format</th>
+              <th>Label</th>
+              <th>PUID</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for result in results %}
+            <tr>
+              <td>{{ result.format }}</td>
+              <td>{{ result.label }}</td>
+              <td>{{ result.puid }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="col-md-2"></div>
+    </div>
+{% endblock page_content %}

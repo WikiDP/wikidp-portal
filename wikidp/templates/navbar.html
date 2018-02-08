@@ -1,19 +1,84 @@
   <!-- Fixed navbar -->
   <nav class="navbar navbar-inverse navbar-fixed-top">
+
     <div class="container">
-      <div class="navbar-header">
+      <div class="navbar-header"><img alt="Portal logo." class="pull-left " title="portal logo" src="{{ url_for('static', filename='img/WikiData_Logo.png') }}" />
         <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
           <span class="sr-only">Toggle navigation</span>
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="/">WikiDP Portal</a>
+        <a class="navbar-brand" href="/">WIKIDATA</br> <span id="nav-header-subtitle">FOR DIGITAL PRESERVATION</span></a>
       </div>
       <div id="navbar" class="navbar-collapse collapse">
-        <ul class="nav navbar-nav">
-          <li><a href="/search">Search</a></li>
-        </ul>
+        <div class="outer-list-div">
+          <ul class="nav navbar-nav">
+            <li><a href="/about" class="effect-underline">about</a></li>
+            <li><a href="/reports" class="effect-underline">reports</a></li>
+            <li><a href="#" class="effect-underline">news</a></li>
+            <li><a href="#" class="effect-underline">support</a></li>
+          </ul>
+        </div>
+        <div id="side-icons" class="pull-right">
+          <div class="side-icon-div">
+          <i class="fa fa-user-circle" aria-hidden="true"></i></div>
+          <div class="side-icon-div">
+          <i class="fa fa-search" id="searchToggle" aria-hidden="true"></i>
+        </div>
+        </div>
+        <!-- Site search bar shamelessly stolen from https://bootsnipp.com/snippets/featured/simple-navbar-search
+             Thanks to mouse0270: https://bootsnipp.com/mouse0270 -->
+        <form class="navbar-form navbar-right" role="search" action="/search" method="POST" id="navbarSearch">
+					<div class="input-group">
+						<input type="text" name="userInput" class="form-control" placeholder="search here">
+						<span class="input-group-btn">
+							<button type="reset" class="btn btn-default" id="search-reset">
+								<span class="glyphicon glyphicon-remove">
+									<span class="sr-only">Close</span>
+								</span>
+							</button>
+							<button type="submit" class="btn btn-default" id="search-btn">
+								<span class="glyphicon glyphicon-search">
+									<span class="sr-only">Search</span>
+								</span>
+							</button>
+						</span>
+					</div>
+				</form>
       </div><!--/.nav-collapse -->
     </div>
   </nav>
+<script type="text/javascript">
+$("form#navbarSearch").submit(function(){
+  $('div.page-container').fadeOut(500);
+  $('form.navbar-form.navbar-right').fadeOut('slow');
+
+
+});
+$('div.side-icon-div i#searchToggle').on('click', function(){
+  var icon = $(this);
+  if(icon.hasClass('fa-search')){
+    $('div.outer-list-div').hide(1000, function(){
+      $('form.navbar-form.navbar-right').fadeIn(500);
+      icon.fadeOut('slow', function(){
+        icon.removeClass('fa-search');
+        icon.addClass('fa-times-circle-o');
+        icon.fadeIn('slow');
+      });
+    });
+  }
+  else{
+    $('form.navbar-form.navbar-right').fadeOut('slow', function(){
+      $('div.outer-list-div').show(1000)
+      icon.fadeOut('slow', function(){
+        icon.removeClass('fa-times-circle-o')
+        icon.addClass('fa-search')
+        icon.fadeIn('slow')
+      });
+    });
+  }
+})
+
+
+</script>
