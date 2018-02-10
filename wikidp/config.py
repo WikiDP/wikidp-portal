@@ -14,14 +14,16 @@ import os
 
 # Template these values for flexible install
 HOST = 'localhost'
-LOG_ROOT = '/tmp/'
+LOG_ROOT = '/tmp'
+CACHE_ROOT = '/tmp/wikidp'
 
 class BaseConfig(object):
     """Base / default config, no debug logging and short log format."""
     HOST = HOST
     DEBUG = False
     LOG_FORMAT = '[%(filename)-15s:%(lineno)-5d] %(message)s'
-    LOG_FILE = LOG_ROOT + 'wikidp.log'
+    LOG_FILE = os.path.join(LOG_ROOT, 'wikidp.log')
+    CACHE_DIR = os.path.join(CACHE_ROOT, 'caches')
     SECRET_KEY = '7d441f27d441f27567d441f2b6176a'
     WIKIDATA_USER_NAME = 'username'
     WIKIDATA_PASSWORD = 'password'
@@ -29,7 +31,8 @@ class BaseConfig(object):
 class DevConfig(BaseConfig):
     """Developer level config, with debug logging and long log format."""
     DEBUG = True
-    LOG_FORMAT = '[%(asctime)s %(levelname)-8s %(filename)-15s:%(lineno)-5d %(funcName)-30s] %(message)s'
+    LOG_FORMAT = '[%(asctime)s %(levelname)-8s %(filename)-15s:%(lineno)-5d ' +\
+                 '%(funcName)-30s] %(message)s'
 
 CONFIGS = {
     "dev": 'wikidp.config.DevConfig',
@@ -42,3 +45,5 @@ def configure_app(app):
     app.config.from_object(CONFIGS[config_name])
     app.config.WIKIDATA_USER_NAME = os.getenv('WIKIDP_BOT_USER', BaseConfig.WIKIDATA_USER_NAME)
     app.config.WIKIDATA_PASSWORD = os.getenv('WIKIDP_BOT_PASSWORD', BaseConfig.WIKIDATA_PASSWORD)
+    if os.getenv('WIKIDP_CONFIG_FILE'):
+        app.config.from_envvar('WIKIDP_CONFIG_FILE')
