@@ -13,6 +13,7 @@
 from collections import OrderedDict
 import logging
 import os
+import errno
 import json
 import pickle
 import urllib.request
@@ -27,7 +28,9 @@ import wikidp.lists as LIST
 
 # Global Variables:
 LANG = 'en'
+
 URL_CACHE, PID_CACHE, QID_CACHE = None, None, None
+CACHE_DIR = APP.config['CACHE_DIR']
 
 def search_result_list(string):
     """Uses wikidataintegrator to generate a list of similar items based on a text search
@@ -190,31 +193,43 @@ def get_value_of_claim(data_type, data_value):
         val = [val[0] + "type level " + data_type]
     return val, size
 
+def _setup_cache_dir():
+    try:
+        os.makedirs(CACHE_DIR)
+    except OSError as _e:
+        if _e.errno != errno.EEXIST:
+            logging.exception("Cannot create cache directory %s", CACHE_DIR)
+            raise
+
 def load_caches():
     """Uses pickle to load all caching files as global variables"""
     logging.debug("Loading the caches")
     global URL_CACHE, PID_CACHE, QID_CACHE
-    cache_dir = APP.config['CACHE_DIR']
 
-    URL_CACHE = _pickle_cache_loader(cache_dir, "url-formats")
-    PID_CACHE = _pickle_cache_loader(cache_dir, "property-labels")
-    QID_CACHE = _pickle_cache_loader(cache_dir, "item-labels")
+    URL_CACHE = _pickle_cache_read("url-formats")
+    PID_CACHE = _pickle_cache_read("property-labels")
+    QID_CACHE = _pickle_cache_read("item-labels")
 
-def _pickle_cache_loader(cache_dir, cache_name):
-    pickle_file = os.path.join(cache_dir, cache_name)
+def _pickle_cache_read(cache_name):
+    pickle_file = os.path.join(CACHE_DIR, cache_name)
     try:
         with open(pickle_file, "rb") as _f:
             return pickle.load(_f)
     except FileNotFoundError:
-        logging.info("Cache file not found %s.", pickle_file)
+        logging.info("Cache file not found: %s.", pickle_file)
     return {}
 
 def save_caches():
     """Uses pickle to save global variables to caching files in order to update"""
     global URL_CACHE, PID_CACHE, QID_CACHE
-    pickle.dump(URL_CACHE, open("wikidp/caches/url-formats", "wb"))
-    pickle.dump(PID_CACHE, open("wikidp/caches/property-labels", "wb"))
-    pickle.dump(QID_CACHE, open("wikidp/caches/item-labels", "wb"))
+    _pickle_cache_persist("url-formats", URL_CACHE)
+    _pickle_cache_persist("property-labels", PID_CACHE)
+    _pickle_cache_persist("item-labels", QID_CACHE)
+
+def _pickle_cache_persist(cache_name, cache_dict):
+    pickle_file = os.path.join(CACHE_DIR, cache_name)
+    with open(pickle_file, "wb") as _f:
+        pickle.dump(cache_dict, _f)
 
 def id_to_label_list(wikidata_id):
     """Takes in an id (P## or Q##) and returns a list of that entity's label and id"""
@@ -235,9 +250,7 @@ def qid_label(qid):
             item.get()
             label = item.labels[LANG]
             QID_CACHE[qid] = label
-            # print("[1] Adding qid to cache {",qid,"}: ", label)
-            pickle.dump(QID_CACHE, open("wikidp/caches/item-labels", "wb"))
-            # print ('---confirmed->' ,QID_CACHE[qid])
+            _pickle_cache_persist("item-labels", QID_CACHE)
             return label
         except:
             try:
@@ -245,7 +258,6 @@ def qid_label(qid):
                 title = html.fromstring(page.content).xpath('//title/text()')
                 title = title[0][:-10]
                 QID_CACHE[qid] = title
-                # print("[2] Adding qid to cache {",qid,"}: ", label)
                 return title
             except:
                 logging.exception("Unexpected exception finding QID label: %s", qid)
@@ -337,6 +349,7 @@ def qid_to_basic_details(qid):
         "aliases": opt.get_aliases()
     }
 
+_setup_cache_dir()
 load_caches()
 
 # Testing function calls/data structure references:
