@@ -1,5 +1,18 @@
+#!/usr/bin/python
+# coding=UTF-8
+#
+# WikiDP Wikidata Portal
+# Copyright (C) 2017
+# All rights reserved.
+#
+# This code is distributed under the terms of the GNU General Public
+# License, Version 3. See the text file "COPYING" for further details
+# about the terms of this license.
+#
+""" Template display helper functions. """
 from collections import OrderedDict
 import logging
+import os
 import json
 import pickle
 import urllib.request
@@ -9,8 +22,9 @@ import pywikibot
 import requests
 from wikidataintegrator import wdi_core
 
+from wikidp import APP
 import wikidp.lists as LIST
-logging.debug("Finished includes")
+
 # Global Variables:
 LANG = 'en'
 URL_CACHE, PID_CACHE, QID_CACHE = None, None, None
@@ -27,8 +41,8 @@ def search_result_list(string):
             opt = qid_to_basic_details(opt)
             output.append(opt)
         # skip those that wdi can not process
-        except Exception as e:
-            print (e)
+        except Exception as _e:
+            logging.exception("Untyped exception caught")
     return output
 
 def item_detail_parse(qid):
@@ -37,7 +51,7 @@ def item_detail_parse(qid):
     try:
         item = wdi_core.WDItemEngine(wd_item_id=qid)
     except:
-        print("Error reading: ", qid)
+        logging.exception("Exception reading QID: %s", qid)
         return None
     load_caches()
     global QID_CACHE
@@ -64,8 +78,10 @@ def item_detail_parse(qid):
             if count > 0:
                 count_dict[claim] = count
     output_dict['claims'] = OrderedDict(sorted(output_dict['claims'].items()))
-    output_dict['claims'] = OrderedDict(sorted(output_dict['claims'].items(), key=dict_sorting_by_length))
-    output_dict['categories'] = sorted(sorted(output_dict['categories']), key=list_sorting_by_length)
+    output_dict['claims'] = OrderedDict(sorted(output_dict['claims'].items(),
+                                               key=dict_sorting_by_length))
+    output_dict['categories'] = sorted(sorted(output_dict['categories']),
+                                       key=list_sorting_by_length)
     prop_list = LIST.properties()
     for prop in prop_list:
         instance = [prop[0], pid_label(prop[0]), 0, prop[1]]
@@ -73,14 +89,15 @@ def item_detail_parse(qid):
             instance[2] = count_dict[prop[0]]
         except:
             pass
-        output_dict['properties'].append(instance) 
+        output_dict['properties'].append(instance)
     save_caches()
     output_dict['prop-counts'] = count_dict
     # print ( '\n NOW', output_dict, '\n NEXT', count_dict)
     return output_dict
 
 def parse_claims(claim, label, json_details, count, output_dict):
-    """Uses the json_details dictionary of a single claim and outputs the parsed data into the output_dict"""
+    """ Uses the json_details dictionary of a single claim and outputs
+    the parsed data into the output_dict. """
     #Parsing references
     # print (claim, '\n', label,'\n', json_details, '\n', count, '\n', output_dict)
     try:
@@ -92,7 +109,9 @@ def parse_claims(claim, label, json_details, count, output_dict):
             ref_list = json_details['references'][0]
             for snak in ref_list['snaks-order']:
                 pid = ref_list['snaks'][snak][0]['property']
-                reference.append((pid, pid_label(pid), parse_by_datatype(ref_list['snaks'][snak][0]['datavalue']['value'])))
+                reference.append((pid,
+                                  pid_label(pid),
+                                  parse_by_datatype(ref_list['snaks'][snak][0]['datavalue']['value'])))
                 ref_num += 1
         val = ["error at the "]
         size = 1
@@ -104,7 +123,7 @@ def parse_claims(claim, label, json_details, count, output_dict):
         try:
             data_type = json_details['mainsnak']['datatype']
             if data_type == 'external-id':
-                output_dict['ex-ids'][(claim, label, val, url_formatter(claim, val))].append(val) 
+                output_dict['ex-ids'][(claim, label, val, url_formatter(claim, val))].append(val)
             else:
                 output_dict['claims'][(claim, label, size)].append(val)
             if ref_num > 0:
@@ -126,12 +145,13 @@ def parse_claims(claim, label, json_details, count, output_dict):
             output_dict["claims"][(claim, label, size)].append(image_url(original))
             output_dict["claims"][(claim, label, size)].remove(original)
         count += 1
-    except Exception as e:
-        print (e)
+    except Exception as _e:
+        logging.exception("Unexpected exception parsing claims.")
     return count
 
 def parse_by_datatype(data):
-    """Checks the datatype of the current data value to determine how to return as a string or ID-label tuple"""
+    """ Checks the datatype of the current data value to determine how
+    to return as a string or ID-label tuple. """
     data_type = type(data)
     if data_type is list:
         pass
@@ -172,27 +192,22 @@ def get_value_of_claim(data_type, data_value):
 
 def load_caches():
     """Uses pickle to load all caching files as global variables"""
+    logging.debug("Loading the caches")
     global URL_CACHE, PID_CACHE, QID_CACHE
-    logging.debug("Loading format caches")
+    cache_dir = APP.config['CACHE_DIR']
 
-    try:
-        with open("wikidp/caches/url-formats", "rb") as f:
-            URL_CACHE = pickle.load(f)
-    except FileNotFoundError:
-        logging.exception("No URL Formats Wiki File.")
+    URL_CACHE = _pickle_cache_loader(cache_dir, "url-formats")
+    PID_CACHE = _pickle_cache_loader(cache_dir, "property-labels")
+    QID_CACHE = _pickle_cache_loader(cache_dir, "item-labels")
 
-    logging.debug("Loading property caches")
+def _pickle_cache_loader(cache_dir, cache_name):
+    pickle_file = os.path.join(cache_dir, cache_name)
     try:
-        with open("wikidp/caches/property-labels", "rb") as f:
-            PID_CACHE = pickle.load(f)
+        with open(pickle_file, "rb") as _f:
+            return pickle.load(_f)
     except FileNotFoundError:
-        logging.exception("No URL Formats Wiki File.")
-    logging.debug("Loading label caches")
-    try:
-        with open("wikidp/caches/item-labels", "rb") as f:
-            QID_CACHE = pickle.load(f)
-    except FileNotFoundError:
-        logging.exception("No URL Formats Wiki File.")
+        logging.info("Cache file not found %s.", pickle_file)
+    return {}
 
 def save_caches():
     """Uses pickle to save global variables to caching files in order to update"""
@@ -201,11 +216,12 @@ def save_caches():
     pickle.dump(PID_CACHE, open("wikidp/caches/property-labels", "wb"))
     pickle.dump(QID_CACHE, open("wikidp/caches/item-labels", "wb"))
 
-def id_to_label_list(id):
+def id_to_label_list(wikidata_id):
     """Takes in an id (P## or Q##) and returns a list of that entity's label and id"""
-    if id[0].lower() == 'p':
-        return [id, pid_label(id)]
-    else: return [id, qid_label(id)]
+    if wikidata_id[0].lower() == 'p':
+        return [wikidata_id, pid_label(wikidata_id)]
+
+    return [wikidata_id, qid_label(wikidata_id)]
 
 def qid_label(qid):
     """Converts item identifier (Q###) to a label and updates the cache"""
@@ -232,7 +248,7 @@ def qid_label(qid):
                 # print("[2] Adding qid to cache {",qid,"}: ", label)
                 return title
             except:
-                print("Error finding QID label: " + qid)
+                logging.exception("Unexpected exception finding QID label: %s", qid)
                 return "Unknown Item Label"
 
 def pid_label(pid):
@@ -253,7 +269,7 @@ def pid_label(pid):
 
 def time_formatter(time):
     """Converts wikidata's time json to a human readable string"""
-    try: 
+    try:
         return datetime.datetime.strptime(time, '+%Y-%m-%dT%H:%M:%SZ').strftime("%A, %B %-d, %Y")
     except:
         return time
@@ -314,7 +330,12 @@ def caching_label(label_id, label, file_name):
 def qid_to_basic_details(qid):
     """Input item qid and returns a tuple: (qid, label, description) using WikiDataIntegrator"""
     opt = wdi_core.WDItemEngine(wd_item_id=qid)
-    return {"id": opt.wd_item_id, "label": opt.get_label().replace("'", "&#39;"), "description": opt.get_description().replace("'","&#39;"),  "aliases": opt.get_aliases()} 
+    return {
+        "id": opt.wd_item_id,
+        "label": opt.get_label().replace("'", "&#39;"),
+        "description": opt.get_description().replace("'", "&#39;"),
+        "aliases": opt.get_aliases()
+    }
 
 load_caches()
 
