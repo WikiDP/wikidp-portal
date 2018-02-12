@@ -11,19 +11,19 @@
 #
 """Configuration for WikiDP portal Flask app."""
 import os
+import tempfile
 
 # Template these values for flexible install
 HOST = 'localhost'
-LOG_ROOT = '/tmp'
-CACHE_ROOT = '/tmp/wikidp'
+TEMP = tempfile.gettempdir()
 
 class BaseConfig(object):
     """Base / default config, no debug logging and short log format."""
     HOST = HOST
     DEBUG = False
     LOG_FORMAT = '[%(filename)-15s:%(lineno)-5d] %(message)s'
-    LOG_FILE = os.path.join(LOG_ROOT, 'wikidp.log')
-    CACHE_DIR = os.path.join(CACHE_ROOT, 'caches')
+    LOG_FILE = os.path.join(TEMP, 'wikidp.log')
+    CACHE_DIR = os.path.join(TEMP, 'caches')
     SECRET_KEY = '7d441f27d441f27567d441f2b6176a'
     WIKIDATA_USER_NAME = 'username'
     WIKIDATA_PASSWORD = 'password'
