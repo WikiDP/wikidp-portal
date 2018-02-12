@@ -7,11 +7,12 @@ from lxml import html
 import pywikibot
 import requests
 from wikidataintegrator import wdi_core
+import os
 
 import wikidp.lists as LIST
 # Global Variables:
 LANG = 'en'
-URL_CACHE, PID_CACHE, QID_CACHE = None, None, None
+URL_CACHE, PID_CACHE, QID_CACHE = {}, {}, {}
 
 def search_result_list(string):
     """Uses wikidataintegrator to generate a list of similar items based on a text search
@@ -71,7 +72,7 @@ def item_detail_parse(qid):
             instance[2] = count_dict[prop[0]]
         except:
             pass
-        output_dict['properties'].append(instance) 
+        output_dict['properties'].append(instance)
     save_caches()
     output_dict['prop-counts'] = count_dict
     # print ( '\n NOW', output_dict, '\n NEXT', count_dict)
@@ -102,7 +103,7 @@ def parse_claims(claim, label, json_details, count, output_dict):
         try:
             data_type = json_details['mainsnak']['datatype']
             if data_type == 'external-id':
-                output_dict['ex-ids'][(claim, label, val, url_formatter(claim, val))].append(val) 
+                output_dict['ex-ids'][(claim, label, val, url_formatter(claim, val))].append(val)
             else:
                 output_dict['claims'][(claim, label, size)].append(val)
             if ref_num > 0:
@@ -234,7 +235,7 @@ def pid_label(pid):
 
 def time_formatter(time):
     """Converts wikidata's time json to a human readable string"""
-    try: 
+    try:
         return datetime.datetime.strptime(time, '+%Y-%m-%dT%H:%M:%SZ').strftime("%A, %B %-d, %Y")
     except:
         return time
@@ -295,9 +296,20 @@ def caching_label(label_id, label, file_name):
 def qid_to_basic_details(qid):
     """Input item qid and returns a tuple: (qid, label, description) using WikiDataIntegrator"""
     opt = wdi_core.WDItemEngine(wd_item_id=qid)
-    return {"id": opt.wd_item_id, "label": opt.get_label().replace("'", "&#39;"), "description": opt.get_description().replace("'","&#39;"),  "aliases": opt.get_aliases()} 
+    return {"id": opt.wd_item_id, "label": opt.get_label().replace("'", "&#39;"), "description": opt.get_description().replace("'","&#39;"),  "aliases": opt.get_aliases()}
 
-load_caches()
+def initialize_cache_directory():
+    try:
+        load_caches()
+    except:
+        filename = "wikidp/caches/item-labels"
+        os.makedirs(os.path.dirname("wikidp/caches/item-labels"), exist_ok=True)
+        os.makedirs(os.path.dirname("wikidp/caches/property-labels"), exist_ok=True)
+        os.makedirs(os.path.dirname("wikidp/caches/url-formats"), exist_ok=True)
+        save_caches()
+
+initialize_cache_directory()
+
 
 # Testing function calls/data structure references:
 # -------------------------------------------------
