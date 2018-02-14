@@ -1,0 +1,41 @@
+---
+# Vagrant box setup variables for WikiDP portal.
+# Used by Vagrantfile to set up a local development VM
+
+# Hostname variables
+#
+# IP Address host machine, MUST be a debian jessie box at present.
+# Set up SSH to use localhost and port 2222 for vagrant.
+ansible_ssh_host: "localhost"
+ansible_ssh_port: 2222
+# Domain of host, used to derive custom sub-domains perhaps, just localhost for now
+hostdomain: localhost
+hostname: "{{ hostdomain }}"
+
+# Use the default vagrant user
+wikidp_user: "vagrant"
+# Use our shared project root development directory as our local git repo
+wikidp_git_local: "/vagrant"
+# Please don't update the local repo, the developer should do this
+wikidp_git_update: false
+# System variables
+#
+# Set machine timezone
+timezone_zone: Europe/London
+# Install apt dependencies
+apt_install:
+  # Debian Jessie lacks the ability to download apt over HTTPS
+  - apt-transport-https
+  # Install some helper network tools
+  - psmisc
+  - net-tools
+
+# Set true to deploy an nginx proxy
+wikidp_nginx_install: false
+# Set true to install uwsgi app server in pip mode
+wikidp_uwsgi_install: false
+
+# Wikidata user name and password
+wikidata:
+  user_name: "my_wikidata_user"
+  password: "my_wikidata_password"
