@@ -12,6 +12,6 @@
   import_tasks: uwsgi/main.yml
   when: wikidp.uwsgi.install
 
-- name: "IMPORT | Configure portal application as a service."
-  import_tasks: service/main.yml
-  when: wikidp.service.install
+# - name: "IMPORT | Configure portal application as a service."
+#   import_tasks: service/main.yml
+#   when: wikidp.service.install
