@@ -28,8 +28,7 @@ import wikidp.lists as LIST
 
 # Global Variables:
 LANG = 'en'
-
-URL_CACHE, PID_CACHE, QID_CACHE = None, None, None
+URL_CACHE, PID_CACHE, QID_CACHE = {}, {}, {}
 CACHE_DIR = APP.config['CACHE_DIR']
 
 def search_result_list(string):
@@ -276,7 +275,7 @@ def pid_label(pid):
             PID_CACHE[pid] = title
             return title
         except:
-            print("Error finding property label: ", pid)
+            logging.exception("Error finding property label: %s", pid)
             return "Unknown Property Label"
 
 def time_formatter(time):
