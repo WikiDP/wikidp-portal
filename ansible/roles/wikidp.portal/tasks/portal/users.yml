@@ -1,0 +1,16 @@
+# Pre-installation tasks for WikiDP Portal
+---
+
+- name: "SYS | Create a dedicated user group: {{ wikidp_group }} for server app."
+  group:
+    name: "{{ wikidp_group }}"
+    state: present
+
+- name: "SYS | Create a dedicated user account: {{ wikidp_user }} for server app."
+  user:
+    name: "{{ wikidp_user }}"
+    comment: "User account for WikiDP server."
+    createhome: yes
+    home: "{{ wikidp_user_home }}"
+    group: "{{ wikidp_group }}"
+    shell: "/bin/bash"

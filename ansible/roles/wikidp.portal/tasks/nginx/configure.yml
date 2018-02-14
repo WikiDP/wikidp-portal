@@ -1,0 +1,31 @@
+---
+# Configure our Nginx installation properly
+
+- name: "NGINX | Remove default.conf nginx site"
+  file:
+    path: "{{ wikidp.nginx.default_site_conf }}"
+    state: absent
+  notify:
+    - restart nginx
+  when: not wikidp.nginx.default_site
+
+- name: "NGINX | Add nginx user to wikidp group: {{ wikidp_group }}."
+  user:
+    name: "nginx"
+    group: "{{ wikidp_group }}"
+
+- name: "NGINX | Add optimized nginx.conf."
+  copy:
+    src: "files/nginx/etc/nginx/nginx.conf"
+    dest: "{{ wikidp.nginx.default_conf }}"
+    mode: 0644
+  notify:
+    - restart nginx
+
+- name: "NGINX | Add our proxy params."
+  copy:
+    src: "files/nginx/etc/nginx/proxy_params"
+    dest: "{{ wikidp.nginx.proxy_params }}"
+    mode: 0644
+  notify:
+    - restart nginx

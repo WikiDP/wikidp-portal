@@ -1,0 +1,7 @@
+# test file for wikidp.portal
+---
+- hosts: localhost
+  connection: local
+  become: true
+  roles:
+    - ../../

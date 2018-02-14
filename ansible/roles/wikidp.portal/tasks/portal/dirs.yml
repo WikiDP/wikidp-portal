@@ -1,0 +1,41 @@
+# Create directories for portal app
+---
+
+- name: "WIKIDP | Create server directory {{ wikidp_app_home }}."
+  file:
+    path: "{{ wikidp_app_home }}"
+    state: directory
+    mode: 0744
+    owner: "{{ wikidp_user }}"
+    group: "{{ wikidp_group }}"
+
+- name: "WIKIDP | Create scripts directory {{ wikidp.app.scripts }}."
+  file:
+    path: "{{ wikidp.app.scripts }}"
+    state: directory
+    mode: 0744
+    owner: "{{ wikidp_user }}"
+    group: "{{ wikidp_group }}"
+
+- name: "WIKIDP | Create the cache dir: {{ wikidp.app.cache_dir }}."
+  file:
+    path: "{{ wikidp.app.cache_dir }}"
+    state: directory
+    mode: 0744
+    owner: "{{ wikidp_user }}"
+    group: "{{ wikidp_group }}"
+
+- name: "WIKIDP | Create log file: {{ wikidp.app.out_file }}."
+  file:
+    path: "{{ wikidp.app.out_file }}"
+    state: touch
+    mode: 0744
+    owner: "{{ wikidp_user }}"
+    group: "{{ wikidp_group }}"
+
+- name: "WIKIDP | Source directory {{ wikidp.src.location }}."
+  file:
+    path: "{{ wikidp.src.location }}"
+    state: directory
+    mode: 0744
+  when: wikidp.src.create

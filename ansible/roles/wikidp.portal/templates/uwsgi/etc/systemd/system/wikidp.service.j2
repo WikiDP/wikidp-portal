@@ -1,0 +1,14 @@
+
+[Unit]
+Description=uWSGI instance to serve {{ wikidp_app_name }}
+After=network.target
+
+[Service]
+User={{ wikidp_user }}
+Group={{ wikidp_group }}
+WorkingDirectory={{ wikidp_app_home }}
+Environment="PATH={{ wikidp.app.venv }}/bin"
+ExecStart={{ wikidp.app.venv }}/bin/uwsgi --ini {{ wikidp_git_local }}/{{ wikidp_app_name }}.ini
+
+[Install]
+WantedBy=multi-user.target

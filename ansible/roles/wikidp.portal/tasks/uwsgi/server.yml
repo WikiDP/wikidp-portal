@@ -1,0 +1,19 @@
+---
+
+- name: "APT | Install uwsgi from package."
+  apt:
+    name:  "uwsgi"
+    state: latest
+
+- name: "CONFIG | Creating uswgi ini script: {{ wikidp_git_local }}/wikidp.ini."
+  template:
+    src: "uwsgi/wikidp/home/wikidp.ini.j2"
+    dest: "{{ wikidp_git_local }}/wikidp.ini"
+    owner: "{{ wikidp_user }}"
+    group: "{{ wikidp_group }}"
+    mode: 0755
+
+- name: "CONFIG | Creating WikiDP portal uwsgi service."
+  template:
+    src: "uwsgi/etc/systemd/system/wikidp.service.j2"
+    dest: "/etc/systemd/system/{{ wikidp_app_name }}.service"
