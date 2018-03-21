@@ -1,0 +1,14 @@
+---
+# Pre-installation tasks for WikiDP Portal
+
+- name: "APT | Install apt package dependencies."
+  apt:
+    name: "{{ item }}"
+    state: "latest"
+  with_items: "{{ wikidp.dependencies.apt }}"
+
+- name: "PIP | Upgrade pip to latest and install dependencies."
+  pip:
+    name:  "{{ item }}"
+    state: latest
+  with_items: "{{ wikidp.dependencies.pip }}"

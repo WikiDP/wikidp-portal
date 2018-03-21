@@ -1,0 +1,11 @@
+---
+# Tasks to set up WikiDP Portal uwsgi appliction
+# file: tasks/uwsgi/main.yml
+
+- name: "IMPORT | Standalone uwsgi configuration."
+  import_tasks: standalone.yml
+  when: not wikidp_server_install
+
+- name: "IMPORT | Server uwsgi configuration."
+  import_tasks: server.yml
+  when: wikidp_server_install

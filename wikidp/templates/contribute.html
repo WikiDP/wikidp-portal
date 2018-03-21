@@ -2,9 +2,7 @@
 {% block title %}Contribute {% endblock %}
 {% block page_content %}
 <!-- <link rel="styleshet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"> -->
-<link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-<script src="../static/js/clipboard.min.js"></script>
+<script src="{{ url_for('static',filename='js/clipboard.min.js') }}"></script>
 <div id="panel-frame" class="contribute-page"  data-qid="{{selected['label'][0]}}">
 
 		<div id="sidebar-frame">
@@ -36,13 +34,13 @@
   						{% for property in selected['properties'] %}
   							{% if property[2] == 0%}
   								<li class="sidebar-property-li">
-                    <span title="{{property[1]}} ({{property[0]}})" data-content-start="{{property[1]}} ({{property[0]}}) " 
+                    <span title="{{property[1]}} ({{property[0]}})" data-content-start="{{property[1]}} ({{property[0]}}) "
       data-content-end=  ""></span>: 0
-  									 
+
   								</li>
   							{% else %}
   								<li class="sidebar-property-li property-ok">
-  									<span title="{{property[1]}} ({{property[0]}})" data-content-start="{{property[1]}} ({{property[0]}}) " 
+  									<span title="{{property[1]}} ({{property[0]}})" data-content-start="{{property[1]}} ({{property[0]}}) "
       data-content-end=  ""></span>: {{property[2]}}
   								</li>
   							{% endif %}
@@ -73,7 +71,7 @@
 
 
 		<div id="content-frame">
-			
+
 		  <div id="header-text">
         <span id="preview-item-name">{{selected['label'][1]}}<a class="wd-id" href="https://wikidata.org/wiki/{{selected['label'][0]}}" target="_blank"> ({{selected['label'][0]}})</a></span>
         <br>
@@ -101,7 +99,7 @@
           <div id="claims-list">
             <span class="creation-section-header">MY CLAIMS</span><br>
             <ul id="added-claims">
-              
+
             </ul>
 
           </div>
@@ -114,12 +112,12 @@
           </div>
           <div id="lookup-results-div">
             <ul id="lookup-results-list">
-              
+
             </ul>
           </div>
         </div>
 
-        
+
       </div>
 		</div>
 
@@ -172,7 +170,7 @@ $('select#option-select').change(function(){
 	var options = []
 	for (i = 0; i < list.length; i++){
 		// console.log($(list[i]).data('qid'), $(list[i]).data('label'));
-		options.push([$(list[i]).data('qid').replace("'","&#39;"), $(list[i]).data('label').replace("'","&#39;"), $(list[i]).data('description').replace("'","&#39;") ]) 
+		options.push([$(list[i]).data('qid').replace("'","&#39;"), $(list[i]).data('label').replace("'","&#39;"), $(list[i]).data('description').replace("'","&#39;") ])
 	}
 	options = JSON.stringify(options);
 	console.log(options);
@@ -191,7 +189,7 @@ $('li#preview-action').click(function(){
   var options = []
   for (i = 0; i < list.length; i++){
     // console.log($(list[i]).data('qid'), $(list[i]).data('label'))
-    options.push([$(list[i]).data('qid').replace("'","&#39;"), $(list[i]).data('label').replace("'","&#39;"), $(list[i]).data('description').replace("'","&#39;") ]) 
+    options.push([$(list[i]).data('qid').replace("'","&#39;"), $(list[i]).data('label').replace("'","&#39;"), $(list[i]).data('description').replace("'","&#39;") ])
   }
   options = JSON.stringify(options);
   // console.log(options);
@@ -294,7 +292,7 @@ function lookupItem(string){
       }
       list.append(`
         <li class="lookup-result-li">
-          <div class="result-main" id="result-main-${qid}" data-qid="${qid}"> 
+          <div class="result-main" id="result-main-${qid}" data-qid="${qid}">
             <button data-clipboard-text="${qid}" class="pull-left clipboardBtn" id="clipboardBtn-${qid}" data-qid="${qid}"><i class="fa fa-clipboard"></i> </button>
             <span class="result-label">${item.label}</span></br>
             ${qid} <span class="glyphicon glyphicon-menu-down"></span>
@@ -341,7 +339,7 @@ function claimFormValidation(){
       validateItem(pid, select.val(), 'Q'+value, type)
       break;
     default:
-      // TO DO: HAVE A CASE FOR EX-IDS AND URL'S 
+      // TO DO: HAVE A CASE FOR EX-IDS AND URL'S
       console.log('form validated');
       createBasicClaim(pid, select.val(), value, type);
       break;

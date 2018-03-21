@@ -1,0 +1,77 @@
+---
+# defaults file for wikidp.portal
+
+wikidp_tmp: "/tmp/"
+wikidp_app_name: "wikidp"
+wikidp_user: "{{ wikidp_app_name }}"
+wikidp_group: "{{ wikidp_user }}"
+wikidp_user_home: "/home/{{ wikidp_user }}"
+wikidp_app_home: "{{ wikidp_user_home }}/{{ wikidp_app_name }}"
+wikidp_host: "{{ hostname }}"
+
+wikidp_git_remote: "https://github.com/WikiDP/portal-proto.git"
+wikidp_git_local: "{{ wikidp_app_home }}/src"
+wikidp_git_version: "master"
+wikidp_git_update: true
+
+wikidp_server_install: false
+wikidp_nginx_install: "{{ wikidp_server_install }}"
+wikidp_uwsgi_install: "{{ wikidp_server_install }}"
+wikidp_nginx_conf_root: "/etc/nginx"
+
+##
+# Don't put your wikidata username or password here please.
+# Override them in a host_vars or other private file.
+# See here for Ansible precendence rules:
+#  http://docs.ansible.com/ansible/latest/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable
+wikidata:
+  user_name: ""
+  password: ""
+
+# Namespaced variables you'll unlikely change
+wikidp:
+  app:
+    scripts: "{{ wikidp_app_home }}/bin"
+    setup: "setup_venv"
+    out_file: "{{ wikidp_tmp }}{{ wikidp_app_name }}.out"
+    cache_dir: "{{ wikidp_tmp }}caches"
+    venv: "{{ wikidp_app_home }}/venv"
+    python_ver: "python3"
+  ##
+  # dependencies to be installed by apt
+  #  - git for wikidp project source control
+  #  - python-dev and build-essential for pip
+  #  - python pip for python dependencies
+  #  - python 3 for our virtualenv
+  dependencies:
+    apt:
+      - "git"
+      - "python-dev"
+      - "build-essential"
+      - "python-pip"
+      - "python3"
+      - "python3-dev"
+    pip:
+      - "pip"
+      - "virtualenv"
+  git:
+    temp_archive: "{{ wikidp_tmp }}{{ wikidp_app_name }}.tar.gz"
+  src:
+    create: false
+    location: "/usr/local/src/{{ wikidp_app_name }}/{{ wikidp_git_version }}"
+  nginx:
+    install: "{{ wikidp_nginx_install }}"
+    branch: "stable"
+    default_conf: "{{ wikidp_nginx_conf_root }}/nginx.conf"
+    default_site: false
+    default_site_conf: "{{ wikidp_nginx_conf_root }}/conf.d/default.conf"
+    proxy_params: "{{ wikidp_nginx_conf_root }}/proxy_params"
+    sites_available: "{{ wikidp_nginx_conf_root }}/sites-available"
+    sites_enabled: "{{ wikidp_nginx_conf_root }}/sites-enabled"
+    log_dir: "/var/log/nginx"
+  flask:
+    port: 5000
+    bind: "0.0.0.0"
+  uwsgi:
+   install: "{{ wikidp_uwsgi_install }}"
+   socket_file: "/var/www/run/{{ wikidp_app_name }}.sock"

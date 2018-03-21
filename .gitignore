@@ -105,3 +105,9 @@ throttle.ctrl
 user-config.py
 caches/
 wikidp/idjc-paper.pages
+
+# Ingore all vagrant artifacts
+.vagrant*
+
+# Ignore Ansible retry files
+ansible/*.retry

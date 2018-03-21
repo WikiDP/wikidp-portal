@@ -1,0 +1,21 @@
+---
+# Playbook to configure a Vagrant box WikiDP Portal instance
+# File: ansible/vagrant.yml
+
+- hosts: all
+  gather_facts: no
+  pre_tasks:
+    - name: 'install python2'
+      raw: sudo apt-get -y install python-simplejson
+
+- hosts: all
+  become: true
+  roles:
+    - { role: tschifftner.hostname }
+    - { role: tersmitten.timezone }
+    - { role: tersmitten.apt }
+
+- hosts: vagrant
+  become: true
+  roles:
+    - { role: wikidp.portal }

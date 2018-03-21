@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+virtualenv -p "{{ wikidp.app.python_ver }}" "{{ wikidp.app.venv }}"
+source "{{ wikidp.app.venv }}/bin/activate"
+pip install -e "{{ wikidp_git_local }}"
+deactivate

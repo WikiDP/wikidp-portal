@@ -1,0 +1,35 @@
+---
+
+- name: "NGINX | Remove any standalone configuration."
+  file:
+    path: "{{ wikidp_nginx_conf_root }}/conf.d/{{ wikidp_host }}.conf"
+    state: absent
+  notify:
+    - restart nginx
+
+- name: "NGINX | Create sites-available."
+  file:
+    path: "{{ wikidp.nginx.sites_available }}"
+    state: directory
+    mode: 0644
+
+- name: "NGINX | Create our sites-enabled."
+  file:
+    path: "{{ wikidp.nginx.sites_enabled }}"
+    state: directory
+    mode: 0644
+
+- name: "NGINX | Add templated sites-available for wikidp."
+  template:
+    src: "nginx/etc/nginx/sites-available/wikidp.j2"
+    dest: "{{ wikidp.nginx.sites_available }}/{{ wikidp_host }}"
+  notify:
+    - restart nginx
+
+- name: "NGINX | Create sites-enabled symlink"
+  file:
+    path: "{{ wikidp.nginx.sites_enabled }}/{{ wikidp_host }}"
+    src: "{{ wikidp.nginx.sites_available }}/{{ wikidp_host }}"
+    state: link
+  notify:
+    - restart nginx

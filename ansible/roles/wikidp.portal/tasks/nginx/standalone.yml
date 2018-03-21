@@ -1,0 +1,15 @@
+---
+
+- name: "NGINX | Remove any server sites for standalone"
+  file:
+    path: "{{ wikidp.nginx.sites_enabled }}/{{ wikidp_host }}"
+    state: absent
+  notify:
+    - restart nginx
+
+- name: "NGINX | Add templated sites-available for wikidp."
+  template:
+    src: "nginx/etc/nginx/conf.d/wikidp.conf.j2"
+    dest: "{{ wikidp_nginx_conf_root }}/conf.d/{{ wikidp_host }}.conf"
+  notify:
+    - restart nginx

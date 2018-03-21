@@ -11,12 +11,13 @@
 #
 """ Flask application routes for Wikidata portal. """
 import logging
+import re
+
 from flask import render_template, request, json
 from wikidp import APP
 from wikidp.model import FileFormat, PuidSearchResult
 from wikidp.lists import properties
 import wikidp.DisplayFunctions as DF
-import re
 
 @APP.route("/")
 def welcome():
@@ -63,7 +64,7 @@ def search_results_page():
                 previewItem = DF.item_detail_parse(res.format)
                 return render_template('preview-item.html', selected=previewItem, options=options)
     except Exception as e:
-        logging.debug("Error Searching for PUID: %s", str(e))
+        logging.exception("Error Searching for PUID: %s", str(e))
     options = DF.search_result_list(_input)
     return render_template('search_results.html', options=options)
 
@@ -119,4 +120,5 @@ def api_lookup_item():
     return json.dumps(output)
 
 if __name__ == "__main__":
-    APP.run()
+    logging.debug("Running Flask App")
+    APP.run(host='0.0.0.0')

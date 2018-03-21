@@ -1,0 +1,21 @@
+[uwsgi]
+
+# Python Setup
+virtualenv = {{ wikidp.app.venv }}
+pythonpath = {{ wikidp_app_home }}
+plugins = python
+
+module = wikidp
+callable = APP
+
+# Logging
+logto = /var/log/uwsgi/{{ wikidp_app_name }}.log
+
+master = true
+processes = 5
+
+socket = {{ wikidp.uwsgi.socket_file }}
+chmod-socket = 660
+vacuum = true
+
+die-on-term = true

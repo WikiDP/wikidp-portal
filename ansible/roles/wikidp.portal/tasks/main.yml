@@ -1,0 +1,17 @@
+---
+# tasks file for wikidp.portal
+
+- name: "IMPORT | Install and configure the WikiDP Portal application."
+  import_tasks: portal/main.yml
+
+- name: "IMPORT | Configure and optimize nginx."
+  import_tasks: nginx/main.yml
+  when: wikidp.nginx.install
+
+- name: "IMPORT | Configure and optimize uwsgi."
+  import_tasks: uwsgi/main.yml
+  when: wikidp.uwsgi.install
+
+# - name: "IMPORT | Configure portal application as a service."
+#   import_tasks: service/main.yml
+#   when: wikidp.service.install

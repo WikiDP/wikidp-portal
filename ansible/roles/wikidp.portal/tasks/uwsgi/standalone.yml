@@ -1,0 +1,20 @@
+---
+
+- name: "PIP | Install uwsgi."
+  pip:
+    name:  "uwsgi"
+    state: latest
+    virtualenv: "{{ wikidp.app.venv }}"
+    virtualenv_command: "{{ wikidp.app.python_ver }}"
+  become: true
+  become_user: "{{ wikidp_user }}"
+
+- name: "CONFIG | Creating local start script: {{ wikidp.app.scripts }}."
+  template:
+    src: "uwsgi/wikidp/home/bin/{{ item }}.sh.j2"
+    dest: "{{ wikidp.app.scripts }}/{{ item }}"
+    owner: "{{ wikidp_user }}"
+    group: "{{ wikidp_group }}"
+    mode: 0755
+  with_items:
+    - start

@@ -1,0 +1,20 @@
+# meta file for wikidp.portal
+---
+galaxy_info:
+  author: Carl Wilson
+  company: The Open Preservation Foundation
+  description: Installs and configures the WikiDP portal server
+  license: GPL v3
+  min_ansible_version: 2.0.0
+  platforms:
+    - name: Ubuntu
+      versions:
+        - xenial
+    - name: Debian
+      versions:
+        - jessie
+  galaxy_tags:
+    - wikidp
+    - portal
+dependencies:
+  - { role: nginxinc.nginx, branch: "{{ wikidp.nginx.branch }}", when: wikidp.nginx.install }

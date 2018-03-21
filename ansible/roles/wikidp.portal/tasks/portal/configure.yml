@@ -1,0 +1,18 @@
+---
+# Configuration of WikiDP Portal
+
+- name: "CONFIG | Create pywikibot conf in home: {{ wikidp_user_home }}/.pywikibot"
+  file:
+    path: "{{ wikidp_user_home }}/.pywikibot"
+    state: directory
+    mode: 0755
+    owner: "{{ wikidp_user }}"
+    group: "{{ wikidp_group }}"
+
+- name: "CONFIG | Copy in our templated user-config.py"
+  template:
+    src: "portal/home/pywikibot/user-config.py.j2"
+    dest: "{{ wikidp_user_home }}/.pywikibot/user-config.py"
+    owner: "{{ wikidp_user }}"
+    group: "{{ wikidp_group }}"
+    mode: 0755

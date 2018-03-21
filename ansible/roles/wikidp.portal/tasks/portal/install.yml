@@ -1,0 +1,53 @@
+---
+# Installation of WikiDP Portal
+
+- name: "WIKIDP | Create local git directory {{ wikidp_git_local }}."
+  file:
+    path: "{{ wikidp_git_local }}"
+    state: directory
+    mode: 0744
+    owner: "{{ wikidp_user }}"
+    group: "{{ wikidp_group }}"
+
+- name: "WIKIDP | Cloning {{ wikidp_git_remote }}/{{ wikidp_git_version }} to {{ wikidp_git_local }}."
+  git:
+    repo: "{{ wikidp_git_remote }}"
+    dest: "{{ wikidp_git_local }}"
+    archive: "{{ wikidp.git.temp_archive }}"
+    version: "{{ wikidp_git_version }}"
+    update: "{{ wikidp_git_update }}"
+  become: true
+  become_user: "{{ wikidp_user }}"
+
+- name: "WIKIDP | Archiving server source to: {{ wikidp.src.dest }}"
+  unarchive:
+    src: "{{ wikidp.git.temp_archive }}"
+    dest: "{{ wikidp.src.dest }}"
+    remote_src: yes
+  when: wikidp.src.create
+
+- name: "WIKIDP | Add the virtualenv install script."
+  template:
+    src: "portal/install/setup_venv.sh.j2"
+    dest: "{{ wikidp.app.scripts }}/{{ wikidp.app.setup }}"
+    owner: "{{ wikidp_user }}"
+    group: "{{ wikidp_group }}"
+    mode: 0755
+
+- name: "WIKIDP | Creating virtualenv: {{ wikidp.app.venv }} and installing: {{ wikidp_git_local }}."
+  command: "{{ wikidp.app.scripts }}/{{ wikidp.app.setup }}"
+  become: true
+  become_user: "{{ wikidp_user }}"
+
+- name: "CONFIG | Creating server scripts: {{ wikidp.app.scripts }}."
+  template:
+    src: "portal/bin/{{ item }}.sh.j2"
+    dest: "{{ wikidp.app.scripts }}/{{ item }}"
+    owner: "{{ wikidp_user }}"
+    group: "{{ wikidp_group }}"
+    mode: 0755
+  with_items:
+    - start
+    - stop
+    - restart
+    - show

@@ -1,0 +1,17 @@
+# tasks file for wikidp.portal.portal
+---
+
+- name: "IMPORT | Dependencies for WikiDP Portal."
+  import_tasks: dependencies.yml
+
+- name: "IMPORT | Create user accounts."
+  import_tasks: users.yml
+
+- name: "IMPORT | Create installation directories."
+  import_tasks: dirs.yml
+
+- name: "IMPORT | Configure the WikiDP Portal."
+  import_tasks: configure.yml
+
+- name: "IMPORT | Install the WikiDP Portal."
+  import_tasks: install.yml

@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+source "{{ wikidp.app.venv }}/bin/activate"
+export WIKIDP_BOT_USER='{{ wikidata.user_name }}'
+export WIKIDP_BOT_PASSWORD='{{ wikidata.password }}'
+uwsgi --socket "{{ wikidp.flask.bind }}:{{ wikidp.flask.port }}" --protocol=http --wsgi-file "{{ wikidp_git_local }}/wsgi.py" --callable APP -H "{{ wikidp.app.venv }}"

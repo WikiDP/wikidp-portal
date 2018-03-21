@@ -1,0 +1,14 @@
+---
+# Tasks to set up WikiDP Portal nginx
+# file: tasks/uwsgi/main.yml
+
+- name: "IMPORT | NGINX global configuration."
+  import_tasks: configure.yml
+
+- name: "IMPORT | Standalone NGINX configuration."
+  import_tasks: standalone.yml
+  when: not wikidp_server_install
+
+- name: "IMPORT | Server NGINX configuration."
+  import_tasks: server.yml
+  when: wikidp_server_install
