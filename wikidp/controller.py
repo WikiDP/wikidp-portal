@@ -72,7 +72,7 @@ def search_results_page():
 def preview_selected_page():
     """Show a preview of a selected search result."""
     options = json.loads(request.form['optionList'])
-    print (options)
+    # print (options)
     preview_item = DF.item_detail_parse(request.form['qid'])
     return render_template('preview-item.html', selected=preview_item, options=options)
 
