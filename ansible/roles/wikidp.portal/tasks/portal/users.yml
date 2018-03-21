@@ -1,5 +1,5 @@
-# Pre-installation tasks for WikiDP Portal
 ---
+# Pre-installation tasks for WikiDP Portal
 
 - name: "SYS | Create a dedicated user group: {{ wikidp_group }} for server app."
   group:
