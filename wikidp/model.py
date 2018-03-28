@@ -50,21 +50,19 @@ class FileFormat(object):
     @classmethod
     def list_formats(cls):
         """Queries Wikdata for formats and returns a list of FileFormat instances."""
-        query = """
-SELECT DISTINCT ?idFileFormat ?idFileFormatLabel
-                (GROUP_CONCAT(DISTINCT ?mediaType; SEPARATOR="|") AS ?mediaTypes)
-WHERE
-{
-    ?idFileFormat wdt:P31 wd:Q235557
-    OPTIONAL {
-        ?idFileFormat wdt:P1163 ?mediaType .
-    }
-    SERVICE wikibase:label { bd:serviceParam wikibase:language "en" }
-}
-GROUP BY ?idFileFormat ?idFileFormatLabel
-ORDER BY ?idFileFormatLabel
-            """
-        results_json = wdi_core.WDItemEngine.execute_sparql_query(query)
+        query = [
+            "SELECT DISTINCT ?idFileFormat ?idFileFormatLabel",
+            "(GROUP_CONCAT(DISTINCT ?mediaType; SEPARATOR="|") AS ?mediaTypes)",
+            "WHERE {",
+            "?idFileFormat wdt:P31 wd:Q235557",
+            "OPTIONAL {",
+            "?idFileFormat wdt:P1163 ?mediaType .}",
+            "SERVICE wikibase:label { bd:serviceParam wikibase:language 'en' }",
+            "}",
+            "GROUP BY ?idFileFormat ?idFileFormatLabel",
+            "ORDER BY ?idFileFormatLabel"
+            ]
+        results_json = wdi_core.WDItemEngine.execute_sparql_query("".join(query))
         results = [cls(x['idFileFormat']['value'].replace('http://www.wikidata.org/entity/', ''),
                        x['idFileFormatLabel']['value'],
                        x['mediaTypes']['value'].split('|'))
@@ -73,9 +71,10 @@ ORDER BY ?idFileFormatLabel
 
 class PuidSearchResult(object):
     """Encapsulates a file format plus widata query magic for formats."""
-    def __init__(self, format, label, puid):
+    def __init__(self, format, label, mime, puid):
         self._format = format
         self._label = label
+        self._mime = mime
         self._puid = puid
 
     @property
@@ -89,6 +88,11 @@ class PuidSearchResult(object):
         return self._label
 
     @property
+    def mime(self):
+        """The MIME type of the format."""
+        return self._mime
+
+    @property
     def puid(self):
         """The PUID of the format."""
         return self._puid
@@ -99,6 +103,8 @@ class PuidSearchResult(object):
         ret_val.append(self.format)
         ret_val.append(", label=")
         ret_val.append(self.label)
+        ret_val.append(", MIME=")
+        ret_val.append(self.mime)
         ret_val.append(", puid=")
         ret_val.append(self.puid)
         ret_val.append("]")
@@ -108,9 +114,10 @@ class PuidSearchResult(object):
     def search_puid(cls, puid):
         """Queries Wikdata for formats and returns a list of FileFormat instances."""
         query = [
-            "SELECT DISTINCT ?format ?formatLabel ?puid ",
+            "SELECT DISTINCT ?format ?formatLabel ?mime ?puid ",
             "WHERE { ",
             "?format wdt:P2748 ?puid  FILTER (?puid = '{}') . ".format(puid),
+            "?format wdt:P1163 ?mime",
             "SERVICE wikibase:label {bd:serviceParam wikibase:language 'en' .}",
             "}"
             ]
@@ -118,6 +125,27 @@ class PuidSearchResult(object):
         logging.debug(str(results_json))
         results = [cls(x['format']['value'].replace('http://www.wikidata.org/entity/', ''),
                        x['formatLabel']['value'],
+                       x['mime']['value'],
+                       x['puid']['value'])
+                   for x in results_json['results']['bindings']]
+        return results
+
+    @classmethod
+    def search_mime(cls, mime):
+        """Queries Wikdata for formats and returns a list of FileFormat instances."""
+        query = [
+            "SELECT DISTINCT ?format ?formatLabel ?mime ?puid ",
+            "WHERE { ",
+            "?format wdt:P2748 ?puid",
+            "?format wdt:P1163 ?mime  FILTER (?mime = '{}') . ".format(mime),
+            "SERVICE wikibase:label {bd:serviceParam wikibase:language 'en' .}",
+            "}"
+            ]
+        results_json = wdi_core.WDItemEngine.execute_sparql_query("".join(query))
+        logging.debug(str(results_json))
+        results = [cls(x['format']['value'].replace('http://www.wikidata.org/entity/', ''),
+                       x['formatLabel']['value'],
+                       x['mime']['value'],
                        x['puid']['value'])
                    for x in results_json['results']['bindings']]
         return results
