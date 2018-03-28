@@ -289,7 +289,6 @@ def url_formatter(pid, value):
     """Inputs property identifier (P###) for a given url type, lookes up that
     pid's url format (P1630) and creates a url with the value using the format"""
     global URL_CACHE
-    # print (value)
     value = value.strip()
     if pid in URL_CACHE:
         base = URL_CACHE[pid]
@@ -298,9 +297,7 @@ def url_formatter(pid, value):
             url = urllib.request.urlopen("https://www.wikidata.org/wiki/Special:EntityData/%s.json"%(pid))
             base = json.loads(url.read().decode())
             URL_CACHE[pid] = base['entities'][pid]['claims']['P1630'][0]['mainsnak']['datavalue']['value']
-            # print("Adding url format to cache {",pid,"}: ", base)
         except:
-            # print ("Error: Could not find url format. ->", pid, value)
             return "unavailable"
     base = base.replace("$1", value)
     return base
@@ -319,7 +316,6 @@ def image_url(title):
             out = base[item]["imageinfo"][0]["url"]
         return out
     except:
-        # print("Error reading image url: "+title)
         return "https://commons.wikimedia.org/wiki/File:"+title
 
 def list_sorting_by_length(elem):
@@ -336,7 +332,6 @@ def caching_label(label_id, label, file_name):
     props = pickle.load(open(url, "rb"))
     props[label_id] = label
     pickle.dump(props, open(url, "wb"))
-    # print ("succesfully cached: ", label, '\n->', out)
 
 def qid_to_basic_details(qid):
     """Input item qid and returns a tuple: (qid, label, description) using WikiDataIntegrator"""
