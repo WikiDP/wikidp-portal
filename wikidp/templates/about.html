@@ -1,67 +1,50 @@
 {% extends "page.html" %}
 {% block title %}About WikiDP{% endblock %}
 {% block page_content %}
-  <!-- <link rel="styleshet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"> -->
 
-<div class="about-page" id="content-frame">
-
-<p>
-   Wikidata for Digital Preservation is a portal that provides an enhanced dashboard related to adding data about the domain of computing to Wikidata.
-We provide a streamlined interface for browsing and contributing structured data related to software and file formats to the Wikidata knowledge base.
-These tools empower us as members of the digital preservation community to edit and maintain our own technical and descriptive metadata.
-</p><br>
-<p class="center">
-Logo design by <a href="https://www.kaiachessen.com/"> Kaia Chessen </a><br>
-
-
-Development Team:<br>
-Katherine Thornton<br>
-Kenneth Seals-Nutt<br>
-Carl Wilson<br>
-Euan Cochrane<br>
-<br>
-Background reading:<br>
-Introducing Wikidata to the Linked Data Web https://www.wikidata.org/wiki/Q27036465<br>
-<br>
-Modeling the Domain of Digital Preservation in Wikidata https://www.wikidata.org/wiki/Q41533080<br>
-<br>
-<br>
-A search via the Scholia platform for scholarly publications about Wikidata https://tools.wmflabs.org/scholia/topic/Q2013<br>
-<br>
-<br>
-Acknowledgements:<br>
-   <a href="https://meta.wikimedia.org/wiki/WikiCite_2016" Wikicite 2016 </a><br>
-   <a href="https://meta.wikimedia.org/wiki/WikiCite_2017" Wikicite 2017 </a><br>
-
-   <a href="http://sulab.org/" The Su Lab </a><br>
-   <a href="https://www.wikidata.org/wiki/Wikidata:WikiProject_Gene_Wiki" GeneWiki </a><br>
-
-<a href="http://openpreservation.org/" Open Preservation Foundation </a><br>
-
-<a href="http://www.bnf.fr/en/tools/lsp.site_map.html" Bibliothèque nationale de France </a><br>
-
-   <a href="https://www.clir.org/" Council on Library and Information Resources </a><br>
-   <a href="https://sloan.org/" The Alfred P. Sloan Foundation </a><br>
-   <a href="https://mellon.org/" The Andrew W. Mellon Foundation </a><br>
-   
-
-
-Looking for inspiration for how to contribute? Visit our inspiration page.<br><br>
-
-
-<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Wikidata_stamp_rec.png/120px-Wikidata_stamp_rec.png"></p>
-</div>
-  <script type="text/javascript">
-
-
-  Bibliothèque nationale de France http://www.bnf.fr/en/tools/lsp.site_map.html<br>
-
-
-  Looking for inspiration for how to contribute? Visit our inspiration page.<br><br>
-
-
-  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Wikidata_stamp_rec.png/120px-Wikidata_stamp_rec.png"></p>
+  <div class="about-page" id="content-frame">
+    <h1>About WikiData</h1>
+    <h2>Introduction</h2>
+    <p>Wikidata for Digital Preservation is a portal that provides an enhanced dashboard related to adding data about the domain of computing to Wikidata.
+       We provide a streamlined interface for browsing and contributing structured data related to software and file formats to the Wikidata knowledge base.
+       These tools empower us as members of the digital preservation community to edit and maintain our own technical and descriptive metadata.
+    </p>
+    <h2>The WikiData Team</h2>
+    <ul>
+      <li>Logo design by <a href="https://www.kaiachessen.com/">Kaia Chessen</li>
+    </ul>
+    <h3>Development Team</h3>
+    <ul>
+      <li>Katherine Thornton</li>
+      <li>Kenneth Seals-Nutt</li>
+      <li>Euan Cochrane</li>
+      <li>Carl Wilson</li>
+    </ul>
+    <h2>Background Reading</h2>
+    <ul>
+      <li>Introducing Wikidata to the Linked Data Web https://www.wikidata.org/wiki/Q27036465</li>
+      <li>Modeling the Domain of Digital Preservation in Wikidata https://www.wikidata.org/wiki/Q41533080</li>
+      <li>A search via the Scholia platform for scholarly publications about Wikidata https://tools.wmflabs.org/scholia/topic/Q2013</li>
+    </ul>
+    <h2>Acknowledgements</h2>
+    <ul>
+      <li><a href="https://meta.wikimedia.org/wiki/WikiCite_2016">Wikicite 2016</a></li>
+      <li><a href="https://meta.wikimedia.org/wiki/WikiCite_2017">Wikicite 2017 </a></li>
+      <li><a href="http://sulab.org/">The Su Lab</a></li>
+      <li><a href="https://www.wikidata.org/wiki/Wikidata:WikiProject_Gene_Wiki">GeneWiki</a></li>
+      <li><a href="https://www.clir.org/">Council on Library and Information Resources</a></li>
+      <li><a href="https://sloan.org/">The Alfred P. Sloan Foundation</a></li>
+      <li><a href="https://mellon.org/">The Andrew W. Mellon Foundation</a></li>
+      <li><a href="http://openpreservation.org/">Open Preservation Foundation</a></li>
+      <li><a href="http://www.bnf.fr/en/tools/lsp.site_map.html">Bibliothèque nationale de France</a></li>
+    </ul>
+    <p class="center">
+      Looking for inspiration for how to contribute? Visit our inspiration page.
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Wikidata_stamp_rec.png/120px-Wikidata_stamp_rec.png">
+    </p>
   </div>
+
+{% endblock page_content %}
 
 {% block page_scripts %}
   <script type="text/javascript">
@@ -70,5 +53,3 @@ Looking for inspiration for how to contribute? Visit our inspiration page.<br><b
       });
   </script>
 {% endblock page_scripts %}
-
-{% endblock page_content %}
