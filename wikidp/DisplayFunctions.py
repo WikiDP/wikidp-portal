@@ -94,14 +94,12 @@ def item_detail_parse(qid):
         output_dict['properties'].append(instance)
     save_caches()
     output_dict['prop-counts'] = count_dict
-    # print ( '\n NOW', output_dict, '\n NEXT', count_dict)
     return output_dict
 
 def parse_claims(claim, label, json_details, count, output_dict):
     """ Uses the json_details dictionary of a single claim and outputs
     the parsed data into the output_dict. """
     #Parsing references
-    # print (claim, '\n', label,'\n', json_details, '\n', count, '\n', output_dict)
     try:
         if json_details['mainsnak']['snaktype'] == 'novalue':
             return 0
@@ -132,7 +130,6 @@ def parse_claims(claim, label, json_details, count, output_dict):
                 output_dict['refs'][(claim, val[0])] = reference
         except:
             if data_type == 'external-id':
-                # print (json_details)
                 output_dict['ex-ids'][(claim, label, val, url_formatter(claim, val))] = [val]
             else:
                 output_dict['claims'][(claim, label, size)] = [val]

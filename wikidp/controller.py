@@ -82,12 +82,15 @@ def contribute_selected_page():
     preview_item = DF.item_detail_parse(request.form['qid'])
     return render_template('contribute.html', selected=preview_item, options=options)
 
-@APP.route("/<qid>")
-def selected_item(qid):
-    """If the item ID is already known, the user can enter in the url, not yet functioning"""
-    qid = qid.strip()
-    properties()
-    return preview_selected_page()
+@APP.route("/q<id>")
+@APP.route("/Q<id>")
+def selected_item(id):
+    """If the item ID is already known, the user can enter in the url"""
+    qid = 'Q'+id
+    preview_item = DF.item_detail_parse(qid)
+    basic_details = DF.qid_to_basic_details(qid)
+    options = [[qid, basic_details['label'], basic_details['description']]]
+    return render_template('preview-item.html', selected=preview_item, options=options)
 
 @APP.route("/api-load-item", methods=['POST'])
 def api_load_item():
