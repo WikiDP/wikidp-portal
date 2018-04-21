@@ -14,56 +14,116 @@
     </div>
     <ul>
       <li>
-        <div class="query-title" onclick="$(this).next().animate({height: 'toggle', opacity: 'toggle',}, 'slow')">
-          Number of software titles recorded
+        <div class="query-title" onclick="addQuery('query1', 1); $(this).next().animate({height: 'toggle', opacity: 'toggle',}, 'slow')">
+          Number of software titles recorded <span id="count1" />
         </div>
         <div class="wd-iframe-container" hidden>
-          <iframe src="https://query.wikidata.org/embed.html#SELECT%20DISTINCT%20%3Fapp%20%3FappLabel%20%0AWHERE%20%7B%0A%20%20%3Fapp%20wdt%3AP31%2Fwdt%3AP279*%20wd%3AQ7397.%0A%0A%20%20SERVICE%20wikibase%3Alabel%20%7B%20bd%3AserviceParam%20wikibase%3Alanguage%20%22en%22.%20%7D%0A%7D" referrerpolicy="origin" sandbox="allow-scripts allow-same-origin allow-popups"></iframe>
+          <iframe name="query1" id="query1" style="width: 80vw; height: 50vh; border: none;" src="" referrerpolicy="origin" sandbox="allow-scripts allow-same-origin allow-popups"></iframe>
         </div>
       </li>
       <li>
-        <div class="query-title" onclick="$(this).next().animate({height: 'toggle', opacity: 'toggle',}, 'slow')">
-          Number of file formats recorded
+        <div class="query-title" onclick="addQuery('query2', 2); $(this).next().animate({height: 'toggle', opacity: 'toggle',}, 'slow')">
+          Number of file formats recorded <span id="count2" />
         </div>
         <div class="wd-iframe-container" hidden>
-          <iframe src="https://query.wikidata.org/#SELECT%20DISTINCT%20%3Fapp%20%3FappLabel%20%0AWHERE%20%7B%0A%20%20%3Fapp%20wdt%3AP31%2Fwdt%3AP279%2A%20wd%3AQ235557.%0A%0A%20%20SERVICE%20wikibase%3Alabel%20%7B%20bd%3AserviceParam%20wikibase%3Alanguage%20%22en%22.%20%7D%0A%7D" referrerpolicy="origin" sandbox="allow-scripts allow-same-origin allow-popups"></iframe>
+          <iframe name="query2" id="query2" style="width: 80vw; height: 50vh; border: none;" src="" referrerpolicy="origin" sandbox="allow-scripts allow-same-origin allow-popups"></iframe>
         </div>
       </li>
       <li>
-        <div class="query-title" onclick="$(this).next().animate({height: 'toggle', opacity: 'toggle',}, 'slow')">
-          Number of PRONOM Unique Identifiers recorded
+        <div class="query-title" onclick="addQuery('query3', 3); $(this).next().animate({height: 'toggle', opacity: 'toggle',}, 'slow')">
+          Number of PRONOM Unique Identifiers recorded <span id="count3" />
         </div>
         <div class="wd-iframe-container" hidden>
-          <iframe src="https://query.wikidata.org/#SELECT%20DISTINCT%20%3Fformat%20%3FformatLabel%20%3Fpuid%0AWHERE%20%7B%0A%20%20%3Fformat%20wdt%3AP2748%20%3Fpuid%20.%0A%20%20SERVICE%20wikibase%3Alabel%20%7B%0A%09%09bd%3AserviceParam%20wikibase%3Alanguage%20%22en%22%20.%0A%7D%0A%20%20%7D" referrerpolicy="origin" sandbox="allow-scripts allow-same-origin allow-popups"></iframe>
+          <iframe name="query3" id="query3" style="width: 80vw; height: 50vh; border: none;" src="" referrerpolicy="origin" sandbox="allow-scripts allow-same-origin allow-popups"></iframe>
         </div>
       </li>
       <li>
-        <div class="query-title" onclick="$(this).next().animate({height: 'toggle', opacity: 'toggle',}, 'slow')">
-          Number of file signatures described
+        <div class="query-title" onclick="addQuery('query4', 4); $(this).next().animate({height: 'toggle', opacity: 'toggle',}, 'slow')">
+          Number of file signatures described <span id="count4" />
         </div>
         <div class="wd-iframe-container" hidden>
-          <iframe src="https://query.wikidata.org/#SELECT%20%3Fitem%20%3FitemLabel%20%3FvalueLabel%0A%7B%0A%09%3Fitem%20wdt%3AP4152%20%3Fvalue%20.%0A%09SERVICE%20wikibase%3Alabel%20%7B%20bd%3AserviceParam%20wikibase%3Alanguage%20%22en%2Cen%22%20%20%7D%20%20%20%20%0A%7D" referrerpolicy="origin" sandbox="allow-scripts allow-same-origin allow-popups"></iframe>
+          <iframe name="query4" id="query4" style="width: 80vw; height: 50vh; border: none;" src="" referrerpolicy="origin" sandbox="allow-scripts allow-same-origin allow-popups"></iframe>
         </div>
       </li>
       <li>
-        <div class="query-title" onclick="$(this).next().animate({height: 'toggle', opacity: 'toggle',}, 'slow')">
-          Number of emulators recorded
+        <div class="query-title" onclick="addQuery('query5', 5); $(this).next().animate({height: 'toggle', opacity: 'toggle',}, 'slow')">
+          Number of emulators recorded <span id="count5" />
         </div>
         <div class="wd-iframe-container" hidden>
-          <iframe src="https://query.wikidata.org/#SELECT%20%3Femulator%20%3FemulatorLabel%0AWHERE%20%7B%0A%20%20%3Femulator%20wdt%3AP31%2Fwdt%3AP279%2A%20wd%3AQ202871%20.%20%20%20%20%20%20%20%20%20%0A%20%20SERVICE%20wikibase%3Alabel%20%7B%0A%09%09bd%3AserviceParam%20wikibase%3Alanguage%20%22en%22%20.%0A%7D%0A%20%20%7D" referrerpolicy="origin" sandbox="allow-scripts allow-same-origin allow-popups"></iframe>
+          <iframe name="query5" id="query5" style="width: 80vw; height: 50vh; border: none;" src="" referrerpolicy="origin" sandbox="allow-scripts allow-same-origin allow-popups"></iframe>
         </div>
       </li>
       <li>
-        <div class="query-title" onclick="$(this).next().animate({height: 'toggle', opacity: 'toggle',}, 'slow')">
-          Number of file systems recorded
+        <div class="query-title" onclick="addQuery('query6', 6); $(this).next().animate({height: 'toggle', opacity: 'toggle',}, 'slow')">
+          Number of file systems recorded <span id="count6" />
         </div>
         <div class="wd-iframe-container" hidden>
-          <iframe src="https://query.wikidata.org/#SELECT%20%3Fitem%20%3FitemLabel%20%0AWHERE%20%0A%7B%0A%20%20%3Fitem%20wdt%3AP31%2Fwdt%3AP279%2A%20wd%3AQ174989.%0A%20%20SERVICE%20wikibase%3Alabel%20%7B%20bd%3AserviceParam%20wikibase%3Alanguage%20%22%5BAUTO_LANGUAGE%5D%2Cen%22.%20%7D%0A%7D" referrerpolicy="origin" sandbox="allow-scripts allow-same-origin allow-popups"></iframe>
+          <iframe name="query6" id="query6" style="width: 80vw; height: 50vh; border: none;" src="" referrerpolicy="origin" sandbox="allow-scripts allow-same-origin allow-popups"></iframe>
         </div>
       </li>
     </ul></div>
 </div>
   <script type="text/javascript">
+    var endpointUrl = 'https://query.wikidata.org/sparql';
+    var endpointEmbedUrl = 'https://query.wikidata.org/embed.html#';
+    var sparqlQueries = [
+      "SELECT ?item ?itemLabel \n" +
+      "WHERE { \n" +
+      "  ?item wdt:P31/wdt:P279* wd:Q7397. \n"
+    ,
+      "SELECT ?item ?itemLabel \n" +
+      "WHERE { \n" +
+      "  ?item wdt:P31/wdt:P279* wd:Q235557. \n"
+    ,
+      "SELECT ?item ?itemLabel ?puid \n" +
+      "WHERE { \n" +
+      "  ?item wdt:P2748 ?puid. \n"
+    ,
+      "SELECT ?item ?itemLabel ?signature ?encodingLabel \n" +
+      "WHERE { \n" +
+      "  ?item wdt:P31/wdt:P279* wd:Q235557. \n" +
+      "  ?item p:P4152 ?signatureStmt. \n" +
+      "  ?signatureStmt ps:P4152 ?signature. \n" +
+      "  ?signatureStmt pq:P3294 ?encoding. \n"
+    ,
+      "SELECT ?item ?itemLabel \n" +
+      "WHERE { \n" +
+      "  ?item wdt:P31/wdt:P279* wd:Q202871. \n"
+    ,
+      "SELECT ?item ?itemLabel \n" +
+      "WHERE { \n" +
+      "    ?item wdt:P31/wdt:P279* wd:Q174989. \n"
+    ];
+
+    var labelServiceStmt =
+      "  SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\". } ";
+    var limitStmt = " LIMIT 100";
+
+    function addQuery(iframeName, number) {
+      var $iframe = $('#' + iframeName);
+      if ( $iframe.length ) {
+        var isThereAQuery = $iframe.attr('src');
+        if ( isThereAQuery == '') {
+          // First time : the query has to be run
+          // Make a first request to COUNT the number of items
+          var countQuery = "SELECT (COUNT(*) AS ?number) WHERE { " +
+            sparqlQueries[number - 1] + labelServiceStmt + " } " + "}";
+          var settings = {
+            headers: { Accept: 'application/sparql-results+json' },
+            data: { query: countQuery }
+          };
+          $.ajax( endpointUrl, settings ).then( function ( data ) {
+              var counter = data['results']['bindings'][0]['number']['value'];
+              $('#count' + number).text("(" + counter + ")");
+              // Embed the query and show the first 100 items
+              var query = sparqlQueries[number - 1] + labelServiceStmt + " } " + limitStmt;
+              $iframe.attr('src', encodeURI(endpointEmbedUrl + query));
+          } );
+          return false;
+        }
+      }
+      return true;
+    }
 
     $("form").submit(function(){
     $('div.page-container').fadeOut(500);
