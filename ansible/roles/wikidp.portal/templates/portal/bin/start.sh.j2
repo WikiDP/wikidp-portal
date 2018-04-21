@@ -2,5 +2,6 @@
 source "{{ wikidp.app.venv }}/bin/activate"
 export WIKIDP_BOT_USER='{{ wikidata.user_name }}'
 export WIKIDP_BOT_PASSWORD='{{ wikidata.password }}'
+export WIKIDP_LANG='{{ wikidata.language }}'
 export FLASK_APP='wikidp'
 flask run --port="{{ wikidp.flask.port }}" --host="{{ wikidp.flask.bind }}"

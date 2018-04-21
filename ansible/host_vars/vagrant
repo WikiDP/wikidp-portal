@@ -35,7 +35,8 @@ wikidp_nginx_install: false
 # Set true to install uwsgi app server in pip mode
 wikidp_uwsgi_install: false
 
-# Wikidata user name and password
+# Wikidata user name, password and prefered language
 wikidata:
   user_name: "my_wikidata_user"
   password: "my_wikidata_password"
+  language: "my_wikidata_language"
