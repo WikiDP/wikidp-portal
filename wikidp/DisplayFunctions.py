@@ -28,7 +28,7 @@ import wikidp.lists as LIST
 
 # Global Variables:
 LANG = 'en'
-URL_CACHE, PID_CACHE, QID_CACHE = {}, {}, {}
+URL_CACHE, PID_CACHE = {}, {}
 CACHE_DIR = APP.config['CACHE_DIR']
 
 def search_result_list(string):
@@ -56,9 +56,7 @@ def item_detail_parse(qid):
         logging.exception("Exception reading QID: %s", qid)
         return None
     load_caches()
-    global QID_CACHE
     label = item.get_label()
-    QID_CACHE[qid] = label
     item = item.wd_json_representation
     output_dict = {'label': [qid, label], 'claims':{}, 'refs':{},
                    'sitelinks':{}, 'aliases':[], 'ex-ids':{}, 'description':[],
@@ -175,7 +173,7 @@ def get_value_of_claim(data_type, data_value):
     elif data_type == 'wikibase-entityid':
         if data_value['entity-type'] == 'item':
             val = data_value['id']
-            val = [val, qid_label(val)]
+            val = [val]
             size = 2
         elif data_value['entity-type'] == 'property':
             val = 'P'+str(data_value['numeric-id'])
@@ -200,11 +198,10 @@ def _setup_cache_dir():
 def load_caches():
     """Uses pickle to load all caching files as global variables"""
     logging.debug("Loading the caches")
-    global URL_CACHE, PID_CACHE, QID_CACHE
+    global URL_CACHE, PID_CACHE
 
     URL_CACHE = _pickle_cache_read("url-formats")
     PID_CACHE = _pickle_cache_read("property-labels")
-    QID_CACHE = _pickle_cache_read("item-labels")
 
 def _pickle_cache_read(cache_name):
     pickle_file = os.path.join(CACHE_DIR, cache_name)
@@ -217,10 +214,9 @@ def _pickle_cache_read(cache_name):
 
 def save_caches():
     """Uses pickle to save global variables to caching files in order to update"""
-    global URL_CACHE, PID_CACHE, QID_CACHE
+    global URL_CACHE, PID_CACHE
     _pickle_cache_persist("url-formats", URL_CACHE)
     _pickle_cache_persist("property-labels", PID_CACHE)
-    _pickle_cache_persist("item-labels", QID_CACHE)
 
 def _pickle_cache_persist(cache_name, cache_dict):
     pickle_file = os.path.join(CACHE_DIR, cache_name)
@@ -231,33 +227,26 @@ def id_to_label_list(wikidata_id):
     """Takes in an id (P## or Q##) and returns a list of that entity's label and id"""
     if wikidata_id[0].lower() == 'p':
         return [wikidata_id, pid_label(wikidata_id)]
-
-    return [wikidata_id, qid_label(wikidata_id)]
+    return [wikidata_id]
+    # return [wikidata_id, qid_label(wikidata_id)]
 
 def qid_label(qid):
     """Converts item identifier (Q###) to a label and updates the cache"""
     ## TO DO: Add step to try using wikidataintegrator as second option
-    global QID_CACHE
     try:
-        return QID_CACHE[qid]
+        item = pywikibot.ItemPage(pywikibot.Site('wikidata', 'wikidata').data_repository(), qid)
+        item.get()
+        label = item.labels[LANG]
+        return label
     except:
         try:
-            item = pywikibot.ItemPage(pywikibot.Site('wikidata', 'wikidata').data_repository(), qid)
-            item.get()
-            label = item.labels[LANG]
-            QID_CACHE[qid] = label
-            _pickle_cache_persist("item-labels", QID_CACHE)
-            return label
+            page = requests.get("http://wikidata.org/wiki/" + qid)
+            title = html.fromstring(page.content).xpath('//title/text()')
+            title = title[0][:-10]
+            return title
         except:
-            try:
-                page = requests.get("http://wikidata.org/wiki/" + qid)
-                title = html.fromstring(page.content).xpath('//title/text()')
-                title = title[0][:-10]
-                QID_CACHE[qid] = title
-                return title
-            except:
-                logging.exception("Unexpected exception finding QID label: %s", qid)
-                return "Unknown Item Label"
+            logging.exception("Unexpected exception finding QID label: %s", qid)
+            return "Unknown Item Label"
 
 def pid_label(pid):
     """Converts property identifier (P###) to a label and updates the cache"""
