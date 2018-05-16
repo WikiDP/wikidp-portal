@@ -1,0 +1,105 @@
+server {
+    ## This is to avoid the spurious if for sub-domain name
+    ## "rewriting".
+    listen 80; # IPv4
+    # listen [2a01:7e00::f03c:91ff:fe56:dd46]:443 ipv6only=on;
+    server_name www.{{ wikibase.mediawiki.server }};
+    return 301 $scheme://{{ wikibase.mediawiki.server }}$request_uri;
+} # server domain rewrite.
+
+
+server {
+    listen 80; # IPv4
+    server_name {{ wikibase.mediawiki.server }};
+    root {{ wikibase.mediawiki.install.dir }};
+    index index.php;
+    autoindex off;
+
+    ## Parameterization using hostname of access and log filenames.
+    access_log /var/log/nginx/{{ wikibase.mediawiki.server }}_access.log;
+    error_log /var/log/nginx/{{ wikibase.mediawiki.server }}_error.log;
+
+    #    Common deny, drop, or internal locations
+
+    #    Exclude all access from the cache directory
+    location ^~ /cache/ { deny all; }
+
+    #    Prevent access to any files starting with a dot, like .htaccess
+    #    or text editor temp files
+    location ~ /\. { access_log off; log_not_found off; deny all; }
+
+    #    Prevent access to any files starting with a $ (usually temp files)
+    location ~ ~$ { access_log off; log_not_found off; deny all; }
+
+    #    Do not log access to robots.txt, to keep the logs cleaner
+    location = /robots.txt { access_log off; log_not_found off; }
+
+    #    Do not log access to the favicon, to keep the logs cleaner
+    location = /favicon.ico { access_log off; log_not_found off; }
+
+    #    Keep images and CSS around in browser cache for as long as possible,
+    #    to cut down on server load
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico)$ {
+        try_files $uri /index.php;
+        expires max;
+        log_not_found off;
+    }
+
+    #    Mark all of these directories as "internal", which means that they cannot
+    #    be explicitly accessed by clients. However, the web server can still use
+    #    and serve the files inside of them. This keeps people from poking around
+    #    in the wiki's internals.
+    location ^~ /bin/ { internal; }
+    location ^~ /docs/ { internal; }
+    location ^~ /extensions/ { internal; }
+    location ^~ /includes/ { internal; }
+    location ^~ /maintenance/ { internal; }
+#    location ^~ /mw-config/ { internal; } #Uncomment after installation
+#    location ^~ /resources/ { internal; }
+    location ^~ /serialized/ { internal; }
+    location ^~ /tests/ { internal; }
+
+    #    Force potentially-malicious files in the /images directory to be served
+    #    with a text/plain mime type, to prevent them from being executed by
+    #    the PHP handler
+    location ~* ^/images/.*.(html|htm|shtml|php)$ {
+        types { }
+        default_type text/plain;
+    }
+
+    #    Redirect all requests for unknown URLs out of images and back to the
+    #    root index.php file
+    location ^~ /images/ {
+        try_files $uri /index.php;
+    }
+
+    # Uncomment after installation!
+    location / {
+        index index.php;
+        rewrite ^/([^?]*)(?:\?(.*))? /index.php?title=$1&$2 last;
+    }
+
+    location ~ \.php5?$ {
+        try_files $uri =404;
+        include fastcgi_params;
+        fastcgi_pass unix:/run/php/mediawiki-first-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_intercept_errors on;
+    }
+
+    location ~ \.php7?$ {
+        try_files $uri =404;
+        include fastcgi_params;
+        fastcgi_pass unix:/run/php/mediawiki-first-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_intercept_errors on;
+    }
+
+    location ~ \.php?$ {
+        try_files $uri =404;
+        include fastcgi_params;
+        fastcgi_pass unix:/run/php/mediawiki-first-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_intercept_errors on;
+    }
+}

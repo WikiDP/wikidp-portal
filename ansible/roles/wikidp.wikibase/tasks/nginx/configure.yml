@@ -1,0 +1,50 @@
+---
+# Configure our Nginx installation properly
+
+- name: "NGINX | Remove default.conf nginx site"
+  file:
+    path: "{{ wikibase.nginx.default_site_conf }}"
+    state: absent
+  notify:
+    - restart nginx
+  when: not wikibase.nginx.default_site
+
+- name: "NGINX | Add nginx user to wikibase group: {{ wikibase_group }}."
+  user:
+    name: "nginx"
+    group: "{{ wikibase_group }}"
+
+- name: "NGINX | Add optimized nginx.conf."
+  copy:
+    src: "files/nginx/etc/nginx/nginx.conf"
+    dest: "{{ wikibase.nginx.default_conf }}"
+    mode: 0644
+  notify:
+    - restart nginx
+
+- name: "NGINX | Create sites-available."
+  file:
+    path: "/etc/nginx/sites-available"
+    state: directory
+    mode: 0644
+
+- name: "NGINX | Create our sites-enabled."
+  file:
+    path: "/etc/nginx/sites-enabled"
+    state: directory
+    mode: 0644
+
+- name: "NGINX | Create site config for MediaWiki"
+  template:
+    src: "nginx/etc/nginx/sites-available/wikibase.conf.j2"
+    dest: "/etc/nginx/sites-available/wikibase.conf"
+    owner: "root"
+    mode: 0644
+
+- name: "NGINX | Create sites-enabled symlink"
+  file:
+    path: "/etc/nginx/sites-enabled/wikibase.conf"
+    src: "/etc/nginx/sites-available/wikibase.conf"
+    state: link
+  notify:
+    - restart nginx

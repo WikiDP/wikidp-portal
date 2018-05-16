@@ -1,0 +1,119 @@
+---
+# defaults file for wikidp.wikibase
+wikidp_tmp: "/tmp/"
+wikibase_app_name: "wikibase"
+wikibase_user: "wikidp"
+wikibase_group: "{{ wikibase_user }}"
+wikibase_user_home: "/home/{{ wikibase_user }}"
+wikibase_app_home: "{{ wikibase_user_home }}/{{ wikibase_app_name }}"
+wikibase_host: "db.{{ hostname }}"
+wikibase_php_version: "7.0"
+wikibase_php_etc: "/etc/php/{{ wikibase_php_version }}"
+wikibase_nginx_conf_root: "/etc/nginx"
+wikibase_mediawiki_version: "1.30"
+wikibase_mediawiki_build: ".0"
+wikibase_mysql_root_password: "vagrant"
+wikibase_mysql_db_schema: "wikidb"
+wikibase_mysql_db_user: "wikiuser"
+wikibase_mysql_db_password: "vagrant"
+wikibase_mysql_host: "localhost"
+wikibase_mediawiki_root: "/srv/www"
+wikibase_mediawiki_dir: "{{ wikibase_mediawiki_root }}/mediawiki-{{ wikibase_mediawiki_version }}{{ wikibase_mediawiki_build}}"
+wikibase:
+  ##
+  # dependencies to be installed by apt
+  #  - php: mediawiki is a PHP application
+  #  - php-apcu, php-intl - further php dependencies
+  dependencies:
+    apt:
+      - "php{{ wikibase_php_version }}-common"
+      - "php{{ wikibase_php_version }}-cli"
+      - "php{{ wikibase_php_version }}-intl"
+      - "php{{ wikibase_php_version }}-curl"
+      - "php{{ wikibase_php_version }}-cgi"
+      - "php{{ wikibase_php_version }}-fpm"
+      - "php{{ wikibase_php_version }}-mysql"
+      - "php{{ wikibase_php_version }}-gd"
+      - "php{{ wikibase_php_version }}-mcrypt"
+      - "php{{ wikibase_php_version }}-posix"
+      - "php{{ wikibase_php_version }}-xml"
+      - "php{{ wikibase_php_version }}-zip"
+      - "php{{ wikibase_php_version }}-xmlreader"
+      - "php{{ wikibase_php_version }}-opcache"
+      - "php{{ wikibase_php_version }}-json"
+      - "php{{ wikibase_php_version }}-dom"
+      - "php{{ wikibase_php_version }}-phar"
+      - "php{{ wikibase_php_version }}-mbstring"
+      - "php{{ wikibase_php_version }}-gettext"
+      - "php{{ wikibase_php_version }}-iconv"
+      - "php{{ wikibase_php_version }}-ctype"
+      - "ssl-cert"
+      - "imagemagick"
+      - "texlive"
+  mediawiki:
+    root: "{{ wikibase_mediawiki_root }}"
+    server: "{{ wikibase_host }}"
+    install:
+      src: "https://releases.wikimedia.org/mediawiki/{{ wikibase_mediawiki_version }}/mediawiki-{{ wikibase_mediawiki_version }}{{ wikibase_mediawiki_build}}.tar.gz"
+      dir: "{{ wikibase_mediawiki_dir }}"
+    extensions_dir: "{{ wikibase_mediawiki_dir}}/extensions"
+    version: "{{ wikibase_mediawiki_version }}"
+    build: "{{ wikibase_mediawiki_build }}"
+    admin_pass: "vagrantwiki"
+  mysql:
+    root_password: "{{ wikibase_mysql_root_password }}"
+    port: "3306"
+    databases:
+     - name: "{{ wikibase_mysql_db_schema }}"
+    users:
+     - name: "{{ wikibase_mysql_db_user }}"
+       password: "{{ wikibase_mysql_db_password }}"
+       priv: "wikidb.*:ALL"
+  nginx:
+    branch: "stable"
+    default_conf: "{{ wikibase_nginx_conf_root }}/nginx.conf"
+    default_site: false
+    default_site_conf: "{{ wikibase_nginx_conf_root }}/conf.d/default.conf"
+    proxy_params: "{{ wikibase_nginx_conf_root }}/proxy_params"
+    sites_available: "{{ wikibase_nginx_conf_root }}/sites-available"
+    sites_enabled: "{{ wikibase_nginx_conf_root }}/sites-enabled"
+    log_dir: "/var/log/nginx"
+  php:
+    apt:
+      repo:
+        main: "deb https://packages.sury.org/php/ {{ ansible_distribution_release }} main"
+        # source: "deb https://packages.sury.org/php/ {{ ansible_distribution_release }} source"
+        key:
+          src: "https://packages.sury.org/php/apt.gpg"
+          dest: "/etc/apt/trusted.gpg.d/php.gpg"
+    composer: "/usr/local/bin/composer"
+    fpm:
+      log: "/var/log/php{{ wikibase_php_version }}-fpm.log"
+      log_level: "notice"
+      syslog_ident: "php-fpm"
+      ini: "{{ wikibase_php_etc }}/fpm/php.ini"
+      conf: "{{ wikibase_php_etc }}/fpm/php-fpm.conf"
+      default_pool: "{{ wikibase_php_etc }}/fpm/pool.d/www.conf"
+      pool_base: "{{ wikibase_php_etc }}/fpm/pool.d/"
+      pools:
+        mediawiki_first:
+          name: "mediawiki-first"
+          user: "nginx"
+          group: "nginx"
+          log_file: "/var/log/php{{ wikibase_php_version }}-fpm.log"
+          log_errors: "on"
+          memory_limit: "512M"
+          pm: "dynamic"
+          pm_max_children: 5
+          pm_min_spare_servers: 1
+          pm_max_spare_servers: 3
+          pm_max_reqs: 500
+          pm_process_timeout: "10s"
+          pm_start_servers: 2
+    error_reporting: "E_ALL & ~E_DEPRECATED & ~E_STRICT"
+    errors: "On"
+    max_exec_time: 60
+    mem_limit: "128M"
+    post_max_size: "20M"
+    timezone: "Europe/London"
+    upload_max_filesize: "20M"

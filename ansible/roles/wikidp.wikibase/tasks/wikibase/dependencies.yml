@@ -1,0 +1,40 @@
+---
+# Pre-installation tasks for WikiDP Portal
+- name: "APT | Add key for Debian sury PHP repo."
+  apt_key:
+    url: "{{ wikibase.php.apt.repo.key.src }}"
+    state: present
+
+- name: "APT | Download key for Debian sury PHP repo {{ wikibase.php.apt.repo.key.src }}."
+  get_url:
+    url: "{{ wikibase.php.apt.repo.key.src }}"
+    dest: "{{ wikibase.php.apt.repo.key.dest }}"
+    mode: 0640
+
+- name: "APT | Add alternative PHP repo."
+  apt_repository:
+    repo: "{{ wikibase.php.apt.repo.main }}"
+    state: present
+
+- name: "APT | Add alternative PHP repo main {{ wikibase.php.apt.repo.main }}."
+  apt_repository:
+    repo: "{{ wikibase.php.apt.repo.main }}"
+    state: present
+
+- name: "APT | Install apt package dependencies."
+  apt:
+    name: "{{ item }}"
+    state: "latest"
+  with_items: "{{ wikibase.dependencies.apt }}"
+  when: wikibase.dependencies.apt is defined
+  notify:
+    - restart php7-fpm
+
+- name: "INCLUDE | MySQL Setup for Wikimedia"
+  include_role:
+    name: "geerlingguy.mysql"
+  vars:
+    mysql_root_password: "{{ wikibase.mysql.root_password }}"
+    mysql_port: "{{ wikibase.mysql.port }}"
+    mysql_databases: "{{ wikibase.mysql.databases }}"
+    mysql_users: "{{ wikibase.mysql.users }}"

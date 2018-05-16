@@ -1,0 +1,38 @@
+---
+# tasks file for wikidp.wikibase
+
+- name: "MEDIAWIKI | Create server directory {{ wikibase.mediawiki.root }}."
+  file:
+    path: "{{ wikibase.mediawiki.root }}"
+    owner: "{{ wikibase_user }}"
+    group: "{{ wikibase_group }}"
+    state: directory
+    mode: 0755
+
+- name: "MEDIAWIKI | Download and unpack MediaWiki {{ wikibase.mediawiki.install.dir}}."
+  unarchive:
+    src: "{{ wikibase.mediawiki.install.src }}"
+    dest: "{{ wikibase.mediawiki.root }}"
+    creates: "{{ wikibase.mediawiki.install.dir}}"
+    remote_src: yes
+    owner: "{{ wikibase_user }}"
+    group: "{{ wikibase_group }}"
+
+- name: "MEDIAWIKI | Run installation script."
+  command: >
+    php maintenance/install.php
+    --server "{{ wikibase.mediawiki.server}}"
+    --dbuser "{{ wikibase_mysql_db_user }}"
+    --dbpass "{{ wikibase_mysql_db_password }}"
+    --confpath "{{ wikibase.mediawiki.install.dir}}"
+    --dbname "{{ wikibase_mysql_db_schema }}"
+    --dbserver "{{ wikibase_mysql_host }}"
+    --installdbuser: "root"
+    --installdbpass: "{{ wikibase_mysql_root_password}}"
+    --pass "{{ wikibase.mediawiki.admin_pass }}"
+    --scriptpath=""
+    "wikidp"
+    "admin"
+  args:
+    chdir: "{{ wikibase.mediawiki.install.dir}}"
+    creates: "{{ wikibase.mediawiki.install.dir}}/LocalSettings.php"

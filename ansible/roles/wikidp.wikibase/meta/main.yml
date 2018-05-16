@@ -1,0 +1,19 @@
+# meta file for wikidp.wikibase
+---
+galaxy_info:
+  author: Carl Wilson
+  company: The Open Preservation Foundation
+  description: Installs and configures a wikibase instance
+  license: GPL v3
+  min_ansible_version: 2.0.0
+  platforms:
+    - name: Ubuntu
+      versions:
+        - xenial
+    - name: Debian
+      versions:
+        - jessie
+  galaxy_tags:
+    - wikidp
+    - portal
+    - wikibase

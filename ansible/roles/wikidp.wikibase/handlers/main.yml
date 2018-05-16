@@ -1,0 +1,12 @@
+---
+# handlers file for wikidp.wikibase
+
+- name: restart nginx
+  service:
+    name: nginx
+    state: restarted
+
+- name: restart php7-fpm
+  service:
+    name: "php{{ wikibase_php_version }}-fpm"
+    state: restarted
