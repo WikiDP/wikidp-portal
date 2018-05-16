@@ -27,6 +27,8 @@ logging.basicConfig(filename=APP.config[ConfKey.LOG_FILE], level=logging.DEBUG,
                     format=APP.config[ConfKey.LOG_FORMAT])
 logging.info("Started Wiki-DP Portal app.")
 logging.debug("Configured logging.")
+logging.debug("Logging in directory %s", APP.config[ConfKey.LOG_FILE])
+logging.debug("Application configured with languages=%s", APP.config[ConfKey.WIKIBASE_LANGUAGE])
 
 # Import the application routes
 logging.info("Setting up application routes")

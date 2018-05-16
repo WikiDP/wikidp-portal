@@ -48,21 +48,20 @@ class FileFormat(object):
         return "".join(ret_val)
 
     @classmethod
-    def list_formats(cls):
-        """Queries Wikdata for formats and returns a list of FileFormat instances."""
+    def list_formats(cls, lang="en"):
+        """Queries Wikidata for formats and returns a list of FileFormat instances."""
         query = [
-            "SELECT DISTINCT ?idFileFormat ?idFileFormatLabel",
-            "(GROUP_CONCAT(DISTINCT ?mediaType; SEPARATOR="|") AS ?mediaTypes)",
+            "SELECT ?idFileFormat ?idFileFormatLabel",
+            "(GROUP_CONCAT(DISTINCT ?mediaType; SEPARATOR='|') AS ?mediaTypes)",
             "WHERE {",
-            "?idFileFormat wdt:P31 wd:Q235557",
-            "OPTIONAL {",
-            "?idFileFormat wdt:P1163 ?mediaType .}",
-            "SERVICE wikibase:label { bd:serviceParam wikibase:language 'en' }",
+            "?idFileFormat wdt:P31 wd:Q235557.",
+            "OPTIONAL { ?idFileFormat wdt:P1163 ?mediaType }",
+            "SERVICE wikibase:label {{ bd:serviceParam wikibase:language  '{}' }}".format(lang),
             "}",
             "GROUP BY ?idFileFormat ?idFileFormatLabel",
             "ORDER BY ?idFileFormatLabel"
             ]
-        results_json = wdi_core.WDItemEngine.execute_sparql_query("".join(query))
+        results_json = wdi_core.WDItemEngine.execute_sparql_query(" ".join(query))
         results = [cls(x['idFileFormat']['value'].replace('http://www.wikidata.org/entity/', ''),
                        x['idFileFormatLabel']['value'],
                        x['mediaTypes']['value'].split('|'))
@@ -129,15 +128,15 @@ class PuidSearchResult(object):
     @staticmethod
     def _concat_query(values_clause="", lang="en"):
         query = [
-            "SELECT DISTINCT ?format ?formatLabel ?mime ?puid ",
+            "SELECT DISTINCT ?format ?formatLabel ?mime ?puid",
             "WHERE {",
             "?format wdt:P2748 ?puid.",
             "?format wdt:P1163 ?mime.",
-            "SERVICE wikibase:label {{bd:serviceParam wikibase:language '{}'}}".format(lang)
+            "SERVICE wikibase:label {{ bd:serviceParam wikibase:language '{}' }}".format(lang)
             ]
         query.append(values_clause)
         query.append("}")
-        return "".join(query)
+        return " ".join(query)
 
     @staticmethod
     def _assemble_results(results_json):
