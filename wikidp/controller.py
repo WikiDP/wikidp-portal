@@ -15,6 +15,7 @@ import re
 
 from flask import render_template, request, json
 from wikidp import APP
+from wikidp.const import ConfKey
 from wikidp.model import FileFormat, PuidSearchResult
 from wikidp.lists import properties
 import wikidp.DisplayFunctions as DF
@@ -37,7 +38,7 @@ def reports():
 @APP.route("/browse")
 def list_extensions():
     """Displays a list of extensions and media types."""
-    formats = FileFormat.list_formats()
+    formats = FileFormat.list_formats(lang = APP.config[ConfKey.WIKIBASE_LANGUAGE])
     return render_template('browse.html', formats=formats)
 
 @APP.route("/puid/<string:puid>")
@@ -45,7 +46,7 @@ def search_puid(puid):
     """Displays a list of extensions and media types."""
     puid = puid.replace('_', '/')
     logging.debug("Searching for PUID: %s", puid)
-    results = PuidSearchResult.search_puid(puid)
+    results = PuidSearchResult.search_puid(puid, lang = APP.config[ConfKey.WIKIBASE_LANGUAGE])
     return render_template('puid_results.html', results=results, puid=puid)
 
 @APP.route("/search", methods=['POST'])
@@ -55,7 +56,7 @@ def search_results_page():
     # Check if searching with PUID
     try:
         if re.search("[x-]?fmt/\d+", _input) != None:
-            result = PuidSearchResult.search_puid( _input)
+            result = PuidSearchResult.search_puid( _input, lang = APP.config[ConfKey.WIKIBASE_LANGUAGE])
             for res in result:
                 item = DF.qid_to_basic_details(res.format)
                 options = [[res.format, res.label, item['description']]]

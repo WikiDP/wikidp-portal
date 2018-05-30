@@ -27,6 +27,7 @@ wikidp_nginx_conf_root: "/etc/nginx"
 wikidata:
   user_name: ""
   password: ""
+  language: "en"
 
 # Namespaced variables you'll unlikely change
 wikidp:

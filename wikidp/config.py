@@ -27,6 +27,8 @@ class BaseConfig(object):
     SECRET_KEY = '7d441f27d441f27567d441f2b6176a'
     WIKIDATA_USER_NAME = 'username'
     WIKIDATA_PASSWORD = 'password'
+    WIKIDATA_LANG = 'en'
+    WIKIDATA_FB_LANG = 'en'
 
 class DevConfig(BaseConfig):
     """Developer level config, with debug logging and long log format."""
@@ -43,7 +45,14 @@ def configure_app(app):
     """Grabs the environment variable for app config or defaults to dev."""
     config_name = os.getenv('WIKIDP_CONFIG', 'dev')
     app.config.from_object(CONFIGS[config_name])
-    app.config.WIKIDATA_USER_NAME = os.getenv('WIKIDP_BOT_USER', BaseConfig.WIKIDATA_USER_NAME)
-    app.config.WIKIDATA_PASSWORD = os.getenv('WIKIDP_BOT_PASSWORD', BaseConfig.WIKIDATA_PASSWORD)
+    app.config['WIKIDATA_USER_NAME'] = os.getenv('WIKIDP_BOT_USER', BaseConfig.WIKIDATA_USER_NAME)
+    app.config['WIKIDATA_PASSWORD'] = os.getenv('WIKIDP_BOT_PASSWORD', BaseConfig.WIKIDATA_PASSWORD)
     if os.getenv('WIKIDP_CONFIG_FILE'):
         app.config.from_envvar('WIKIDP_CONFIG_FILE')
+    app.config['WIKIDATA_LANG'] = os.getenv('WIKIDP_LANG', BaseConfig.WIKIDATA_LANG)
+    app.config['WIKIDATA_FB_LANG'] = os.getenv('WIKIDP_FB_LANG', BaseConfig.WIKIDATA_FB_LANG)
+    # Create the list of unique languages to easy SPARQL queries
+    if app.config['WIKIDATA_LANG'] != app.config['WIKIDATA_FB_LANG']:
+        app.config['WIKIBASE_LANGUAGE'] = ",".join([app.config['WIKIDATA_LANG'], app.config['WIKIDATA_FB_LANG']])
+    else:
+        app.config['WIKIBASE_LANGUAGE'] = app.config['WIKIDATA_LANG']

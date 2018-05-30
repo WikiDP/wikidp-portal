@@ -24,17 +24,19 @@ import requests
 from wikidataintegrator import wdi_core
 
 from wikidp import APP
+from wikidp.const import ConfKey
 import wikidp.lists as LIST
 
 # Global Variables:
-LANG = 'en'
 URL_CACHE, PID_CACHE = {}, {}
+LANG = APP.config[ConfKey.WIKIDATA_LANG]
+FALLBACK_LANG = APP.config[ConfKey.WIKIDATA_FB_LANG]
 CACHE_DIR = APP.config['CACHE_DIR']
 
 def search_result_list(string):
     """Uses wikidataintegrator to generate a list of similar items based on a text search
     and returns a list of (qid, Label, description, aliases) dictionaries"""
-    options = wdi_core.WDItemEngine.get_wd_search_results(string)
+    options = wdi_core.WDItemEngine.get_wd_search_results(string, language=LANG)
     if len(options) > 10:
         options = options[:10]
     output = []
@@ -48,7 +50,7 @@ def search_result_list(string):
     return output
 
 def item_detail_parse(qid):
-    """Uses the JSON representaion of wikidataintegrator to parse the item ID specified (qid)
+    """Uses the JSON representation of wikidataintegrator to parse the item ID specified (qid)
     and returns a new dictionary of previewing information and a dictionary of property counts"""
     try:
         item = wdi_core.WDItemEngine(wd_item_id=qid)
@@ -56,18 +58,18 @@ def item_detail_parse(qid):
         logging.exception("Exception reading QID: %s", qid)
         return None
     load_caches()
-    label = item.get_label()
+    label = item.get_label(lang=LANG) if item.get_label(lang=LANG) != '' else item.get_label(lang=FALLBACK_LANG)
     item = item.wd_json_representation
     output_dict = {'label': [qid, label], 'claims':{}, 'refs':{},
                    'sitelinks':{}, 'aliases':[], 'ex-ids':{}, 'description':[],
                    'categories':[], 'properties':[], 'prop-counts':{}}
     count_dict = {}
     try:
-        output_dict['aliases'] = [x['value'] for x in item['aliases'][LANG]]
+        output_dict['aliases'] = [x['value'] for x in item['aliases'].get(LANG) or item['aliases'][FALLBACK_LANG]]
     except:
         pass
     try:
-        output_dict['description'] = item['descriptions'][LANG]['value']
+        output_dict['description'] = [x['value'] for x in item['descriptions'].get(LANG) or item['descriptions'][FALLBACK_LANG]]
     except:
         pass
     for claim in item['claims']:
@@ -196,11 +198,12 @@ def _setup_cache_dir():
 
 def load_caches():
     """Uses pickle to load all caching files as global variables"""
-    logging.debug("Loading the caches")
+    logging.debug("Loading the caches with LANG %s", LANG)
     global URL_CACHE, PID_CACHE
 
     URL_CACHE = _pickle_cache_read("url-formats")
     PID_CACHE = _pickle_cache_read("property-labels")
+    load_pid_labels()
 
 def _pickle_cache_read(cache_name):
     pickle_file = os.path.join(CACHE_DIR, cache_name)
@@ -239,13 +242,38 @@ def qid_label(qid):
         return label
     except:
         try:
-            page = requests.get("http://wikidata.org/wiki/" + qid)
-            title = html.fromstring(page.content).xpath('//title/text()')
-            title = title[0][:-10]
-            return title
+            item = pywikibot.ItemPage(pywikibot.Site('wikidata', 'wikidata').data_repository(), qid)
+            item.get()
+            label = item.labels.get(LANG, item.labels[FALLBACK_LANG]) # get the item in the language or in the fallback
+            return label
         except:
             logging.exception("Unexpected exception finding QID label: %s", qid)
             return "Unknown Item Label"
+
+def load_pid_labels():
+    """Load all the labels in LIST into the cache"""
+    global PID_CACHE
+    prop_list = LIST.properties()
+    ids = []
+    for prop in prop_list:
+        ids.append(prop[0])
+    try:
+        payload = {
+            'action': 'wbgetentities',
+            'ids': '|'.join(ids),
+            'languages': '|'.join([LANG, FALLBACK_LANG]),
+            'languagefallback': 'true',
+            'props': 'labels',
+            'format': 'json'
+        }
+        page = requests.get('https://www.wikidata.org/w/api.php', params=payload)
+        jpage = page.json()
+        for pid in jpage['entities']:
+            labels=jpage['entities'][pid]['labels']
+            title = labels.get(LANG, labels.get(FALLBACK_LANG))['value']
+            PID_CACHE[pid] = title
+    except:
+        logging.exception("Error loading properties in cache")
 
 def pid_label(pid):
     """Converts property identifier (P###) to a label and updates the cache"""
@@ -254,9 +282,20 @@ def pid_label(pid):
         return PID_CACHE[pid]
     except:
         try:
-            page = requests.get("http://wikidata.org/wiki/Property:"+pid)
-            title = html.fromstring(page.content).xpath('//title/text()')
-            title = title[0][:-10].title()
+            # Use the API in order to get the full Property in JSON with all the language alternatives
+            payload = {
+                'action': 'wbgetentities',
+                'ids': pid,
+                'languages': '|'.join([LANG, FALLBACK_LANG]),
+                'languagefallback': 'true',
+                'props': 'labels',
+                'format': 'json'
+            }
+            page = requests.get('https://www.wikidata.org/w/api.php', params=payload)
+            jpage = page.json()
+            labels=jpage['entities'][pid]['labels']
+            title = labels.get(LANG, labels.get(FALLBACK_LANG))['value']
+            # title = title[0][:-10]
             PID_CACHE[pid] = title
             return title
         except:
@@ -320,12 +359,13 @@ def caching_label(label_id, label, file_name):
 
 def qid_to_basic_details(qid):
     """Input item qid and returns a tuple: (qid, label, description) using WikiDataIntegrator"""
-    opt = wdi_core.WDItemEngine(wd_item_id=qid)
+    item = wdi_core.WDItemEngine(wd_item_id=qid)
+    label = item.get_label(lang=LANG) if item.get_label(lang=LANG) != '' else item.get_label(lang=FALLBACK_LANG)
     return {
-        "id": opt.wd_item_id,
-        "label": opt.get_label().replace("'", "&#39;"),
-        "description": opt.get_description().replace("'", "&#39;"),
-        "aliases": opt.get_aliases()
+        "id": item.wd_item_id,
+        "label": label.replace("'", "&#39;"),
+        "description": (item.get_description(lang=LANG) or item.get_description(lang=FALLBACK_LANG)).replace("'","&#39;"),
+        "aliases": item.get_aliases(lang=LANG) or item.get_aliases(lang=FALLBACK_LANG)
     }
 
 _setup_cache_dir()

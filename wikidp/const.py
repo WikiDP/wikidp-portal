@@ -15,6 +15,9 @@ than multiple hardcoded strings in code.
 """
 
 class ConfKey(object):
-    """Config key string constatnts"""
+    """Config key string constants"""
     LOG_FORMAT = 'LOG_FORMAT'
     LOG_FILE = 'LOG_FILE'
+    WIKIDATA_LANG = 'WIKIDATA_LANG'
+    WIKIDATA_FB_LANG = 'WIKIDATA_FB_LANG'
+    WIKIBASE_LANGUAGE = 'WIKIBASE_LANGUAGE'
