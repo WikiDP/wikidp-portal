@@ -107,9 +107,8 @@ def parse_claims(claim, label, json_details, count, output_dict):
             ref_list = json_details['references'][0]
             for snak in ref_list['snaks-order']:
                 pid = ref_list['snaks'][snak][0]['property']
-                reference.append((pid,
-                                  pid_label(pid),
-                                  parse_by_datatype(ref_list['snaks'][snak][0]['datavalue']['value'])))
+                ref_val = parse_by_datatype(ref_list['snaks'][snak][0]['datavalue']['value'])
+                reference.append((pid, pid_label(pid), ref_val))
                 ref_num += 1
         val = ["error at the "]
         size = 1
