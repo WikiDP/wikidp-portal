@@ -72,7 +72,7 @@
 		<!-- preview page specific -->
 			<div id="preview-div">
 			<div id="header-text">
-				<span id="preview-item-name"><span class="qlabel" its-ta-ident-ref="http://www.wikidata.org/entity/{{selected['label'][0]}}"></span><a class="wd-id" href="https://wikidata.org/wiki/{{selected['label'][0]}}" target="_blank"> ({{selected['label'][0]}})</a></span>
+				<span id="preview-item-name"><span class="qlabel" its-ta-ident-ref="http://www.wikidata.org/entity/{{selected['label'][0]}}">{{selected['label'][1]}}</span><a class="wd-id" href="https://wikidata.org/wiki/{{selected['label'][0]}}" target="_blank"> ({{selected['label'][0]}})</a></span>
 				<br>
 				{% if selected['description'] != []%}
         <span id="preview-item-description" title="{{selected['description']}}">{{selected['description']}}</span>
@@ -89,7 +89,7 @@
 				<div id="claims-div">
 				<div class="table-header-div">
 					<span class="tbl-cat">
-              Current Data About <span class="qlabel" its-ta-ident-ref="http://www.wikidata.org/entity/{{selected['label'][0]}}"></span>
+              Current Data About <span class="qlabel" its-ta-ident-ref="http://www.wikidata.org/entity/{{selected['label'][0]}}">{{selected['label'][1]}}</span>
             </span></div>
             <div id="claims-scroller" class="scroller">
 
@@ -108,8 +108,8 @@
                     <span class="detail-row">
                       {% if clm[2] == 2 %}
                         {% if sub[0][0] == 'Q' %}
-                          <span class="qlabel" its-ta-ident-ref="http://www.wikidata.org/entity/{{sub[0]}}"></span>
-                          <a target="_blank" href="/{{sub[0]}}" class="p_or_q_id">
+                          <span class="qlabel" its-ta-ident-ref="http://www.wikidata.org/entity/{{sub[0]}}">{{sub[1]}}</span>
+                          <a href="/{{sub[0]}}" class="p_or_q_id">
                             ({{ sub[0] }})
                           </a>
                         {% elif sub[0][0] == 'P' %}
@@ -143,7 +143,7 @@
                                 {% else %}
                                     {% if x[2][0][0] == 'Q' %}
                                       <a target="_blank" href="https://wikidata.org/wiki/{{x[2][0]}}"class="">
-		                                    <span class="qlabel" its-ta-ident-ref="http://www.wikidata.org/entity/{{x[2][0]}}"></span>
+		                                    <span class="qlabel" its-ta-ident-ref="http://www.wikidata.org/entity/{{x[2][0]}}">{{x[2][1]}}</span>
 		                                  </a>
                                     {% else %}
                                       <a target="_blank" href="https://wikidata.org/wiki/property:{{x[2][0]}}"class="">
