@@ -1,6 +1,6 @@
-WikiData DP Portal Prototype
+Wikidata DP Portal Prototype
 ==============================
-A prototype for the WikiData digital preservation portal.
+A prototype for the Wikidata digital preservation portal.
 
 Pre-requisites
 --------------
