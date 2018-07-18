@@ -1,0 +1,12 @@
+---
+# Tasks to set up WikiDP Wikibase nginx
+# file: tasks/nginx/main.yml
+
+- name: "INCLUDE ROLE | NGINX Setup for WikiMedia"
+  include_role:
+    name: "nginxinc.nginx"
+  vars:
+    - branch: "{{ wikibase.nginx.branch }}"
+
+- name: "IMPORT | NGINX global configuration."
+  import_tasks: configure.yml

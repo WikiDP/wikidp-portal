@@ -1,0 +1,8 @@
+---
+# tasks file for wikidp.wikibase
+
+- name: "IMPORT | Install and configure MediaWiki and WikiBase."
+  import_tasks: wikibase/main.yml
+
+- name: "IMPORT | Configure and optimize nginx."
+  import_tasks: nginx/main.yml

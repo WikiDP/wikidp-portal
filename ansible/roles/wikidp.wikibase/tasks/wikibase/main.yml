@@ -1,0 +1,14 @@
+---
+# tasks file for wikidp.wikibase
+
+- name: "IMPORT | Install MediaWiki dependencies."
+  import_tasks: dependencies.yml
+
+- name: "IMPORT | Configure PHP-FPM."
+  import_tasks: php-fpm.yml
+
+- name: "IMPORT | Install MediaWiki."
+  import_tasks: mediawiki.yml
+
+- name: "IMPORT | Install Wikibase extension."
+  import_tasks: wikibase.yml

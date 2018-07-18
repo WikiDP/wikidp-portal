@@ -1,0 +1,68 @@
+---
+# tasks file for wikidp.wikibase
+
+- name: "WIKIBASE | Create local git directory."
+  file:
+    path: "{{ wikibase.mediawiki.extensions_dir }}/Wikibase"
+    state: directory
+    mode: 0755
+    owner: "{{ wikidp_user }}"
+    group: "{{ wikidp_group }}"
+
+- name: "WIKIBASE | Cloning {{ wikidp_git_remote }}/{{ wikidp_git_version }} to {{ wikidp_git_local }}."
+  git:
+    repo: "https://github.com/wikimedia/mediawiki-extensions-Wikibase.git"
+    dest: "{{ wikibase.mediawiki.extensions_dir }}/Wikibase"
+    version: "REL1_30"
+    update: true
+  become: true
+  become_user: "{{ wikidp_user }}"
+
+- name: "WIKIBASE | Composer install Wikibase extension."
+  composer:
+    command: install
+    working_dir: "{{ wikibase.mediawiki.extensions_dir }}/Wikibase"
+
+- name: "WIKIBASE | Adding wikibase extension lines to LocalSettings.php"
+  blockinfile:
+    path: "{{ wikibase.mediawiki.install.dir}}/LocalSettings.php"
+    insertafter: "EOF"
+    block: |
+      $wgEnableWikibaseRepo = true;
+      $wgEnableWikibaseClient = true;
+      require_once "$IP/extensions/Wikibase/repo/Wikibase.php";
+      require_once "$IP/extensions/Wikibase/repo/ExampleSettings.php";
+      require_once "$IP/extensions/Wikibase/client/WikibaseClient.php";
+      require_once "$IP/extensions/Wikibase/client/ExampleSettings.php";
+
+- name: "WIKIBASE | Run WikiMedia maintenance update."
+  command: >
+    php maintenance/update.php
+  args:
+    chdir: "{{ wikibase.mediawiki.install.dir}}"
+  become: true
+  become_user: "{{ wikidp_user }}"
+
+- name: "WIKIBASE | Run Wikibase site population script."
+  command: >
+    php lib/maintenance/populateSitesTable.php
+  args:
+    chdir: "{{ wikibase.mediawiki.extensions_dir }}/Wikibase"
+  become: true
+  become_user: "{{ wikidp_user }}"
+
+- name: "WIKIBASE | Run Wikibase rebuild maintenance script."
+  command: >
+    php repo/maintenance/rebuildItemsPerSite.php
+  args:
+    chdir: "{{ wikibase.mediawiki.extensions_dir }}/Wikibase"
+  become: true
+  become_user: "{{ wikidp_user }}"
+
+- name: "WIKIBASE | Run Wikibase populateInterwiki maintenance script."
+  command: >
+    php client/maintenance/populateInterwiki.php
+  args:
+    chdir: "{{ wikibase.mediawiki.extensions_dir }}/Wikibase"
+  become: true
+  become_user: "{{ wikidp_user }}"

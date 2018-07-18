@@ -1,0 +1,44 @@
+---
+# tasks file for wikidp.wikibase
+
+- name: "PHP-FPM | Customise PHP ini"
+  template:
+    src: "php/etc/php/fpm/php.ini.j2"
+    dest: "{{ wikibase.php.fpm.ini }}"
+    owner: "root"
+    mode: 0644
+  notify: restart php7-fpm
+
+- name: "PHP-FPM | Create configuration"
+  template:
+    src: "php/etc/php/fpm/php-fpm.conf.j2"
+    dest: "{{ wikibase.php.fpm.conf }}"
+    owner: "root"
+    mode: 0644
+  notify: restart php7-fpm
+
+- name: "PHP | Remove default PHP-FPM pool."
+  file:
+    path: "{{ wikibase.php.fpm.default_pool }}"
+    state: absent
+  notify: restart php7-fpm
+
+- name: "PHP | Writing PHP-FPM pool configs."
+  template:
+    src: "php/etc/php/fpm/pool.d/pool.conf.j2"
+    dest: "{{ wikibase.php.fpm.pool_base }}/{{ item.key }}.conf"
+    owner: "root"
+    mode: 0644
+  with_dict: "{{ wikibase.php.fpm.pools }}"
+  notify: restart php7-fpm
+  tags:
+    - "php-fpm"
+    - "install"
+
+- name: "PHP | Install Composer"
+  get_url:
+    url: https://getcomposer.org/composer.phar
+    dest: "{{ wikibase.php.composer }}"
+    mode: 0755
+    owner: "root"
+    group: "staff"

@@ -14,6 +14,7 @@ hostname: "{{ hostdomain }}"
 
 # Use the default vagrant user
 wikidp_user: "vagrant"
+wikibase_user: "vagrant"
 # Use our shared project root development directory as our local git repo
 wikidp_git_local: "/vagrant"
 # Please don't update the local repo, the developer should do this
