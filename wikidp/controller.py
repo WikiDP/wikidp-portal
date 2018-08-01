@@ -13,7 +13,7 @@
 import logging
 import re
 
-from flask import render_template, request, json
+from flask import render_template, request, json, redirect
 from wikidp import APP
 from wikidp.const import ConfKey
 from wikidp.model import FileFormat, PuidSearchResult
@@ -50,9 +50,14 @@ def search_puid(puid):
     return render_template('puid_results.html', results=results, puid=puid)
 
 @APP.route("/search", methods=['POST'])
+def process_search_url():
+    """Processes search request into a state-saving url."""
+    return redirect('/search?string='+request.form['userInput'].strip())
+
+@APP.route("/search")
 def search_results_page():
     """Displays the most likely results of a users search."""
-    _input = request.form['userInput'].strip()
+    _input = request.args.get('string', default = 0, type = str)
     # Check if searching with PUID
     try:
         if re.search("[x-]?fmt/\d+", _input) != None:
@@ -70,18 +75,9 @@ def search_results_page():
     return render_template('search_results.html', options=options)
 
 @APP.route("/preview", methods=['POST'])
-def preview_selected_page():
+def process_preview_page():
     """Show a preview of a selected search result."""
-    options = json.loads(request.form['optionList'])
-    preview_item = DF.item_detail_parse(request.form['qid'])
-    return render_template('preview-item.html', selected=preview_item, options=options)
-
-@APP.route("/contribute", methods=['POST'])
-def contribute_selected_page():
-    """Handles a user's contributed statements."""
-    options = json.loads(request.form['optionList'])
-    preview_item = DF.item_detail_parse(request.form['qid'])
-    return render_template('contribute.html', selected=preview_item, options=options)
+    return redirect('/'+request.form['qid']+'?options='+request.form['optionList'])
 
 @APP.route("/q<id>")
 @APP.route("/Q<id>")
@@ -89,9 +85,32 @@ def selected_item(id):
     """If the item ID is already known, the user can enter in the url"""
     qid = 'Q'+id
     preview_item = DF.item_detail_parse(qid)
-    basic_details = DF.qid_to_basic_details(qid)
-    options = [[qid, basic_details['label'], basic_details['description']]]
+    options = request.args.get('options', default = 0, type = str)
+    if type(options) is str:
+        options = json.loads(options)
+    else:
+        basic_details = DF.qid_to_basic_details(qid)
+        options = [[qid, basic_details['label'], basic_details['description']]]
     return render_template('preview-item.html', selected=preview_item, options=options)
+
+@APP.route("/contribute", methods=['POST'])
+def process_contribute_url():
+    """Processes contribute page into a state-saving url."""
+    return redirect('/contribute?qid='+request.form['qid']+'&options='+request.form['optionList'])
+
+@APP.route("/contribute")
+def contribute_selected_page():
+    """Handles a user's contributed statements."""
+    qid = request.args.get('qid', type = str)
+    preview_item = DF.item_detail_parse(qid)
+    options = request.args.get('options', default = 0, type = str)
+    if type(options) is str:
+        options = json.loads(options)
+    else:
+        basic_details = DF.qid_to_basic_details(qid)
+        options = [[qid, basic_details['label'], basic_details['description']]]
+    return render_template('contribute.html', selected=preview_item, options=options)
+
 
 @APP.route("/api-load-item", methods=['POST'])
 def api_load_item():
