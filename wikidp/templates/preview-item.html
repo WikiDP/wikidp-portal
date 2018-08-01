@@ -27,7 +27,7 @@
 				<!-- property overview -->
 				<div class="property-overview-div">
 					<div class="sidebar-header">property checklist</div>
-					<div id="sidebar-property-scroller">
+					<div id="sidebar-property-scroller" class="scroller">
 					<ul id="sidebar-property-list" value="">
 						{% for property in selected['properties'] %}
   							{% if property[2] == 0%}
@@ -72,18 +72,26 @@
 		<!-- preview page specific -->
 			<div id="preview-div">
 			<div id="header-text">
-				<span id="preview-item-name">{{selected['label'][1]}}<a class="wd-id" href="https://wikidata.org/wiki/{{selected['label'][0]}}" target="_blank"> ({{selected['label'][0]}})</a></span>
+				<span id="preview-item-name"><span class="qlabel" its-ta-ident-ref="http://www.wikidata.org/entity/{{selected['label'][0]}}"></span><a class="wd-id" href="https://wikidata.org/wiki/{{selected['label'][0]}}" target="_blank"> ({{selected['label'][0]}})</a></span>
 				<br>
 				{% if selected['description'] != []%}
         <span id="preview-item-description" title="{{selected['description']}}">{{selected['description']}}</span>
         {% endif %}
+				<div id="languageSelectDiv">
+					Language:
+					<select name="" id="languageSelect">
+						<option value="en">English</option>
+						<option value="fr">French</option>
+						<option value="es">Spanish</option>
+					</select>
+				</div>
 			</div>
 				<div id="claims-div">
 				<div class="table-header-div">
 					<span class="tbl-cat">
-              Current Data About {{selected['label'][1]}}
+              Current Data About <span class="qlabel" its-ta-ident-ref="http://www.wikidata.org/entity/{{selected['label'][0]}}"></span>
             </span></div>
-            <div id="claims-scroller">
+            <div id="claims-scroller" class="scroller">
 
 							<table  class="table claims-table table-responsive table-striped table-hover">
 
@@ -91,22 +99,22 @@
               <tr>
                 <td class="invert-col">
                   {{ clm[1] }}
-                  <a target="_blank" href="https://wikidata.org/wiki/property:{{clm[0]}}" class="p_or_q_id">
+                  <a target="_blank" href="https://wikidata.org/wiki/property:{{clm[0]}}" class="">
                     ({{clm[0]}})
                   </a>
                 </td>
                 <td>
                   {% for sub in selected['claims'][clm] %}
                     <span class="detail-row">
-                      {% if clm[2] == 2%}
+                      {% if clm[2] == 2 %}
                         {% if sub[0][0] == 'Q' %}
-                          {{ sub[1] }}
+                          <span class="qlabel" its-ta-ident-ref="http://www.wikidata.org/entity/{{sub[0]}}"></span>
                           <a target="_blank" href="/{{sub[0]}}" class="p_or_q_id">
                             ({{ sub[0] }})
                           </a>
                         {% elif sub[0][0] == 'P' %}
                           {{ sub[1] }}
-                          <a target="_blank" href="https://wikidata.org/wiki/property:{{sub[0]}}" class="p_or_q_id">
+                          <a target="_blank" href="https://wikidata.org/wiki/property:{{sub[0]}}" class="">
                             ({{sub[0]}})
                           </a>
                         {% endif %}
@@ -125,7 +133,7 @@
                             <tr>
                               <td>
                                 {{ x[1] }}
-                                <a target="_blank" href="https://wikidata.org/wiki/property:{{x[0]}}" class="p_or_q_id">
+                                <a target="_blank" href="https://wikidata.org/wiki/property:{{x[0]}}" class="">
                                   ({{ x[0] }})
                                 </a>
                               </td>
@@ -133,15 +141,16 @@
                                 {% if x[2] is string %}
                                   {{x[2]}}
                                 {% else %}
-                                  <a target="_blank"
                                     {% if x[2][0][0] == 'Q' %}
-                                      href="https://wikidata.org/wiki/{{x[2][0]}}"
+                                      <a target="_blank" href="https://wikidata.org/wiki/{{x[2][0]}}"class="">
+		                                    <span class="qlabel" its-ta-ident-ref="http://www.wikidata.org/entity/{{x[2][0]}}"></span>
+		                                  </a>
                                     {% else %}
-                                      href="https://wikidata.org/wiki/property:{{x[2][0]}}"
+                                      <a target="_blank" href="https://wikidata.org/wiki/property:{{x[2][0]}}"class="">
+		                                    {{x[2][0]}}
+		                                  </a>
                                     {% endif %}
-                                  class="">
-                                    {{x[2][1]}}
-                                  </a>
+
                                 {% endif %}
                               </td>
                             </tr>
@@ -165,7 +174,7 @@
 				<span class="tbl-cat">
             other details
           </span></div>
-          <div id="other-info-scroller">
+          <div id="other-info-scroller" class="scroller">
           <table class="selected-table table-responsive table-striped table-hover">
             {%if selected['aliases'] != []%}
               <tr>
@@ -190,7 +199,7 @@
               </tr>
             {%endif%}
           </table>
-          {%if selected['aliases'] != []%}
+          {%if selected['ex-ids'] != []%}
           <br>
 
 					<span class="tbl-cat">External Links </span>
@@ -199,7 +208,7 @@
               <tr>
                 <td>
                   {{p[1]}}
-                  <a target="_blank" href="https://wikidata.org/wiki/property:{{p[0]}}" class="p_or_q_id">
+                  <a target="_blank" href="https://wikidata.org/wiki/property:{{p[0]}}" class="">
                     ({{ p[0] }})
                   </a>
                 </td>
@@ -227,6 +236,7 @@
 </table>
 
 <script type="text/javascript">
+var LANG = 'en';
 	$(document).ready(function(){
 		$('img.property-image').fadeIn(4000)
 	})
@@ -273,7 +283,14 @@ var form = $('<form action="/contribute" method="post">' +
   '</form>').hide(0);
 pageTransition(form)
 	})
-
+	$('.scroller').scroll(function()
+	{
+			$.qLabel.switchLanguage(LANG);
+	});
+	$('#languageSelect').change(function(){
+		LANG = $('#languageSelect').val()
+		$.qLabel.switchLanguage(LANG);
+	})
 </script>
 
 

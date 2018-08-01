@@ -27,6 +27,11 @@ input{
 }
 table {
     width: 100%;
+    table-layout: fixed;
+}
+
+td {
+    word-wrap: break-word;
 }
 div.page-container {
     height: calc(100% - 50px);
@@ -186,6 +191,9 @@ div#panel-frame div {
 }
 table.ex-links-table a {
     color: #ff00bc;
+}
+select#languageSelect {
+    background: none;
 }
 #claims-scroller a {
     color: #ff00bc;
@@ -388,7 +396,7 @@ div#preview-div {
 }
 
 div#header-text {
-    height: 100px;
+    height: 120px;
     width: calc(100%);
     padding: 0px 10%;
     white-space: nowrap;
