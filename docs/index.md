@@ -17,3 +17,7 @@ We need to create statements on software items using readable file format (P1072
 This information is available from the software itself. It is also sometimes described in the user manual or on a website about the software.
 #### Reference example
 This is an item with relatively complete information about how it relates to file formats: GIMP (Q8038). 
+
+### Work from a list
+
+[File formats with info from Just Solve Wiki](https://www.wikidata.org/wiki/User:YULdigitalpreservation/FileFormatsList)
