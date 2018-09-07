@@ -14,6 +14,10 @@ This application will allow you to find the correct Wikidata item for software o
 
 ### Step 1: Find Item
 
+#### Searching Tips
+Word Perfect
+WordPerfect
+
 ### Step 2: Contribute statements
 
 ### Step 3: 
