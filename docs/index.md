@@ -52,7 +52,7 @@ If you find an item for a software developer that does not yet have many stateme
 
 Follow the link from the value for [MobyGames company ID](https://www.wikidata.org/wiki/Property:P4773) on the item for the developer to see the Moby Games page for the company. Thank you for making the information in Wikidata more complete! 
 
-Here is a SPARQL query to find all Wikidata items that have a statment using [MobyGames company ID](https://www.wikidata.org/wiki/Property:P4773). Copy the text of the query and paste it into the Wikidata Query Service SPARQL endpoint.
+Here is a SPARQL query to find all Wikidata items that have a statment using [MobyGames company ID](https://www.wikidata.org/wiki/Property:P4773). Copy the text of the query and paste it into the [Wikidata Query Service SPARQL endpoint](https://query.wikidata.org).
 
 ### Work from a list
 
