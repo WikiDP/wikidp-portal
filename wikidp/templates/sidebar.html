@@ -1,0 +1,56 @@
+<div id="sidebar-div">
+  <!-- action buttons-->
+  <div class="actions-div">
+    <ul id="sidebar-action-list" value="">
+      <li class="sidebar-action-li" id="explore-action">
+        explore
+      </li>
+      <li class="sidebar-action-li {% if page == 'preview' %}preview-on{% endif %}" id="preview-action">
+        preview
+      </li>
+      <li class="sidebar-action-li {% if page == 'contribute' %}contribute-on{% endif %}" id="contribute-action" onclick="">
+        contribute
+      </li>
+    </ul>
+  </div>
+  <!-- selected item -->
+  <div class="selected-item-div">
+    <div class="sidebar-header">selected item</div>
+    <select id="option-select" value="">
+    {% for option in options %}
+    {% if option[0] != selected['label'][0] %}
+
+    <option class="item-option" data-qid="{{option[0]}}"  data-label="{{option[1]}}" data-description="{{option[2]}}" title="{{option[2]}}" value="{{option[0]}}">
+      {{option[1]}}<span class="select-item-id"> ({{option[0]}})</span>
+    </option>
+    {% else %}
+    <option class="item-option" data-qid="{{option[0]}}"  data-label="{{option[1]}}" data-description="{{option[2]}}" title="{{option[2]}}" value="{{option[0]}}" selected="true">
+      {{option[1]}}<span class="select-item-id"> ({{option[0]}})</span>
+    </option>
+    {% endif %}
+    {% endfor %}
+    </select>
+  </div>
+
+  <!-- property overview -->
+  <div class="property-overview-div">
+    <div class="sidebar-header">property checklist</div>
+    <div id="sidebar-property-scroller" class="scroller">
+    <ul id="sidebar-property-list" value="">
+      {% for property in selected['properties'] %}
+          {% if property[2] == 0%}
+            <li class="sidebar-property-li">
+              <span title="{{property[1]}} ({{property[0]}})" data-content-start="{{property[1]}} ({{property[0]}}) "
+data-content-end=  ""></span>: 0
+
+            </li>
+          {% else %}
+            <li class="sidebar-property-li property-ok">
+              <span title="{{property[1]}} ({{property[0]}})" data-content-start="{{property[1]}} ({{property[0]}}) "
+data-content-end=  ""></span>: {{property[2]}}
+            </li>
+          {% endif %}
+        {% endfor %}
+    </ul></div>
+  </div>
+</div>
