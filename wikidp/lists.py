@@ -17,18 +17,18 @@ def properties():
     				 ]
     property_values = ["P31", "P361", "P144", "P1365", "P178"]
     return softwareList
-        fileFormatList = [("P856", "url"),
-    				 ("P178", "item"),
-                     ("P577", "date"),    
-                     ("P348", "string"),
-    				 ("P1195", "string"),
-                     ("P1163", "string"),
-    				 ("P144", "item"),
-    				 ("P4152", "string"),
-    				 ("P2748", "ex-id"),
-    				 ("P3266", "string"),
-                     ("P973", "item"),     
-    				 ("P3381", "string")
+    fileFormatList = [("P856", "url"),
+				 ("P178", "item"),
+                 ("P577", "date"),
+                 ("P348", "string"),
+				 ("P1195", "string"),
+                 ("P1163", "string"),
+				 ("P144", "item"),
+				 ("P4152", "string"),
+				 ("P2748", "ex-id"),
+				 ("P3266", "string"),
+                 ("P973", "item"),
+				 ("P3381", "string")
     				 ]
     property_values = ["P31", "P361", "P144", "P178"]
     return fileFormatList
