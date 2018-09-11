@@ -18,9 +18,13 @@ setup(
     include_package_data=True,
     install_requires=[
         'flask==0.12.2',
-        'wikidataintegrator==0.0.481',
+        'wikidataintegrator',
         'lxml==3.7.3',
-        'pywikibot==3.0.20180204'
+        'pandas',
+        'pywikibot',
+        'pylint',
+        'pytest',
+        'tqdm'
         #
         # carl@openpreservation.org removed these dependencies as almost certainly
         # unused on 2nd Oct 2017, commenting for safety.
