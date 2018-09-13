@@ -20,7 +20,7 @@ WordPerfect
 
 ### Step 2: Contribute statements
 
-### Step 3: 
+### Step 3: Add references
 
 
 
@@ -82,3 +82,5 @@ External id properties have their own data type and are used to link out to data
 ### Work from a list
 
 [File formats with info from Just Solve Wiki](https://www.wikidata.org/wiki/User:YULdigitalpreservation/FileFormatsList)
+
+### Source code repository
