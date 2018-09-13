@@ -57,28 +57,29 @@ Here is a SPARQL query to find all Wikidata items that have a statment using [Mo
 
 External id properties have their own data type and are used to link out to datasets beyond Wikidata.
 
-   [AUR package (P4162)](https://www.wikidata.org/wiki/Property:P4162)
-    [Arch Linux package (P3454)](https://www.wikidata.org/wiki/Property:P3454)
-   [Debian stable package (P3442)](https://www.wikidata.org/wiki/Property:P3442)
-   [DistroWatch ID (P3112)](https://www.wikidata.org/wiki/Property:P3112)
-    [F-Droid package (P3597)](https://www.wikidata.org/wiki/Property:P3597)
-    [Fedora package (P3463)](https://www.wikidata.org/wiki/Property:P3463)
-    [Framalibre ID (P4107)](https://www.wikidata.org/wiki/Property:P4107)
-    [Free Software Directory entry](https://www.wikidata.org/wiki/Property:P2537)
-    [Gentoo package (P3499)](https://www.wikidata.org/wiki/Property:P3499)
-    [Google Play Store App ID (P3418)](https://www.wikidata.org/wiki/Property:P3418)
-    [Hall of Light Amiga database ID (P4671)](https://www.wikidata.org/wiki/Property:P4671)
-    [MAC Address Block Large ID (P4776)](https://www.wikidata.org/wiki/Property:P4776)
-    [Nintendo Game Store ID (P4685)](https://www.wikidata.org/wiki/Property:P4685)
-    [PRONOM software identifier (P2749)](https://www.wikidata.org/wiki/Property:P2749)
-    [Rosetta Code ID (P5047)](https://www.wikidata.org/wiki/Property:P5407)
-    [SourceForge project (P2209)](https://www.wikidata.org/wiki/Property:P2209)
-    [Stack Exchange tag (P1482)]
-    [Twitter hashtag (P2572)]
-    [Ubuntu package (P3473)]
-    [Uniform Resource Identifier Scheme (P4742)]
-    [crates.io ID (P4763)]
-    [snap package (P4435)]
+   * [AUR package (P4162)](https://www.wikidata.org/wiki/Property:P4162)
+   * [Arch Linux package (P3454)](https://www.wikidata.org/wiki/Property:P3454)
+   * [Debian stable package (P3442)](https://www.wikidata.org/wiki/Property:P3442)
+  * [DistroWatch ID (P3112)](https://www.wikidata.org/wiki/Property:P3112)
+   * [F-Droid package (P3597)](https://www.wikidata.org/wiki/Property:P3597)
+   * [Fedora package (P3463)](https://www.wikidata.org/wiki/Property:P3463)
+   * [Framalibre ID (P4107)](https://www.wikidata.org/wiki/Property:P4107)
+   * [Free Software Directory entry](https://www.wikidata.org/wiki/Property:P2537)
+   * [Gentoo package (P3499)](https://www.wikidata.org/wiki/Property:P3499)
+   * [Google Play Store App ID (P3418)](https://www.wikidata.org/wiki/Property:P3418)
+   * [Hall of Light Amiga database ID (P4671)](https://www.wikidata.org/wiki/Property:P4671)
+   * [MAC Address Block Large ID (P4776)](https://www.wikidata.org/wiki/Property:P4776)
+   * [Nintendo Game Store ID (P4685)](https://www.wikidata.org/wiki/Property:P4685)
+   * [PRONOM software identifier (P2749)](https://www.wikidata.org/wiki/Property:P2749)
+   * [Rosetta Code ID (P5047)](https://www.wikidata.org/wiki/Property:P5407)
+   * [SourceForge project (P2209)](https://www.wikidata.org/wiki/Property:P2209)
+   * [Stack Exchange tag (P1482)](https://www.wikidata.org/wiki/Property:P1482)
+    * [Twitter hashtag (P2572)](https://www.wikidata.org/wiki/Property:P2572)
+    * [Ubuntu package (P3473)](https://www.wikidata.org/wiki/Property:P3473)
+    * [Uniform Resource Identifier Scheme (P4742)](https://www.wikidata.org/wiki/Property:P4742)
+    * [crates.io ID (P4763)](https://www.wikidata.org/wiki/Property:P4763)
+    * [snap package (P4435)](https://www.wikidata.org/wiki/Property:P4435)
+    
 ### Work from a list
 
 [File formats with info from Just Solve Wiki](https://www.wikidata.org/wiki/User:YULdigitalpreservation/FileFormatsList)
