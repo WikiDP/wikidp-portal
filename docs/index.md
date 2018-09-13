@@ -74,11 +74,11 @@ External id properties have their own data type and are used to link out to data
    * [Rosetta Code ID (P5047)](https://www.wikidata.org/wiki/Property:P5407)
    * [SourceForge project (P2209)](https://www.wikidata.org/wiki/Property:P2209)
    * [Stack Exchange tag (P1482)](https://www.wikidata.org/wiki/Property:P1482)
-    * [Twitter hashtag (P2572)](https://www.wikidata.org/wiki/Property:P2572)
-    * [Ubuntu package (P3473)](https://www.wikidata.org/wiki/Property:P3473)
-    * [Uniform Resource Identifier Scheme (P4742)](https://www.wikidata.org/wiki/Property:P4742)
-    * [crates.io ID (P4763)](https://www.wikidata.org/wiki/Property:P4763)
-    * [snap package (P4435)](https://www.wikidata.org/wiki/Property:P4435)
+   * [Twitter hashtag (P2572)](https://www.wikidata.org/wiki/Property:P2572)
+   * [Ubuntu package (P3473)](https://www.wikidata.org/wiki/Property:P3473)
+   * [Uniform Resource Identifier Scheme (P4742)](https://www.wikidata.org/wiki/Property:P4742)
+   * [crates.io ID (P4763)](https://www.wikidata.org/wiki/Property:P4763)
+   * [snap package (P4435)](https://www.wikidata.org/wiki/Property:P4435)
     
 ### Work from a list
 
