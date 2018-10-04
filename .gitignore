@@ -111,3 +111,6 @@ wikidp/idjc-paper.pages
 
 # Ignore Ansible retry files
 ansible/*.retry
+
+# MAC OS Hidden Files
+.DS_Store
