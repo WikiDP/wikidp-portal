@@ -17,7 +17,7 @@
           <select id="create-claim-property">
             <option class="default" data-type="default" >select a property</option>
             {% for property in selected['properties'] %}
-              <option class="" data-pid="{{property[0]}}" data-count="{{property[2]}}" data-type="{{property[3]}}">
+              <option class="" value="{{property[0]}}"  data-pid="{{property[0]}}" data-count="{{property[2]}}" data-type="{{property[3]}}">
                 {{property[1]}}
               </option>
             {% endfor %}
@@ -28,6 +28,7 @@
       <div id="claims-list">
         <span class="creation-section-header">MY CLAIMS</span><br>
         <ul id="added-claims">
+          <li id="saveClaimsLi" style="display:none"> <button id="saveClaimsBtn" onclick="save_claims()">SAVE TO WIKIDATA</button></li>
         </ul>
       </div>
     </div>
@@ -49,8 +50,13 @@
       form.submit();
     })
   }
+  $('.sidebar-property-li').click(function(){
+    $('#create-claim-property').val($(this).data('pid'));
+    initializeClaim();
+  })
+  function initializeClaim(){
+   var type = $('select#create-claim-property :selected').data('type');
 
-  function initializeClaim(type){
     $('select#create-claim-property option.default').prop('disabled', true)
     console.log('...initialing data-type: '+type);
     var div = $('div#create-claim-value-div').fadeOut(400, function(){
@@ -122,7 +128,7 @@
   })
 
   $('select#create-claim-property').change(function(){
-    initializeClaim($(':selected', this).data('type'));
+    initializeClaim();
   });
 
   function bindAddButton(){
@@ -144,7 +150,7 @@
   function createBasicClaim(pid, pidLabel, value, type) {
   // TODO: NEED LEVEL1 VALIDATION HERE
     var listTemplate = $(`
-      <li class="added-claim-li ${type}">
+      <li class="added-claim-li ${type}" data-pid="${pid}" data-value="${value}" data-type="${type}">
       <div class="row-div">
        <div class="added-property-div">
           ${pidLabel} <a class="wd-id" href="https://wikidata.org/wiki/Property:${pid}" target="_blank"> (${pid})</a></span>
@@ -159,6 +165,17 @@
     $('button#addClaimButton').remove();
     bindAddButton();
   }
+  function serializeClaimList(){
+    var array = $('.added-claim-li').map(function(){
+    return {
+      pid: $(this).data('pid'),
+      type: $(this).data('type'),
+      value: $(this).data('value'),
+    }
+}).get()
+console.log(array)
+return array
+  }
 
   function createItemClaim(pid, pidLabel, item, type) {
     // TODO: NEED LEVEL1 VALIDATION HERE
@@ -167,7 +184,7 @@
       description = 'this item has no description';
     }
     var listTemplate = $(`
-      <li class="added-claim-li ${type}">
+      <li class="added-claim-li ${type}" data-pid="${pid}" data-value="${item.id}" data-type="${type}">
       <div class="row-div">
         <div class="added-property-div">
           ${pidLabel} <a class="wd-id" href="https://wikidata.org/wiki/Property:${pid}" target="_blank"> (${pid})</a></span>
@@ -255,14 +272,37 @@
     }
     switch(type){
       case 'item':
-        validateItem(pid, select.val(), 'Q'+value, type)
+        validateItem(pid,
+        select.text().trim(), 'Q'+value, type)
         break;
       default:
         // TO DO: HAVE A CASE FOR EX-IDS AND URL'S
         console.log('form validated');
-        createBasicClaim(pid, select.val(), value, type);
+        createBasicClaim(pid,
+        select.text().trim(), value, type);
         break;
     }
+    return $('#saveClaimsLi').show()
+  }
+  function save_claims(){
+    var data = serializeClaimList()
+    console.log('STR->', JSON.stringify(data))
+    $.ajax({
+      type: 'POST',
+      url: "/api/{{selected['label'][0]}}/claims/write",
+      dataType: 'json',
+      contentType: 'application/json; charset=utf-8',
+      data: JSON.stringify(data),
+      success: function(response){
+        console.log(response)
+      },
+      error: function(error){
+        console.log(error)
+      }
+
+    })
+
+
   }
 
   $("input#lookup-input").keyup(function(event){

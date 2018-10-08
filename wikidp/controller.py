@@ -19,7 +19,7 @@ from wikidp.const import ConfKey
 from wikidp.model import FileFormat, PuidSearchResult
 from wikidp.lists import properties
 import wikidp.DisplayFunctions as DF
-
+from wikidp.controllers.api import *
 @APP.route("/")
 def welcome():
     """Landing Page for first time"""

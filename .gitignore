@@ -100,14 +100,23 @@ ENV/
 /site
 
 # Application odds and ends
+.pytest_cache/
 apicache/
+apicache-py3/
 throttle.ctrl
 user-config.py
 caches/
 wikidp/idjc-paper.pages
+pywikibot.lwp
 
 # Ingore all vagrant artifacts
 .vagrant*
+
+# Ignore Ansible build directories
+ansible/roles/nginxinc.nginx/
+ansible/roles/tersmitten.apt/
+ansible/roles/tersmitten.timezone/
+ansible/roles/tschifftner.hostname/
 
 # Ignore Ansible retry files
 ansible/*.retry

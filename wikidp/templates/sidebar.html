@@ -39,15 +39,15 @@
     <ul id="sidebar-property-list" value="">
       {% for property in selected['properties'] %}
           {% if property[2] == 0%}
-            <li class="sidebar-property-li">
+            <li class="sidebar-property-li" data-pid="{{property[0]}}">
               <span title="{{property[1]}} ({{property[0]}})" data-content-start="{{property[1]}} ({{property[0]}}) "
-data-content-end=  ""></span>: 0
+data-content-end=  ""></span> <div class="sidebar-property-count">: 0</div>
 
             </li>
           {% else %}
-            <li class="sidebar-property-li property-ok">
+            <li class="sidebar-property-li property-ok" data-pid="{{property[0]}}">
               <span title="{{property[1]}} ({{property[0]}})" data-content-start="{{property[1]}} ({{property[0]}}) "
-data-content-end=  ""></span>: {{property[2]}}
+data-content-end=  ""></span> <div class="sidebar-property-count">: {{property[2]}} </div>
             </li>
           {% endif %}
         {% endfor %}
