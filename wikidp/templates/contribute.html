@@ -204,8 +204,7 @@ return array
   }
 
   function validateItem(pid, pidLabel, qid, type){
-    $.post("/api-get-qid-label", {qid:qid}, function(response){
-      response = JSON.parse(response);
+    $.get(`/api/${qid}/label`,  function(response){
       console.log(response);
       createItemClaim(pid, pidLabel, response, type);
     }).fail(function(error){
@@ -215,8 +214,7 @@ return array
 
   function lookupItem(string){
     var list = $('ul#lookup-results-list').hide(1000);
-    $.post("/api-lookup-item", {string:string}, function(response){
-      response = JSON.parse(response)
+    $.get("/api/search/"+string, function(response){
       console.log(response)
       list.empty()
       for (var opt = 0; opt < response.length; opt++){

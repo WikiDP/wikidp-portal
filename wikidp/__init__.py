@@ -32,4 +32,4 @@ logging.debug("Application configured with languages=%s", APP.config[ConfKey.WIK
 
 # Import the application routes
 logging.info("Setting up application routes")
-import wikidp.controller
+import wikidp.run
