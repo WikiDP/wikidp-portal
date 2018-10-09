@@ -1,5 +1,5 @@
 from wikidp import APP
-from flask import render_template, request
+from flask import render_template, request, redirect
 from wikidp.controllers import pages as pages_controller
 
 @APP.route("/")
