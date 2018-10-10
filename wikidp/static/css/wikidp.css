@@ -211,8 +211,9 @@ div#sidebar-div {
     height: 100%;
     padding: 0;
     position: relative;
+    overflow-y: scroll;
 }
-div#sidebar-frame select#option-select {
+div#sidebar-frame select#option-select, div#sidebar-frame select#schema-select {
     width: 95%;
     background: none;
     color: white;
@@ -238,29 +239,30 @@ div#sidebar-frame select#option-select {
 
 div#content-frame {
     width: 85%;
-    height: 100%;
+    min-height: 100%;
     padding-top: 20px;
     color: white;
+    overflow-y: scroll;
 }
 
 
-select#option-select {
+select#option-select, select#schem-select {
     width: 95%;
 }
 
 
 .property-overview-div {
-	    height: calc(100% - 236px);
+	    /* height: calc(100% - 236px); */
 	    /*overflow-y: scroll;*/
-	margin: 0 5px;
-    padding: 15px 5px;
-    color: white;
-    font-size: 13px;
-    font-weight: 400;
-    letter-spacing: 1px;
-    line-height: 1.8;
-    border-bottom: 1px solid rgba(220, 220, 220, 0.63);
-    border-top: 1px solid rgba(220, 220, 220, 0.63);
+	    margin: 0 5px;
+	    padding: 15px 5px;
+	    color: white;
+	    font-size: 13px;
+	    font-weight: 400;
+	    letter-spacing: 1px;
+	    line-height: 1.8;
+	    border-bottom: 1px solid rgba(220, 220, 220, 0.63);
+	    border-top: 1px solid rgba(220, 220, 220, 0.63);
 }
 div#sidebar-property-scroller {
     overflow-y: scroll;
@@ -270,6 +272,7 @@ div#sidebar-property-scroller {
     display: block;
     color: rgb(255, 255, 255);
     text-align: left;
+		cursor: pointer;
 }
 .sidebar-property-count {
     display: inline;

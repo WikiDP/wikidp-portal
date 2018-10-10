@@ -10,4 +10,34 @@
     {% endblock item_content %}
   </div>
 </div>
+<script>
+
+function initialize_contribute_property_selector(){
+  options_raw_html = `<option class="default" data-type="default" >select a property</option>`
+  $('.sidebar-property-li').each(function(){
+    var prop_pid = $(this).data('pid')
+    var prop_count = $(this).data('count')
+    var prop_type = $(this).data('type')
+    var prop_label = $(this).data('label')
+    options_raw_html += `
+    <option class="" value="${prop_pid}"  data-pid="${prop_pid}" data-count="${prop_count}" data-type="${prop_type}">
+      ${prop_label}
+    </option>`
+  })
+  $('select#create-claim-property').html(options_raw_html)
+}
+function load_property_checklist_by_schema(schema){
+  console.log('Loading schema-> ', schema)
+  $('ul#sidebar-property-list').html('')
+  $.get('/{{selected['label'][0]}}/checklist/'+schema, function(response){
+    $('ul#sidebar-property-list').html(response)
+    initialize_contribute_property_selector()
+
+  })
+}
+
+  // Initialize property checklist based on default schema:
+  $('select#schema-select').change()
+
+</script>
 {% endblock page_content %}

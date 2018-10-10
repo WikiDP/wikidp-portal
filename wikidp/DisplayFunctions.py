@@ -25,7 +25,6 @@ from wikidataintegrator import wdi_core
 
 from wikidp import APP
 from wikidp.const import ConfKey
-import wikidp.lists as LIST
 
 # Global Variables:
 URL_CACHE, PID_CACHE = {}, {}
@@ -84,14 +83,6 @@ def item_detail_parse(qid):
                                                key=dict_sorting_by_length))
     output_dict['categories'] = sorted(sorted(output_dict['categories']),
                                        key=list_sorting_by_length)
-    prop_list = LIST.properties()
-    for prop in prop_list:
-        instance = [prop[0], pid_label(prop[0]), 0, prop[1]]
-        try:
-            instance[2] = count_dict[prop[0]]
-        except:
-            pass
-        output_dict['properties'].append(instance)
     save_caches()
     output_dict['prop-counts'] = count_dict
     return output_dict
@@ -203,7 +194,6 @@ def load_caches():
 
     URL_CACHE = _pickle_cache_read("url-formats")
     PID_CACHE = _pickle_cache_read("property-labels")
-    load_pid_labels()
 
 def _pickle_cache_read(cache_name):
     pickle_file = os.path.join(CACHE_DIR, cache_name)
@@ -250,30 +240,6 @@ def qid_label(qid):
             logging.exception("Unexpected exception finding QID label: %s", qid)
             return "Unknown Item Label"
 
-def load_pid_labels():
-    """Load all the labels in LIST into the cache"""
-    global PID_CACHE
-    prop_list = LIST.properties()
-    ids = []
-    for prop in prop_list:
-        ids.append(prop[0])
-    try:
-        payload = {
-            'action': 'wbgetentities',
-            'ids': '|'.join(ids),
-            'languages': '|'.join([LANG, FALLBACK_LANG]),
-            'languagefallback': 'true',
-            'props': 'labels',
-            'format': 'json'
-        }
-        page = requests.get('https://www.wikidata.org/w/api.php', params=payload)
-        jpage = page.json()
-        for pid in jpage['entities']:
-            labels=jpage['entities'][pid]['labels']
-            title = labels.get(LANG, labels.get(FALLBACK_LANG))['value']
-            PID_CACHE[pid] = title
-    except:
-        logging.exception("Error loading properties in cache")
 
 def pid_label(pid):
     """Converts property identifier (P###) to a label and updates the cache"""

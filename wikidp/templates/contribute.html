@@ -50,12 +50,13 @@
       form.submit();
     })
   }
-  $('.sidebar-property-li').click(function(){
-    $('#create-claim-property').val($(this).data('pid'));
+  function sidebar_property_click(elm){
+    $('#create-claim-property').val($(elm).data('pid'));
     initializeClaim();
-  })
+  }
+
   function initializeClaim(){
-   var type = $('select#create-claim-property :selected').data('type');
+   var type = $('select#create-claim-property :selected').data('type').toLowerCase();
 
     $('select#create-claim-property option.default').prop('disabled', true)
     console.log('...initialing data-type: '+type);
@@ -67,12 +68,12 @@
             div.append($('<input/>').attr({'placeholder':'enter value here', 'id':'claim-value'}));
             bindAddButton();
             break;
-        case 'ex-id':
+        case 'externalid':
             console.log('EXID');
             div.append($('<input/>').attr({'placeholder':'enter value here', 'id':'claim-value'}));
             bindAddButton();
             break;
-        case 'item':
+        case 'wikibaseitem':
             console.log('ITEM');
             div.append('Q',$('<input/>').attr({'placeholder':'1234', 'id':'claim-value', 'type':'number'}));
             bindAddButton();

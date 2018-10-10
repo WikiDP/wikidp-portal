@@ -19,6 +19,12 @@ from wikidp.routes.forms import *
 from wikidp.routes.search import *
 from wikidp.routes.api import *
 
+from wikidp.utils import remove_extension_from_filename
+@APP.template_filter('file_to_label')
+def filter_file_to_label(filename):
+    output = remove_extension_from_filename(filename)
+    return output.replace('_', ' ').title()
+
 if __name__ == "__main__":
     logging.debug("Running Flask App")
     APP.run(host='0.0.0.0')

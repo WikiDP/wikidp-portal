@@ -27,7 +27,7 @@
 					<table  class="table claims-table table-responsive table-striped table-hover">
 
 				{% for clm in selected['claims']%}
-					<tr>
+					<tr data-pid="{{clm[0]}}">
 						<td class="invert-col">
 							{{ clm[1] }}
 							<a target="_blank" href="https://wikidata.org/wiki/property:{{clm[0]}}" class="">
@@ -172,6 +172,14 @@
 	form.submit();
 	})
 	}
+	function sidebar_property_click(elm){
+		if($(elm).data('count') > 0){
+			$(`.claims-table tr[data-pid="${$(elm).data('pid')}"]`)[0].scrollIntoView({behavior: "smooth"})
+		}
+		else{
+			alert('There are currently no statements with this property recorded. If you know of some to add, click the contribute button to create a statement for this property.')
+		}
+  }
 		$('select#option-select').change(function(){
 			var list = $('option.item-option')
 			var options = []

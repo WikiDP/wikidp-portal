@@ -15,16 +15,17 @@ import re
 
 from flask import render_template, request, json, redirect, jsonify
 from wikidp import APP
+from wikidp.utils import remove_duplicates_from_list, get_pid_from_string
 from wikidp.const import ConfKey
 from wikidp.model import FileFormat, PuidSearchResult
-from wikidp.lists import properties
+from wikidp.controllers import sparql as sparql_controller
 import wikidp.DisplayFunctions as DF
 import pywikibot
 SANDBOX_API_URL = 'https://test.wikidata.org/w/'
 SANDBOX_SPARQL_URL = 'https://test.wikidata.org/proxy/wdqs/bigdata/namespace/wdq/'
 SITE = pywikibot.Site("test", "wikidata")
 REPO = SITE.data_repository()
-
+SCHEMA_DIRECTORY_PATH = 'wikidp/schemas/'
 
 def search_item_by_string(search_string):
     """User posts a string and returns list of json of (id, label, description, aliases)"""
@@ -38,6 +39,43 @@ def get_item_label(qid):
     logging.debug("Processing user POST request.")
     output = DF.qid_to_basic_details(qid)
     return jsonify(output)
+
+def load_schema(schema_name):
+    try:
+        with open(SCHEMA_DIRECTORY_PATH+schema_name) as data_file:
+            return json.load(data_file)
+    except Exception as e:
+        return False
+
+def get_schema_properties(schema_name):
+    try:
+        data = load_schema(schema_name)
+        if data is False:
+            return False
+        exps = []
+        for shape in data['shapes']:
+            if 'expression' in shape:
+                shape_expression = shape['expression']
+                if 'expressions' in shape_expression:
+                    shape_expression_expressions = shape_expression['expressions']
+                    exps += [expression['predicate'] for expression in shape_expression_expressions if 'predicate' in expression and expression['predicate'] not in exps]
+                if 'predicate' in shape_expression and shape_expression['predicate'] not in exps:
+                    exps.append(shape_expression['predicate'])
+        # Extract pids from list
+        exps = [get_pid_from_string(predicate) for predicate in exps if get_pid_from_string(predicate) is not False ]
+        output = remove_duplicates_from_list(exps)
+        return output
+    except Exception as e:
+        return False
+
+def get_property_checklist_from_schema(schema_name, source='client'):
+    pid_list = get_schema_properties(schema_name)
+    if pid_list:
+        property_details = sparql_controller.get_property_details_by_pid_list(pid_list)
+        output = property_details['results']['bindings']
+    else:
+        output = []
+    return jsonify(output) if source is 'client' else output
 
 def write_claims_to_item(qid):
     logging.debug("Processing user POST request.")

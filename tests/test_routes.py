@@ -97,6 +97,18 @@ def test_route_item_contribute(client):
     assert response.status_code == 200
     assert b'Q7715973' in response.data
 
+# TODO: Once a schema is added without a category add a test
+
+def test_route_item_checklist_by_schema__with_category(client):
+    response = client.get('/Q7715973/checklist/file_format/file_format_minimal.json')
+    assert response.status_code == 200
+    assert b'sidebar-property-li' in response.data
+
+def test_route_item_checklist_by_schema__fake_schema(client):
+    response = client.get('/Q7715973/checklist/fake_schema.json')
+    assert response.status_code == 200
+    assert b'no suggested properties in this schema' in response.data
+
 # TODO: FORMS TEST
 
 # SEARCH TESTS
@@ -135,5 +147,27 @@ def test_route_api_get_item_label(client):
     response = client.get('/api/Q7715973/label')
     assert response.status_code == 200
     assert json_response(response)['id'] == 'Q7715973'
+
+
+def test_route_api_get_schema_properties__with_category(client):
+    response = client.get('/api/schema/file_format/file_format_minimal.json/properties')
+    assert response.status_code == 200
+    assert len(json_response(response)) > 0
+    assert 'id' in json_response(response)[0]
+
+# TODO: Once a schema is added without a category add a api test
+
+def test_route_api_get_properties_by_schema__with_category(client):
+    response = client.get('/api/schema/file_format/file_format_minimal.json/properties')
+    assert response.status_code == 200
+    assert len(json_response(response)) > 0
+    assert 'id' in json_response(response)[0]
+
+
+def test_route_api_get_properties_by_schema__fake_schema(client):
+    response = client.get('/api/schema/fake_schema.json/properties')
+    assert response.status_code == 200
+    assert len(json_response(response)) == 0
+    assert json_response(response) == []
 
 # TODO: Test for route_api_write_claims_to_item
