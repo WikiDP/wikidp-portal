@@ -16,7 +16,7 @@
   <!-- selected item -->
   <div class="selected-item-div">
     <div class="sidebar-header">selected item</div>
-    <select id="option-select" value="">
+    <select id="option-select" value=""  aria-label="Select an alternative wikidata item option">
     {% for option in options %}
     {% if option[0] != selected['label'][0] %}
 
@@ -34,7 +34,7 @@
   <!-- schema gallery -->
   <div class="schema-gallery-div">
     <div class="sidebar-header">selected schema</div>
-    <select id="schema-select" value="" onchange="load_property_checklist_by_schema(this.value)">
+    <select id="schema-select" value="" aria-label="Select a Property Checklist Schema" onchange="load_property_checklist_by_schema(this.value)">
       {% for schema in schemas %}
         {% if schema is string %}
           <option class="item-schema" data-schema_name="{{schema}}"  title="{{schema | file_to_label }}" value="{{schema}}">

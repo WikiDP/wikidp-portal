@@ -216,17 +216,18 @@ div#sidebar-div {
 div#sidebar-frame select#option-select, div#sidebar-frame select#schema-select {
     width: 95%;
     background: none;
-    color: white;
+    color: #3a3a3a;
     font-size: 20px;
     font-weight: 300;
     letter-spacing: 1px;
     outline: none;
-    border: 1px solid rgba(84, 84, 84, 0.34);
+    border: none;
+    margin: 5px;
 }
 
 .sidebar-header {
     /*color: rgba(45, 116, 117, 0.61);*/
-    color: rgba(58, 58, 58, 0.33);
+    color: rgba(58, 58, 58, 1);
     letter-spacing: 2px;
     font-size: 14px;
     font-weight: 500;
@@ -254,7 +255,7 @@ select#option-select, select#schem-select {
 .property-overview-div {
 	    /* height: calc(100% - 236px); */
 	    /*overflow-y: scroll;*/
-	    margin: 0 5px;
+	    margin: 10px 5px;
 	    padding: 15px 5px;
 	    color: white;
 	    font-size: 13px;
@@ -524,11 +525,12 @@ div#statement-creation-frame ul {
 
 }
 div#creation-div {
-    background: #455b6d;
-    height: 100px;
+    background: #32434f;
+    min-height: 100px;
     /* border-bottom: 1px solid; */
     margin-bottom: 15px;
     opacity: 1;
+    padding: 20px 0;
 }
 div#creation-div:hover, div#creation-div:focus {
     opacity: 1;
@@ -568,8 +570,9 @@ button#addClaimButton.off {
 
 
 div#claims-list {
-	background: #455b6d;
+	background: #32434f;
 	min-height: calc(100% - 115px);
+	padding: 20px 0;
 }
 
 div#lookup-header-div {
@@ -578,7 +581,7 @@ div#lookup-header-div {
     letter-spacing: 1px;
     text-transform: uppercase;
     font-size: 12px;
-    padding-top:  5px;
+    padding-top: 20px;
 }
 
 span.creation-section-header{
@@ -749,6 +752,10 @@ div.about-page, div.reports-page {
 }
 div.about-page .center, div.reports-page .center{
     text-align: center;
+}
+.about-page a {
+	color: #95dcff;
+	font-weight: 400;
 }
 /*End About Page*/
 /*Reports Page */

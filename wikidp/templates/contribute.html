@@ -14,7 +14,7 @@
         <span class="creation-section-header">CREATE A CLAIM</span><br>
         <span class="creation-section-subtitle">Select a property below and we will provide you with a pre-formatted textbox.</span><br>
           <div id="creation-content-div"><div id="creation-property-div">
-          <select id="create-claim-property">
+          <select id="create-claim-property"  aria-label="Select a Property">
             <option class="default" data-type="default" >select a property</option>
             {% for property in selected['properties'] %}
               <option class="" value="{{property[0]}}"  data-pid="{{property[0]}}" data-count="{{property[2]}}" data-type="{{property[3]}}">
@@ -35,7 +35,7 @@
     <div class="" id="lookup-panel">
       <div id="lookup-header-div">
         looking for an item id?<br>
-         <input id="lookup-input" type=" " name="" placeholder="search here">
+         <input id="lookup-input" type=" " name="" aria-label="Item Lookup Input" placeholder="search here">
       </div>
       <div id="lookup-results-div">
         <ul id="lookup-results-list">
