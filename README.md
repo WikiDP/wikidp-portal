@@ -85,19 +85,24 @@ export WIKIDP_BOT_PASSWORD='<password>'
 
 Point your browser to http://127.0.0.1:5000 and you should see the prototype of the portal.
 
-Testing
+Testing the application
 --------------
-All Tests are currently in the tests/ directory. We use py.test to manage our testing interface.
+All Tests are currently in the _tests/_ directory. We use py.test to manage our testing interface.
 
-### Running test
+### Running Tests
 ````bash
 (venv) $ pytest
 ````
 
-### Checking coverage
+### Checking test coverage
 We have provided a bash script to handle the coverage reporting
 ````bash
 (venv) $ ./coverage_report.sh
+````
+If you would prefer a more visual web-interface for the coverage report,
+this creates an _htmlcov/index.html_ file for browser viewing
+````bash
+(venv) $ ./coverage_report.sh visual
 ````
 
 
