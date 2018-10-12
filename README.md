@@ -82,8 +82,26 @@ There's a script that you can use for this in the project root, `run.sh`. You'll
 export WIKIDP_BOT_USER='<username>'
 export WIKIDP_BOT_PASSWORD='<password>'
 ````
-    
+
 Point your browser to http://127.0.0.1:5000 and you should see the prototype of the portal.
+
+Testing
+--------------
+All Tests are currently in the tests/ directory. We use py.test to manage our testing interface.
+
+### Running test
+````bash
+(venv) $ pytest
+````
+
+### Checking coverage
+We have provided a bash script to handle the coverage reporting
+````bash
+(venv) $ ./coverage_report.sh
+````
+
+
+
 
 Troubleshooting
 --------------
@@ -98,4 +116,4 @@ If you see something like:
 
 You need to set the FLASK_APP environment variable, see Quick Start above.
 
-This code is released under the GPLv3 license. 
+This code is released under the GPLv3 license.

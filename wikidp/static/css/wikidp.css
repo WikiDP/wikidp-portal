@@ -569,7 +569,7 @@ button#addClaimButton.off {
 
 div#claims-list {
 	background: #455b6d;
-	height: calc(100% - 115px);
+	min-height: calc(100% - 115px);
 }
 
 div#lookup-header-div {
@@ -586,6 +586,7 @@ span.creation-section-header{
     font-weight: bold;
     letter-spacing: 2px;
     font-size: 18px;
+    margin-top: 40px;
 }
 span.creation-section-subtitle {
     font-weight: 100;
@@ -621,36 +622,44 @@ div.added-property-div {
     flex: 1;
     display: inline-block;
     padding: 15px;
+    background: #747b80;
 }
-li.string div.added-property-div {
+li.String div.added-property-div {
     background: #4bded4;
 }
 li.url div.added-property-div {
     background: #9864cc;
 }
-li.item div.added-property-div {
+li.WikibaseItem div.added-property-div {
     background: rgb(228, 174, 43);
 }
+li.ExternalId div.added-property-div {
+    background: #ce3c55;
+}
 div.added-value-div {
-	line-height: 1.2;
-	position: relative;
+    line-height: 1.2;
+    position: relative;
     width: 70%;
     display: inline-block;
     padding: 15px;
     flex:3;
+    background: #676e73c4;
 }
 #added-claims li i {
     font-size: 12px;
     letter-spacing: 1.5px;
 }
-li.string div.added-value-div {
+li.String div.added-value-div {
     background: rgba(76, 221, 211, 0.5);
 }
 li.url div.added-value-div {
     background: rgba(171, 114, 230, 0.43);
 }
-li.item div.added-value-div {
+li.WikibaseItem div.added-value-div {
     background: rgba(228, 174, 43, 0.7);
+}
+li.ExternalId div.added-value-div {
+    background: #d63056b5;
 }
 input#lookup-input {
 	padding-top: 10px;

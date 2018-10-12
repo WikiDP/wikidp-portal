@@ -25,8 +25,7 @@ REPO = SITE.data_repository()
 
 import pytest
 from wikidp import APP
-from flask import jsonify
-import json
+from flask import jsonify, json
 # class APITests(TestCase):
 #     def test_search_item_by_string(self):
 #         """Queries Wikidata for formats and returns a list of FileFormat instances."""
@@ -38,16 +37,16 @@ import json
 @pytest.fixture
 def client(request):
     test_client = APP.test_client()
+    ctx = APP.app_context()
+    ctx.push()
+    yield test_client
 
+    ctx.pop()
     def teardown():
         pass # databases and resourses have to be freed at the end. But so far we don't have anything
 
     request.addfinalizer(teardown)
     return test_client
-
-def post_json(client, url, json_dict):
-    """Send dictionary json_dict as a json to the specified url """
-    return client.post(url, data=json.dumps(json_dict), content_type='application/json')
 
 def json_response(response):
     """Decode json from response"""
@@ -109,9 +108,50 @@ def test_route_item_checklist_by_schema__fake_schema(client):
     assert response.status_code == 200
     assert b'no suggested properties in this schema' in response.data
 
-# TODO: FORMS TEST
+# FORMS TEST
+def test_route_form_preview_item(client):
+    """Test the client loads the contribute of sample item  """
+    response = client.post('/preview',
+                            data={
+                                'qid':'Q7715973',
+                                'optionList':'[["Q7715973", "TEST ELEMENT", "test description"]]'
+                            },
+                            follow_redirects=True)
+    assert response.status_code == 200
+    assert b'Q7715973' in response.data
+    assert b'TEST ELEMENT' in response.data
+    assert b'test description' in response.data
+
+def test_route_form_contribute_item(client):
+    """Test the client loads the contribute of sample item  """
+    response = client.post('/contribute',
+                            data={
+                                'qid':'Q7715973',
+                                'optionList':'[["Q7715973", "TEST ELEMENT", "test description"]]'
+                            },
+                            follow_redirects=True)
+    assert response.status_code == 200
+    assert b'Q7715973' in response.data
+    assert b'TEST ELEMENT' in response.data
+    assert b'test description' in response.data
 
 # SEARCH TESTS
+def test_route_process_site_search__by_label(client):
+    """Test the client loads the contribute of sample item  """
+    response = client.post('/search',
+                            data={'userInput':'debian'},
+                            follow_redirects=True)
+    assert response.status_code == 200
+    assert b'Q7715973' in response.data
+
+def test_route_process_site_search__by_puid(client):
+    """Test the client loads the contribute of sample item  """
+    response = client.post('/search',
+                            data={'userInput':'fmt/354'},
+                            follow_redirects=True)
+    assert response.status_code == 200
+    assert b'Q26543628' in response.data
+
 def test_route_site_search__by_label(client):
     """Test the client loads the contribute of sample item  """
     response = client.get('/search?string=debian')

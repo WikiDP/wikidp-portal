@@ -48,25 +48,22 @@ def load_schema(schema_name):
         return False
 
 def get_schema_properties(schema_name):
-    try:
-        data = load_schema(schema_name)
-        if data is False:
-            return False
-        exps = []
-        for shape in data['shapes']:
-            if 'expression' in shape:
-                shape_expression = shape['expression']
-                if 'expressions' in shape_expression:
-                    shape_expression_expressions = shape_expression['expressions']
-                    exps += [expression['predicate'] for expression in shape_expression_expressions if 'predicate' in expression and expression['predicate'] not in exps]
-                if 'predicate' in shape_expression and shape_expression['predicate'] not in exps:
-                    exps.append(shape_expression['predicate'])
-        # Extract pids from list
-        exps = [get_pid_from_string(predicate) for predicate in exps if get_pid_from_string(predicate) is not False ]
-        output = remove_duplicates_from_list(exps)
-        return output
-    except Exception as e:
+    data = load_schema(schema_name)
+    if data is False:
         return False
+    exps = []
+    for shape in data['shapes']:
+        if 'expression' in shape:
+            shape_expression = shape['expression']
+            if 'expressions' in shape_expression:
+                shape_expression_expressions = shape_expression['expressions']
+                exps += [expression['predicate'] for expression in shape_expression_expressions if 'predicate' in expression and expression['predicate'] not in exps]
+            if 'predicate' in shape_expression and shape_expression['predicate'] not in exps:
+                exps.append(shape_expression['predicate'])
+    # Extract pids from list
+    exps = [get_pid_from_string(predicate) for predicate in exps if get_pid_from_string(predicate) is not False ]
+    output = remove_duplicates_from_list(exps)
+    return output
 
 def get_property_checklist_from_schema(schema_name, source='client'):
     pid_list = get_schema_properties(schema_name)
