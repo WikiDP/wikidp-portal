@@ -11,21 +11,22 @@
 #
 """Unit tests for WikiData reads."""
 from unittest import TestCase
-
+import pytest
+from flask import jsonify, json
 import pywikibot
-
 from wikidataintegrator import wdi_core
 from wikidataintegrator.wdi_core import WDItemEngine
 
+from tests import settings
+from wikidp import APP
 from wikidp.model import FileFormat, PuidSearchResult
+
 SANDBOX_API_URL = 'https://test.wikidata.org/w/'
 SANDBOX_SPARQL_URL = 'https://test.wikidata.org/proxy/wdqs/bigdata/namespace/wdq/'
 SITE = pywikibot.Site("test", "wikidata")
 REPO = SITE.data_repository()
 
-import pytest
-from wikidp import APP
-from flask import jsonify, json
+
 # class APITests(TestCase):
 #     def test_search_item_by_string(self):
 #         """Queries Wikidata for formats and returns a list of FileFormat instances."""
@@ -78,23 +79,41 @@ def test_route_page_browse(client):
     assert response.status_code == 200
     assert b'WikiDP | Browse' in response.data
 
-def test_route_item_preview(client):
+def test_route_page_unauthorized(client):
+    """Test the client loads the 403 page  """
+    response = client.get('/unauthorized', follow_redirects=True)
+    assert response.status_code == 403
+    assert b'You are not authorized to view this page' in response.data
+
+def test_route_page_error(client):
+    """Test the client loads the 500 page  """
+    response = client.get('/error', follow_redirects=True)
+    assert response.status_code == 500
+    assert b'Internal Error' in response.data
+
+def test_route_page_selected_item(client):
     """Test the client loads the preview of sample item  """
-    response = client.get('/Q7715973', follow_redirects=True)
+    response = client.get('/'+settings.SAMPLE_QID, follow_redirects=True)
     assert response.status_code == 200
-    assert b'Q7715973' in response.data
+    assert bytes(settings.SAMPLE_QID, encoding='utf-8') in response.data
+    response = client.get('/'+settings.SAMPLE_QID_NOT_EXIST, follow_redirects=True)
+    assert response.status_code == 404
 
 def test_route_item_preview(client):
     """Test the client loads the preview of sample item  """
-    response = client.get('/Q7715973/preview')
+    response = client.get('/'+settings.SAMPLE_QID+'/preview', follow_redirects=True)
     assert response.status_code == 200
-    assert b'Q7715973' in response.data
+    assert bytes(settings.SAMPLE_QID, encoding='utf-8') in response.data
+    response = client.get('/'+settings.SAMPLE_QID_NOT_EXIST+'/preview', follow_redirects=True)
+    assert response.status_code == 404
 
 def test_route_item_contribute(client):
     """Test the client loads the contribute of sample item  """
-    response = client.get('/Q7715973/contribute')
+    response = client.get('/'+settings.SAMPLE_QID+'/contribute', follow_redirects=True)
     assert response.status_code == 200
-    assert b'Q7715973' in response.data
+    assert bytes(settings.SAMPLE_QID, encoding='utf-8') in response.data
+    response = client.get('/'+settings.SAMPLE_QID_NOT_EXIST+'/contribute', follow_redirects=True)
+    assert response.status_code == 404
 
 # TODO: Once a schema is added without a category add a test
 
@@ -210,4 +229,60 @@ def test_route_api_get_properties_by_schema__fake_schema(client):
     assert len(json_response(response)) == 0
     assert json_response(response) == []
 
-# TODO: Test for route_api_write_claims_to_item
+def test_route_api_write_claims_to_item(client):
+    """
+    Currently Supporting:
+        1. WikibaseItem
+        2. String
+
+    TODO: Add all the datatypes
+    https://www.wikidata.org/wiki/Help:Data_type#List_of_data_types
+    """
+    claim_list = [ {
+            'pid': settings.SAMPLE_PID_WIKIBASEITEM__TEST,
+            'value': settings.SAMPLE_QID__TEST,
+            'type': 'WikibaseItem'
+        },
+            {
+            'pid': settings.SAMPLE_PID_STRING__TEST,
+            'value': 'Test String',
+            'type': 'String'
+        }
+        ]
+    response = client.post('/api/'+settings.SAMPLE_QID__TEST+'/claims/write',
+                            data=json.dumps(claim_list),
+                            content_type='application/json',
+                            follow_redirects=True)
+    res = json_response(response)
+    assert response.status_code == 200
+    assert res['status'] == 'success'
+    assert len(res['successful_claims']) == len(claim_list)
+    assert len(res['failure_claims']) == 0
+
+def test_route_api_write_claims_to_item__errors(client):
+    """
+    Claim List Errors:
+        1. Item Value with Non-existent item
+        2. Item Value passed with random string
+
+    """
+    claim_list = [ {
+            'pid': settings.SAMPLE_PID_WIKIBASEITEM__TEST,
+            'value': settings.SAMPLE_QID_NOT_EXIST__TEST,
+            'type': 'WikibaseItem'
+        },
+            {
+            'pid': settings.SAMPLE_PID_WIKIBASEITEM__TEST,
+            'value': 'Test String',
+            'type': 'WikibaseItem'
+        }
+        ]
+    response = client.post('/api/'+settings.SAMPLE_QID__TEST+'/claims/write',
+                            data=json.dumps(claim_list),
+                            content_type='application/json',
+                            follow_redirects=True)
+    res = json_response(response)
+    assert response.status_code == 200
+    assert res['status'] == 'success'
+    assert len(res['failure_claims']) == len(claim_list)
+    assert len(res['successful_claims']) == 0

@@ -8,18 +8,15 @@ import wikidp.DisplayFunctions as DF
 def get_search_result_context(search_string):
     context = []
     # Check if searching with PUID
-    try:
-        if re.search("[x-]?fmt/\d+", search_string) != None:
-            result = PuidSearchResult.search_puid( search_string, lang = APP.config[ConfKey.WIKIBASE_LANGUAGE])
-            for res in result:
-                item = DF.qid_to_basic_details(res.format)
-                context.append({
-                    'id': res.format,
-                    'label': res.label,
-                    'description': item['description']
-                })
-    except Exception as e:
-        logging.exception("Error Searching for PUID: %s", str(e))
+    if re.search("[x-]?fmt/\d+", search_string) != None:
+        result = PuidSearchResult.search_puid( search_string, lang = APP.config[ConfKey.WIKIBASE_LANGUAGE])
+        for res in result:
+            item = DF.qid_to_basic_details(res.format)
+            context.append({
+                'id': res.format,
+                'label': res.label,
+                'description': item['description']
+            })
     context += DF.search_result_list(search_string)
     return context
 

@@ -78,8 +78,10 @@ def write_claims_to_item(qid):
     logging.debug("Processing user POST request.")
     user_claims = request.get_json()
     successful_claims, failure_claims = [], []
+    item = pywikibot.ItemPage(REPO, u"Q175461") # WIKIDATA TESTING ITEM
+    # item = pywikibot.ItemPage(REPO, qid)
     for user_claim in user_claims:
-        write_status = write_claim(qid, user_claim['pid'], user_claim['value'])
+        write_status = write_claim(item, user_claim['pid'], user_claim['value'], user_claim['type'])
         if write_status is True:
             successful_claims.append(user_claim)
         else:
@@ -87,11 +89,11 @@ def write_claims_to_item(qid):
     output = {'status': 'success', 'successful_claims': successful_claims, 'failure_claims':failure_claims}
     return jsonify(output)
 
-def write_claim(qid, property, value, meta=False):
+def write_claim(item, property, value, type, meta=False):
     '''Function for writing a claim to WikiData
 
     Args:
-        qid (str): Wikidata Item Identifier [ex. 'Q1234']
+        item (pywikibot.ItemPage): Wikidata Item Model
         property (str): Wikidata Property Identifier [ex. 'P1234']
         value (str): Value matching accepted property type (could be other datatypes)
         meta (dict, optional): Contains information about qualifiers/references/summaries
@@ -99,11 +101,14 @@ def write_claim(qid, property, value, meta=False):
         bool: True if successful, False otherwise
     '''
     try:
-        # TODO: Convert to writes to any item by uncommenting line 34
-        item = pywikibot.ItemPage(REPO, u"Q175461") # WIKIDATA TESTING ITEM
-        # item = pywikibot.ItemPage(REPO, qid)
+        # TODO: Account for all dataTypes
         claim = pywikibot.Claim(REPO, property)
-        target = pywikibot.ItemPage(REPO, value)
+        if type == 'WikibaseItem':
+            target = pywikibot.ItemPage(REPO, value)
+        # elif type == 'Coordinate'
+        # elif type == 'String'
+        else:
+            target = value
         claim.setTarget(target)
         item.addClaim(claim, summary=u'Adding claim')
         return True

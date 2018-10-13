@@ -55,7 +55,7 @@ def item_detail_parse(qid):
         item = wdi_core.WDItemEngine(wd_item_id=qid)
     except:
         logging.exception("Exception reading QID: %s", qid)
-        return None
+        return False
     load_caches()
     label = item.get_label(lang=LANG) if item.get_label(lang=LANG) != '' else item.get_label(lang=FALLBACK_LANG)
     item = item.wd_json_representation

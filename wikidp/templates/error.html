@@ -1,0 +1,24 @@
+{% extends "page.html" %}
+{% block title %}Oops...{% endblock %}
+{% block page_content %}
+
+  <div class="about-page" id="content-frame" style="text-align:center">
+    <h1>Oops...</h1>
+    <h2>The Page You are attempting to reach is not available</h2>
+    <p>
+      {{message}}
+    </p>
+    <p>
+      Please Try Again or <a href="{{url_for('route_page_welcome')}}">Return Home.</a> 
+    </p>
+  </div>
+
+{% endblock page_content %}
+
+{% block page_scripts %}
+  <script type="text/javascript">
+      $("form").submit(function() {
+        $('div.page-container').fadeOut(500);
+      });
+  </script>
+{% endblock page_scripts %}

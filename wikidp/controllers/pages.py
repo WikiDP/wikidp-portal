@@ -4,16 +4,18 @@ from wikidp.model import FileFormat
 from wikidp.controllers.api import get_property_checklist_from_schema
 from flask import request, json
 import wikidp.DisplayFunctions as DF
-from wikidp.utils import  get_directory_filenames_with_subdirectories
+from wikidp.utils import get_directory_filenames_with_subdirectories
 SCHEMA_DIRECTORY_PATH = 'wikidp/schemas/'
 
 def get_browse_context():
-    context = FileFormat.list_formats(lang = APP.config[ConfKey.WIKIBASE_LANGUAGE])
+    context = FileFormat.list_formats(lang=APP.config[ConfKey.WIKIBASE_LANGUAGE])
     return context
 
 def get_item_context(qid):
     selected_item = DF.item_detail_parse(qid)
-    options = request.args.get('options', default = 0, type = str)
+    if selected_item is False:
+        return False
+    options = request.args.get('options', default=0, type=str)
     if type(options) is str:
         options = json.loads(options)
     else:
