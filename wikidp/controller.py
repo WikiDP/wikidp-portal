@@ -19,7 +19,7 @@ from wikidp.const import ConfKey
 from wikidp.model import FileFormat, PuidSearchResult
 from wikidp.lists import properties
 import wikidp.DisplayFunctions as DF
-
+from wikidp.controllers.api import *
 @APP.route("/")
 def welcome():
     """Landing Page for first time"""
@@ -91,7 +91,7 @@ def selected_item(id):
     else:
         basic_details = DF.qid_to_basic_details(qid)
         options = [[qid, basic_details['label'], basic_details['description']]]
-    return render_template('preview-item.html', selected=preview_item, options=options)
+    return render_template('preview-item.html', selected=preview_item, options=options, page='preview')
 
 @APP.route("/contribute", methods=['POST'])
 def process_contribute_url():
@@ -109,7 +109,7 @@ def contribute_selected_page():
     else:
         basic_details = DF.qid_to_basic_details(qid)
         options = [[qid, basic_details['label'], basic_details['description']]]
-    return render_template('contribute.html', selected=preview_item, options=options)
+    return render_template('contribute.html', selected=preview_item, options=options, page='contribute')
 
 
 @APP.route("/api-load-item", methods=['POST'])

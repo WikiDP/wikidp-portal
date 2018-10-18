@@ -123,12 +123,11 @@ a.wd-id {
 	}
 
 	ul#search-option-list {
-	    list-style: none;
-	    padding: 0;
-		margin: 0 auto;
-    	width: 80%;
-	    max-height: 350px;
-        overflow-y: scroll;
+			list-style: none;
+			padding: 0;
+			margin: 0 auto;
+			margin-bottom: 200px;
+			width: 80%;
 	}
 
 	ul#search-option-list li {
@@ -210,7 +209,7 @@ div#panel-frame.contribute-page div#sidebar-frame {
 
 div#sidebar-div {
     height: 100%;
-    padding: 10px 0;
+    padding: 0;
     position: relative;
 }
 div#sidebar-frame select#option-select {
@@ -270,9 +269,12 @@ div#sidebar-property-scroller {
 .property-overview-div li {
     display: block;
     color: rgb(255, 255, 255);
-    text-align: right;
+    text-align: left;
 }
-
+.sidebar-property-count {
+    display: inline;
+    float: right;
+}
 .property-overview-div li:before
 {
     /*Using a Bootstrap glyphicon as the bullet point*/
@@ -326,18 +328,18 @@ li.sidebar-property-li.property-ok {
 
 .actions-div {
 	width: 100%;
-    padding: 15px 0 0 0;
-    font-size: 20px;
-    font-weight: 600;
-    position: absolute;
-    bottom: 0;
-
-
+	padding: 0;
+	font-size: 20px;
+	margin-bottom: 15px;
+	font-weight: 600;
+	/* position: absolute; */
+	/* bottom: 0; */
 }
 
 li.sidebar-action-li {
     background: #444646;
     padding: 10px;
+    color: lightgrey;
 }
 div.actions-div ul#sidebar-action-list {
 	cursor: pointer;
@@ -523,10 +525,18 @@ div#creation-div {
     height: 100px;
     /* border-bottom: 1px solid; */
     margin-bottom: 15px;
-    opacity: .5;
+    opacity: 1;
 }
 div#creation-div:hover, div#creation-div:focus {
     opacity: 1;
+}
+button#saveClaimsBtn {
+    background: none;
+    color: white;
+    border: 2px solid;
+    padding: 19px 20%;
+    font-weight: bold;
+    margin: 50px 0 100px;
 }
 input#claim-value {
     width: calc(80% - 30px);

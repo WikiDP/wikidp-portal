@@ -1,355 +1,314 @@
-{% extends "page.html" %}
-{% block title %}Contribute {% endblock %}
-{% block page_content %}
-<script src="{{ url_for('static',filename='js/clipboard.min.js') }}"></script>
-<div id="panel-frame" class="contribute-page"  data-qid="{{selected['label'][0]}}">
-
-		<div id="sidebar-frame">
-			<div id="sidebar-div">
-				<!-- selected item -->
-				<div class="selected-item-div">
-					<div class="sidebar-header">selected item</div>
-					<select id="option-select" value="">
-					{% for option in options %}
-					{% if option[0] != selected['label'][0] %}
-
-					<option class="item-option" data-qid="{{option[0]}}"  data-label="{{option[1]}}" data-description="{{option[2]}}" title="{{option[2]}}" value="{{option[0]}}">
-						{{option[1]}}<span class="select-item-id"> ({{option[0]}})</span>
-					</option>
-					{% else %}
-					<option class="item-option" data-qid="{{option[0]}}"  data-label="{{option[1]}}" data-description="{{option[2]}}" title="{{option[2]}}" value="{{option[0]}}" selected="true">
-						{{option[1]}}<span class="select-item-id"> ({{option[0]}})</span>
-					</option>
-					{% endif %}
-					{% endfor %}
-					</select>
-				</div>
-
-				<!-- property overview -->
-				<div class="property-overview-div">
-					<div class="sidebar-header">property checklist</div>
-          <div id="sidebar-property-scroller">
-  					<ul id="sidebar-property-list" value="">
-  						{% for property in selected['properties'] %}
-  							{% if property[2] == 0%}
-  								<li class="sidebar-property-li">
-                    <span title="{{property[1]}} ({{property[0]}})" data-content-start="{{property[1]}} ({{property[0]}}) "
-      data-content-end=  ""></span>: 0
-
-  								</li>
-  							{% else %}
-  								<li class="sidebar-property-li property-ok">
-  									<span title="{{property[1]}} ({{property[0]}})" data-content-start="{{property[1]}} ({{property[0]}}) "
-      data-content-end=  ""></span>: {{property[2]}}
-  								</li>
-  							{% endif %}
-  						{% endfor %}
-  					</ul>
-          </div>
-				</div>
-
-				<!-- action buttons-->
-				<div class="actions-div">
-					<div class="sidebar-header">actions</div>
-					<ul id="sidebar-action-list" value="">
-						<li class="sidebar-action-li" id="explore-action">
-							explore
-						</li>
-						<li class="sidebar-action-li" id="preview-action">
-							preview
-						</li>
-						<li class="sidebar-action-li contribute-on" id="contribute-action">
-							contribute
-						</li>
-					</ul>
-				</div>
-
-			</div>
-		</div>
-
-
-
-		<div id="content-frame">
-
-		  <div id="header-text">
-        <span id="preview-item-name">{{selected['label'][1]}}<a class="wd-id" href="https://wikidata.org/wiki/{{selected['label'][0]}}" target="_blank"> ({{selected['label'][0]}})</a></span>
-        <br>
-        {% if selected['description'] != []%}
-        <span id="preview-item-description" title="{{selected['description']}}">{{selected['description']}}</span>
-        {% endif %}
-      </div>
-      <div id="statement-creation-frame">
-        <div id="creation-panel">
-          <div id="creation-div">
-            <span class="creation-section-header">CREATE A CLAIM</span><br>
-            <span class="creation-section-subtitle">Select a property below and we will provide you with a pre-formatted textbox.</span><br>
-              <div id="creation-content-div"><div id="creation-property-div">
-              <select id="create-claim-property">
-                <option class="default" data-type="default" >select a property</option>
-                {% for property in selected['properties'] %}
-                  <option class="" data-pid="{{property[0]}}" data-count="{{property[2]}}" data-type="{{property[3]}}">
-                    {{property[1]}}
-                  </option>
-              {% endfor %}
-              </select> :</div>
-              <div id="create-claim-value-div"> </div>
-            </div>
-          </div>
-          <div id="claims-list">
-            <span class="creation-section-header">MY CLAIMS</span><br>
-            <ul id="added-claims">
-
-            </ul>
-
-          </div>
-
+{% extends "item.html" %}
+{% block item_content %}
+  <script src="{{ url_for('static',filename='js/clipboard.min.js') }}"></script>
+  <div id="header-text">
+    <span id="preview-item-name">{{selected['label'][1]}}<a class="wd-id" href="https://wikidata.org/wiki/{{selected['label'][0]}}" target="_blank"> ({{selected['label'][0]}})</a></span>
+    <br>
+    {% if selected['description'] != []%}
+      <span id="preview-item-description" title="{{selected['description']}}">{{selected['description']}}</span>
+    {% endif %}
+  </div>
+  <div id="statement-creation-frame">
+    <div id="creation-panel">
+      <div id="creation-div">
+        <span class="creation-section-header">CREATE A CLAIM</span><br>
+        <span class="creation-section-subtitle">Select a property below and we will provide you with a pre-formatted textbox.</span><br>
+          <div id="creation-content-div"><div id="creation-property-div">
+          <select id="create-claim-property">
+            <option class="default" data-type="default" >select a property</option>
+            {% for property in selected['properties'] %}
+              <option class="" value="{{property[0]}}"  data-pid="{{property[0]}}" data-count="{{property[2]}}" data-type="{{property[3]}}">
+                {{property[1]}}
+              </option>
+            {% endfor %}
+          </select> :</div>
+          <div id="create-claim-value-div"> </div>
         </div>
-        <div class="" id="lookup-panel">
-          <div id="lookup-header-div">
-            looking for an item id?<br>
-             <input id="lookup-input" type=" " name="" placeholder="search here">
-          </div>
-          <div id="lookup-results-div">
-            <ul id="lookup-results-list">
-
-            </ul>
-          </div>
-        </div>
-
-
       </div>
-		</div>
-
-</div>
-
-<script type="text/javascript">
-function pageTransition(form){
-  $('div.page-container').fadeOut(500, function(){
-    $('body').append(form);
-    form.submit();
-  })
-}
-
-function initializeClaim(type){
-  $('select#create-claim-property option.default').prop('disabled', true)
-  console.log('...initialing data-type: '+type);
-  var div = $('div#create-claim-value-div').fadeOut(400, function(){
-    div.empty();
-    switch(type){
-      case 'string':
-          console.log('STRING');
-          div.append($('<input/>').attr({'placeholder':'enter value here', 'id':'claim-value'}));
-          bindAddButton();
-          break;
-      case 'ex-id':
-          console.log('EXID');
-          div.append($('<input/>').attr({'placeholder':'enter value here', 'id':'claim-value'}));
-          bindAddButton();
-          break;
-      case 'item':
-          console.log('ITEM');
-          div.append('Q',$('<input/>').attr({'placeholder':'1234', 'id':'claim-value', 'type':'number'}));
-          bindAddButton();
-          break;
-      case 'url':
-          console.log('URL');
-          div.append('https://',$('<input/>').attr({'placeholder':'www.website.com/', 'id':'claim-value', 'type':'url'}))
-          bindAddButton();
-          break;
-      default:
-          console.log('NONE OF THE ABOVE');
-          break;
-    }
-    div.fadeIn('slow');
-  });
-}
-
-$('select#option-select').change(function(){
-	var list = $('option.item-option')
-	var options = []
-	for (i = 0; i < list.length; i++){
-		// console.log($(list[i]).data('qid'), $(list[i]).data('label'));
-		options.push([$(list[i]).data('qid').replace("'","&#39;"), $(list[i]).data('label').replace("'","&#39;"), $(list[i]).data('description').replace("'","&#39;") ])
-	}
-	options = JSON.stringify(options);
-	console.log(options);
-	console.log($(this).val());
-  var form = $('<form action="/preview" method="post">' +
-    '<input type="text" name="qid" value="' + $(this).val() + '" />' +
-    '<input type="text" name="optionList" '+"value='"+options+"' />" +
-    '</form>');
-  $('body').append(form);
-  pageTransition(form);
-	// return $.post("/preview", {qid:qid})
-});
-
-$('li#preview-action').click(function(){
-  var list = $('option.item-option')
-  var options = []
-  for (i = 0; i < list.length; i++){
-    // console.log($(list[i]).data('qid'), $(list[i]).data('label'))
-    options.push([$(list[i]).data('qid').replace("'","&#39;"), $(list[i]).data('label').replace("'","&#39;"), $(list[i]).data('description').replace("'","&#39;") ])
-  }
-  options = JSON.stringify(options);
-  // console.log(options);
-  // console.log($('div#panel-frame').data('qid'));
-  var form = $('<form action="/preview" method="post">' +
-    '<input type="text" name="qid" value="' + $('div#panel-frame').data('qid') + '" />' +
-    '<input type="text" name="optionList" '+"value='"+options+"' />" +
-    '</form>').hide(0);
-  pageTransition(form);
-
-})
-
-$('select#create-claim-property').change(function(){
-  initializeClaim($(':selected', this).data('type'));
-});
-
-function bindAddButton(){
-  $('div#create-claim-value-div').append(' ',
-    $('<button/>').attr({'id':'addClaimButton', 'class':'off'}).prop("disabled",true).html('add claim')
-  );
-  $('input#claim-value').on('input', function(event){
-    if($('button#addClaimButton.on').length == 0){
-      $('button#addClaimButton.off').addClass('on').removeClass('off').prop("disabled",false).attr({'onclick':'claimFormValidation()'});
-    }
-    // TO DO: Let the user submit by enter, below this code does not perform quite as expected
-    // else if(event.keyCode == 13){
-    //   $('button#addClaimButton').click()
-    //  $('button#addClaimButton').click().prop("disabled", true)
-    // }
-  });
-}
-
-function createBasicClaim(pid, pidLabel, value, type) {
-// TODO: NEED LEVEL1 VALIDATION HERE
-  var listTemplate = $(`
-    <li class="added-claim-li ${type}">
-    <div class="row-div">
-     <div class="added-property-div">
-        ${pidLabel} <a class="wd-id" href="https://wikidata.org/wiki/Property:${pid}" target="_blank"> (${pid})</a></span>
-     </div>
-     <div class="added-value-div">
-          ${value}
-     </div></div>
-    </li>`).hide(0)
-  $('ul#added-claims').prepend(listTemplate);
-  $('ul#added-claims').scrollTop(0);
-  listTemplate.slideDown(750);
-  $('button#addClaimButton').remove();
-  bindAddButton();
-}
-
-function createItemClaim(pid, pidLabel, item, type) {
-  // TODO: NEED LEVEL1 VALIDATION HERE
-  var description = item.description
-  if (!description.length){
-    description = 'this item has no description';
-  }
-  var listTemplate = $(`
-    <li class="added-claim-li ${type}">
-    <div class="row-div">
-      <div class="added-property-div">
-        ${pidLabel} <a class="wd-id" href="https://wikidata.org/wiki/Property:${pid}" target="_blank"> (${pid})</a></span>
-     </div>
-     <div class="added-value-div">
-          <span class="added-label">${item.label} <a class="wd-id" href="https://wikidata.org/wiki/${item.id}" target="_blank">(${item.id})</a></span><br>
-          <i> &mdash; ${description} &mdash; </i></br>
-          <span class="sub-aka"><b>Also Referred To As:</b> ${item.aliases}</span>
-          </div>
-     </div></div>
-    </li>`).hide(0)
-  $('ul#added-claims').scrollTop(0);
-  $('ul#added-claims').prepend(listTemplate);
-  listTemplate.slideDown(750);
-  $('button#addClaimButton').remove();
-  bindAddButton();
-}
-
-function validateItem(pid, pidLabel, qid, type){
-  $.post("/api-get-qid-label", {qid:qid}, function(response){
-    response = JSON.parse(response);
-    console.log(response);
-    createItemClaim(pid, pidLabel, response, type);
-  }).fail(function(error){
-    console.log(error);
-  })
-}
-
-function lookupItem(string){
-  var list = $('ul#lookup-results-list').hide(1000);
-  $.post("/api-lookup-item", {string:string}, function(response){
-    response = JSON.parse(response)
-    console.log(response)
-    list.empty()
-    for (var opt = 0; opt < response.length; opt++){
-      var item = response[opt]
-      var qid = item.id
-      var description = item.description
-      if (!description.length){
-        description = 'this item has no description'
-      }
-      list.append(`
-        <li class="lookup-result-li">
-          <div class="result-main" id="result-main-${qid}" data-qid="${qid}">
-            <button data-clipboard-text="${qid}" class="pull-left clipboardBtn" id="clipboardBtn-${qid}" data-qid="${qid}"><i class="fa fa-clipboard"></i> </button>
-            <span class="result-label">${item.label}</span></br>
-            ${qid} <span class="glyphicon glyphicon-menu-down"></span>
-          </div>
-          <div class="result-sub" id="result-sub-${qid}">
-         <i> &mdash; ${description} &mdash; </i></br></br>
-          <span class="sub-aka"><b>Also Referred To As:</b> ${item.aliases}</span>
-          </div>
-        </li>
-        `);
-      var btn = document.getElementById('clipboardBtn-'+qid);
-      // Thanks to https://clipboardjs.com/ for this object below
-      var clipboard = new Clipboard(btn);
-      clipboard.on('success', function(e) {
-        console.log(e);
-      });
-      clipboard.on('error', function(e) {
-        console.log(e);
-      });
-    }
-    $('div.result-main').click(function(){
-      var id = $(this).data('qid');
-      console.log('calling--> ', id);
-      $('div#result-sub-'+id).slideToggle('slow');
+      <div id="claims-list">
+        <span class="creation-section-header">MY CLAIMS</span><br>
+        <ul id="added-claims">
+          <li id="saveClaimsLi" style="display:none"> <button id="saveClaimsBtn" onclick="save_claims()">SAVE TO WIKIDATA</button></li>
+        </ul>
+      </div>
+    </div>
+    <div class="" id="lookup-panel">
+      <div id="lookup-header-div">
+        looking for an item id?<br>
+         <input id="lookup-input" type=" " name="" placeholder="search here">
+      </div>
+      <div id="lookup-results-div">
+        <ul id="lookup-results-list">
+        </ul>
+      </div>
+    </div>
+  </div>
+  <script type="text/javascript">
+  function pageTransition(form){
+    $('div#content-frame').fadeOut(500, function(){
+      $('body').append(form);
+      form.submit();
     })
-    list.fadeIn(1000);
-    // createItemClaim(pid, pidLabel, response, type)
-  }).fail(function(error){
-    console.log(error)
+  }
+  $('.sidebar-property-li').click(function(){
+    $('#create-claim-property').val($(this).data('pid'));
+    initializeClaim();
   })
-}
+  function initializeClaim(){
+   var type = $('select#create-claim-property :selected').data('type');
 
-function claimFormValidation(){
-  var select = $(':selected', $('select#create-claim-property'))
-  var type = select.data('type')
-  var input = $('input#claim-value')
-  var pid = select.data('pid')
-  var value = input.val()
-  if (value.length == 0){
-    return console.log('no content')
+    $('select#create-claim-property option.default').prop('disabled', true)
+    console.log('...initialing data-type: '+type);
+    var div = $('div#create-claim-value-div').fadeOut(400, function(){
+      div.empty();
+      switch(type){
+        case 'string':
+            console.log('STRING');
+            div.append($('<input/>').attr({'placeholder':'enter value here', 'id':'claim-value'}));
+            bindAddButton();
+            break;
+        case 'ex-id':
+            console.log('EXID');
+            div.append($('<input/>').attr({'placeholder':'enter value here', 'id':'claim-value'}));
+            bindAddButton();
+            break;
+        case 'item':
+            console.log('ITEM');
+            div.append('Q',$('<input/>').attr({'placeholder':'1234', 'id':'claim-value', 'type':'number'}));
+            bindAddButton();
+            break;
+        case 'url':
+            console.log('URL');
+            div.append('https://',$('<input/>').attr({'placeholder':'www.website.com/', 'id':'claim-value', 'type':'url'}))
+            bindAddButton();
+            break;
+        default:
+            console.log('NONE OF THE ABOVE');
+            break;
+      }
+      div.fadeIn('slow');
+    });
   }
-  switch(type){
-    case 'item':
-      validateItem(pid, select.val(), 'Q'+value, type)
-      break;
-    default:
-      // TO DO: HAVE A CASE FOR EX-IDS AND URL'S
-      console.log('form validated');
-      createBasicClaim(pid, select.val(), value, type);
-      break;
-  }
-}
 
-$("input#lookup-input").keyup(function(event){
-    if(event.keyCode == 13){
-      lookupItem(this.value)
+  $('select#option-select').change(function(){
+    var list = $('option.item-option')
+    var options = []
+    for (i = 0; i < list.length; i++){
+      // console.log($(list[i]).data('qid'), $(list[i]).data('label'));
+      options.push([$(list[i]).data('qid').replace("'","&#39;"), $(list[i]).data('label').replace("'","&#39;"), $(list[i]).data('description').replace("'","&#39;") ])
     }
-});
+    options = JSON.stringify(options);
+    console.log(options);
+    console.log($(this).val());
+    var form = $('<form action="/preview" method="post">' +
+      '<input type="text" name="qid" value="' + $(this).val() + '" />' +
+      '<input type="text" name="optionList" '+"value='"+options+"' />" +
+      '</form>');
+    $('body').append(form);
+    pageTransition(form);
+    // return $.post("/preview", {qid:qid})
+  });
 
-</script>
-    {% endblock page_content %}
+  $('li#preview-action').click(function(){
+    var list = $('option.item-option')
+    var options = []
+    for (i = 0; i < list.length; i++){
+      // console.log($(list[i]).data('qid'), $(list[i]).data('label'))
+      options.push([$(list[i]).data('qid').replace("'","&#39;"), $(list[i]).data('label').replace("'","&#39;"), $(list[i]).data('description').replace("'","&#39;") ])
+    }
+    options = JSON.stringify(options);
+    // console.log(options);
+    // console.log($('div#panel-frame').data('qid'));
+    var form = $('<form action="/preview" method="post">' +
+      '<input type="text" name="qid" value="' + $('div#panel-frame').data('qid') + '" />' +
+      '<input type="text" name="optionList" '+"value='"+options+"' />" +
+      '</form>').hide(0);
+    pageTransition(form);
+
+  })
+
+  $('select#create-claim-property').change(function(){
+    initializeClaim();
+  });
+
+  function bindAddButton(){
+    $('div#create-claim-value-div').append(' ',
+      $('<button/>').attr({'id':'addClaimButton', 'class':'off'}).prop("disabled",true).html('add claim')
+    );
+    $('input#claim-value').on('input', function(event){
+      if($('button#addClaimButton.on').length == 0){
+        $('button#addClaimButton.off').addClass('on').removeClass('off').prop("disabled",false).attr({'onclick':'claimFormValidation()'});
+      }
+      // TO DO: Let the user submit by enter, below this code does not perform quite as expected
+      // else if(event.keyCode == 13){
+      //   $('button#addClaimButton').click()
+      //  $('button#addClaimButton').click().prop("disabled", true)
+      // }
+    });
+  }
+
+  function createBasicClaim(pid, pidLabel, value, type) {
+  // TODO: NEED LEVEL1 VALIDATION HERE
+    var listTemplate = $(`
+      <li class="added-claim-li ${type}" data-pid="${pid}" data-value="${value}" data-type="${type}">
+      <div class="row-div">
+       <div class="added-property-div">
+          ${pidLabel} <a class="wd-id" href="https://wikidata.org/wiki/Property:${pid}" target="_blank"> (${pid})</a></span>
+       </div>
+       <div class="added-value-div">
+            ${value}
+       </div></div>
+      </li>`).hide(0)
+    $('ul#added-claims').prepend(listTemplate);
+    $('ul#added-claims').scrollTop(0);
+    listTemplate.slideDown(750);
+    $('button#addClaimButton').remove();
+    bindAddButton();
+  }
+  function serializeClaimList(){
+    var array = $('.added-claim-li').map(function(){
+    return {
+      pid: $(this).data('pid'),
+      type: $(this).data('type'),
+      value: $(this).data('value'),
+    }
+}).get()
+console.log(array)
+return array
+  }
+
+  function createItemClaim(pid, pidLabel, item, type) {
+    // TODO: NEED LEVEL1 VALIDATION HERE
+    var description = item.description
+    if (!description.length){
+      description = 'this item has no description';
+    }
+    var listTemplate = $(`
+      <li class="added-claim-li ${type}" data-pid="${pid}" data-value="${item.id}" data-type="${type}">
+      <div class="row-div">
+        <div class="added-property-div">
+          ${pidLabel} <a class="wd-id" href="https://wikidata.org/wiki/Property:${pid}" target="_blank"> (${pid})</a></span>
+       </div>
+       <div class="added-value-div">
+            <span class="added-label">${item.label} <a class="wd-id" href="https://wikidata.org/wiki/${item.id}" target="_blank">(${item.id})</a></span><br>
+            <i> &mdash; ${description} &mdash; </i></br>
+            <span class="sub-aka"><b>Also Referred To As:</b> ${item.aliases}</span>
+            </div>
+       </div></div>
+      </li>`).hide(0)
+    $('ul#added-claims').scrollTop(0);
+    $('ul#added-claims').prepend(listTemplate);
+    listTemplate.slideDown(750);
+    $('button#addClaimButton').remove();
+    bindAddButton();
+  }
+
+  function validateItem(pid, pidLabel, qid, type){
+    $.post("/api-get-qid-label", {qid:qid}, function(response){
+      response = JSON.parse(response);
+      console.log(response);
+      createItemClaim(pid, pidLabel, response, type);
+    }).fail(function(error){
+      console.log(error);
+    })
+  }
+
+  function lookupItem(string){
+    var list = $('ul#lookup-results-list').hide(1000);
+    $.post("/api-lookup-item", {string:string}, function(response){
+      response = JSON.parse(response)
+      console.log(response)
+      list.empty()
+      for (var opt = 0; opt < response.length; opt++){
+        var item = response[opt]
+        var qid = item.id
+        var description = item.description
+        if (!description.length){
+          description = 'this item has no description'
+        }
+        list.append(`
+          <li class="lookup-result-li">
+            <div class="result-main" id="result-main-${qid}" data-qid="${qid}">
+              <button data-clipboard-text="${qid}" class="pull-left clipboardBtn" id="clipboardBtn-${qid}" data-qid="${qid}"><i class="fa fa-clipboard"></i> </button>
+              <span class="result-label">${item.label}</span></br>
+              ${qid} <span class="glyphicon glyphicon-menu-down"></span>
+            </div>
+            <div class="result-sub" id="result-sub-${qid}">
+           <i> &mdash; ${description} &mdash; </i></br></br>
+            <span class="sub-aka"><b>Also Referred To As:</b> ${item.aliases}</span>
+            </div>
+          </li>
+          `);
+        var btn = document.getElementById('clipboardBtn-'+qid);
+        // Thanks to https://clipboardjs.com/ for this object below
+        var clipboard = new Clipboard(btn);
+        clipboard.on('success', function(e) {
+          console.log(e);
+        });
+        clipboard.on('error', function(e) {
+          console.log(e);
+        });
+      }
+      $('div.result-main').click(function(){
+        var id = $(this).data('qid');
+        console.log('calling--> ', id);
+        $('div#result-sub-'+id).slideToggle('slow');
+      })
+      list.fadeIn(1000);
+      // createItemClaim(pid, pidLabel, response, type)
+    }).fail(function(error){
+      console.log(error)
+    })
+  }
+
+  function claimFormValidation(){
+    var select = $(':selected', $('select#create-claim-property'))
+    var type = select.data('type')
+    var input = $('input#claim-value')
+    var pid = select.data('pid')
+    var value = input.val()
+    if (value.length == 0){
+      return console.log('no content')
+    }
+    switch(type){
+      case 'item':
+        validateItem(pid,
+        select.text().trim(), 'Q'+value, type)
+        break;
+      default:
+        // TO DO: HAVE A CASE FOR EX-IDS AND URL'S
+        console.log('form validated');
+        createBasicClaim(pid,
+        select.text().trim(), value, type);
+        break;
+    }
+    return $('#saveClaimsLi').show()
+  }
+  function save_claims(){
+    var data = serializeClaimList()
+    console.log('STR->', JSON.stringify(data))
+    $.ajax({
+      type: 'POST',
+      url: "/api/{{selected['label'][0]}}/claims/write",
+      dataType: 'json',
+      contentType: 'application/json; charset=utf-8',
+      data: JSON.stringify(data),
+      success: function(response){
+        console.log(response)
+      },
+      error: function(error){
+        console.log(error)
+      }
+
+    })
+
+
+  }
+
+  $("input#lookup-input").keyup(function(event){
+      if(event.keyCode == 13){
+        lookupItem(this.value)
+      }
+  });
+  </script>
+{% endblock item_content %}

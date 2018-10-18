@@ -1,0 +1,13 @@
+{% extends "page.html" %}
+{% block title %}{{page}} {% endblock %}
+{% block page_content %}
+<div id="panel-frame" class="{{page}}-page" data-qid="{{selected['label'][0]}}">
+  <div id="sidebar-frame">
+		{% include "sidebar.html" %}
+  </div>
+  <div id="content-frame">
+    {% block item_content %}
+    {% endblock item_content %}
+  </div>
+</div>
+{% endblock page_content %}
