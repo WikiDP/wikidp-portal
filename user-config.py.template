@@ -1,0 +1,10 @@
+mylang = 'en'
+family = 'wikidata'
+usernames[family][mylang] = u'<username>'
+
+authenticate['wikidata.org'] = ('<username>','<password>')
+console_encoding = 'utf-8'
+
+usernames[family]['test'] = u'<username>'
+
+authenticate['test.wikidata.org'] = ('<username>','<password>')
