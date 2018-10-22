@@ -99,6 +99,14 @@ def test_route_page_selected_item(client):
     response = client.get('/'+settings.SAMPLE_QID_NOT_EXIST, follow_redirects=True)
     assert response.status_code == 404
 
+def test_route_page_selected_item__lowercase(client):
+    """Test the client loads the preview of sample item using lowercase id  """
+    response = client.get('/'+settings.SAMPLE_QID.lower(), follow_redirects=True)
+    assert response.status_code == 200
+    assert bytes(settings.SAMPLE_QID, encoding='utf-8') in response.data
+    response = client.get('/'+settings.SAMPLE_QID_NOT_EXIST.lower(), follow_redirects=True)
+    assert response.status_code == 404
+
 def test_route_item_preview(client):
     """Test the client loads the preview of sample item  """
     response = client.get('/'+settings.SAMPLE_QID+'/preview', follow_redirects=True)

@@ -13,6 +13,9 @@
 import logging
 from wikidp import APP
 
+# Import Routing converters
+from wikidp.routing_converters import *
+
 # Import Application Routes from '/routes' directory
 from wikidp.routes.pages import *
 from wikidp.routes.forms import *

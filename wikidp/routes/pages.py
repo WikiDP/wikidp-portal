@@ -33,13 +33,12 @@ def route_page_error():
     """Displays a 500 error page."""
     return abort(500)
 
-@APP.route("/q<id>")
-@APP.route("/Q<id>")
-def route_page_selected_item(id):
+@APP.route("/<item:qid>")
+def route_page_selected_item(qid):
     """If the item ID is already known, the user can enter in the url"""
-    return redirect('/Q'+id+'/preview')
+    return redirect('/'+qid+'/preview')
 
-@APP.route("/<qid>/preview")
+@APP.route("/<item:qid>/preview")
 def route_item_preview(qid):
     """If the item ID is already known, the user can enter in the url"""
     try:
@@ -48,7 +47,7 @@ def route_item_preview(qid):
     except:
         return abort(404)
 
-@APP.route("/<qid>/contribute")
+@APP.route("/<item:qid>/contribute")
 def route_item_contribute(qid):
     """Handles a user's contributed statements."""
     try:
@@ -57,7 +56,7 @@ def route_item_contribute(qid):
     except:
         return abort(404)
 
-@APP.route("/<qid>/checklist/<path:schema>")
+@APP.route("/<item:qid>/checklist/<path:schema>")
 def route_item_checklist_by_schema(qid, schema):
     """ """
     properties = pages_controller.get_checklist_context(qid, schema)
