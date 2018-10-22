@@ -23,7 +23,7 @@ def route_api_search_item_by_string(search_string):
     """User posts a string and returns list of json of (id, label, description, aliases)"""
     return api_controller.search_item_by_string(search_string)
 
-@APP.route("/api/<qid>/label", methods=['GET', 'POST'])
+@APP.route("/api/<item:qid>/label", methods=['GET', 'POST'])
 def route_api_get_item_label(qid):
     """User posts a item-id and returns json of (id, label, description, aliases)"""
     return api_controller.get_item_label(qid)
@@ -33,7 +33,7 @@ def route_api_get_properties_by_schema(schema_name):
     return api_controller.get_property_checklist_from_schema(schema_name)
 
 
-@APP.route("/api/<qid>/claims/write", methods=['POST'])
+@APP.route("/api/<item:qid>/claims/write", methods=['POST'])
 def route_api_write_claims_to_item(qid):
     """ User posts a JSON object of claims to contribute to an item"""
     return api_controller.write_claims_to_item(qid)
