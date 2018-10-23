@@ -9,31 +9,13 @@
 # License, Version 3. See the text file "COPYING" for further details
 # about the terms of this license.
 #
-"""Unit tests for WikiData reads."""
-from unittest import TestCase
+"""Client tests for WikiDP Routes."""
 import pytest
-from flask import jsonify, json
-import pywikibot
-from wikidataintegrator import wdi_core
-from wikidataintegrator.wdi_core import WDItemEngine
+from flask import json
 
 from tests import settings
 from wikidp import APP
-from wikidp.model import FileFormat, PuidSearchResult
 
-SANDBOX_API_URL = 'https://test.wikidata.org/w/'
-SANDBOX_SPARQL_URL = 'https://test.wikidata.org/proxy/wdqs/bigdata/namespace/wdq/'
-SITE = pywikibot.Site("test", "wikidata")
-REPO = SITE.data_repository()
-
-
-# class APITests(TestCase):
-#     def test_search_item_by_string(self):
-#         """Queries Wikidata for formats and returns a list of FileFormat instances."""
-#         results = api.search_item_by_string('grace hopper')
-#
-#         assert results, \
-#         'Format read returned no results'
 
 @pytest.fixture
 def client(request):
@@ -215,6 +197,11 @@ def test_route_api_get_item_label(client):
     assert response.status_code == 200
     assert json_response(response)['id'] == 'Q7715973'
 
+def test_route_api_get_property(client):
+    response = client.get('/api/'+settings.SAMPLE_PID_STRING)
+    assert response.status_code == 200
+    assert json_response(response)['id']['value'] == settings.SAMPLE_PID_STRING
+    assert 'propertyLabel' in json_response(response)
 
 def test_route_api_get_schema_properties__with_category(client):
     response = client.get('/api/schema/file_format/file_format_minimal.json/properties')

@@ -65,6 +65,11 @@ def get_schema_properties(schema_name):
     output = remove_duplicates_from_list(exps)
     return output
 
+def get_property(pid, source='client'):
+    property_details = sparql_controller.get_property_details_by_pid_list([pid])
+    output = property_details['results']['bindings'][0]
+    return jsonify(output) if source is 'client' else output
+
 def get_property_checklist_from_schema(schema_name, source='client'):
     pid_list = get_schema_properties(schema_name)
     if pid_list:

@@ -25,11 +25,11 @@ def get_item_context(qid):
     return selected_item, options, schemas
 
 def get_checklist_context(qid, schema):
+    checklist = get_property_checklist_from_schema(schema, source='server')
+    if checklist == []:
+        return []
     selected_item = DF.item_detail_parse(qid)
     counts = selected_item['prop-counts']
-    checklist = get_property_checklist_from_schema(schema, source='server')
-    if checklist is False:
-        return []
     output = [{
                 "pid": prop['id']['value'],
                 "label": prop['propertyLabel']['value'],

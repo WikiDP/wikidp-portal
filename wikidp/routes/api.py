@@ -28,6 +28,10 @@ def route_api_get_item_label(qid):
     """User posts a item-id and returns json of (id, label, description, aliases)"""
     return api_controller.get_item_label(qid)
 
+@APP.route("/api/<prop:pid>", methods=['GET', 'POST'])
+def route_api_get_property(pid):
+    return api_controller.get_property(pid)
+
 @APP.route("/api/schema/<path:schema_name>/properties")
 def route_api_get_properties_by_schema(schema_name):
     return api_controller.get_property_checklist_from_schema(schema_name)
