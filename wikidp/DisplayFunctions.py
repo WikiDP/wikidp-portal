@@ -25,28 +25,17 @@ from wikidataintegrator import wdi_core
 
 from wikidp import APP
 from wikidp.const import ConfKey
+from wikidp.utils import (
+    list_sorting_by_length,
+    dict_sorting_by_length,
+    time_formatter
+)
 
 # Global Variables:
 URL_CACHE, PID_CACHE = {}, {}
 LANG = APP.config[ConfKey.WIKIDATA_LANG]
 FALLBACK_LANG = APP.config[ConfKey.WIKIDATA_FB_LANG]
 CACHE_DIR = APP.config['CACHE_DIR']
-
-def search_result_list(string):
-    """Uses wikidataintegrator to generate a list of similar items based on a text search
-    and returns a list of (qid, Label, description, aliases) dictionaries"""
-    options = wdi_core.WDItemEngine.get_wd_search_results(string, language=LANG)
-    if len(options) > 10:
-        options = options[:10]
-    output = []
-    for opt in options:
-        try:
-            opt = qid_to_basic_details(opt)
-            output.append(opt)
-        # skip those that wdi can not process
-        except Exception as _e:
-            logging.exception("Untyped exception caught")
-    return output
 
 def item_detail_parse(qid):
     """Uses the JSON representation of wikidataintegrator to parse the item ID specified (qid)
@@ -268,12 +257,6 @@ def pid_label(pid):
             logging.exception("Error finding property label: %s", pid)
             return "Unknown Property Label"
 
-def time_formatter(time):
-    """Converts wikidata's time json to a human readable string"""
-    try:
-        return datetime.datetime.strptime(time, '+%Y-%m-%dT%H:%M:%SZ').strftime("%A, %B %-d, %Y")
-    except:
-        return time
 
 def url_formatter(pid, value):
     """Inputs property identifier (P###) for a given url type, lookes up that
@@ -308,13 +291,6 @@ def image_url(title):
     except:
         return "https://commons.wikimedia.org/wiki/File:"+title
 
-def list_sorting_by_length(elem):
-    """Auxiliary sorting key function at the list level"""
-    return len(elem[0])
-
-def dict_sorting_by_length(elem):
-    """Auxiliary sorting key function at the dictionary level"""
-    return len(elem[0][0])
 
 def caching_label(label_id, label, file_name):
     """Auxiliary function to cache information {not currently called by any function}"""

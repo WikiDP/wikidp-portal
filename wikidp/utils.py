@@ -1,6 +1,7 @@
 import re
 from os import listdir
 from os.path import isfile, join, splitext
+from datetime import datetime
 
 ITEM_REGEX = "(Q|q)\d+"
 PROPERTY_REGEX = "(P|p)\d+"
@@ -27,3 +28,20 @@ def get_directory_filenames_with_subdirectories(directory_path):
 
 def remove_extension_from_filename(filename_string):
     return splitext(filename_string)[0]
+
+def list_sorting_by_length(elem):
+    """Auxiliary sorting key function at the list level"""
+    return len(elem[0])
+
+def dict_sorting_by_length(elem):
+    """Auxiliary sorting key function at the dictionary level"""
+    return len(elem[0][0])
+
+
+def time_formatter(time):
+    """Converts wikidata's time json to a human readable string"""
+    try:
+        formatted_time = datetime.strptime(time, '+%Y-%m-%dT%H:%M:%SZ')
+        return formatted_time.strftime("%A, %B %-d, %Y")
+    except Exception:
+        return time

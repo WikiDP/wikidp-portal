@@ -11,28 +11,31 @@
 #
 """ Flask application routes for Wikidata portal. """
 import logging
-import re
 
-from flask import render_template, request, json, redirect, jsonify
-from wikidp import APP
-from wikidp.utils import remove_duplicates_from_list, get_pid_from_string
-from wikidp.const import ConfKey
-from wikidp.model import FileFormat, PuidSearchResult
-from wikidp.controllers import sparql as sparql_controller
-import wikidp.DisplayFunctions as DF
+from flask import request, json, jsonify
 import pywikibot
+
+from wikidp.utils import remove_duplicates_from_list, get_pid_from_string
+from wikidp.controllers import (
+    sparql as sparql_controller,
+    search as search_controller
+)
+import wikidp.DisplayFunctions as DF
+
 SANDBOX_API_URL = 'https://test.wikidata.org/w/'
 SANDBOX_SPARQL_URL = 'https://test.wikidata.org/proxy/wdqs/bigdata/namespace/wdq/'
 SITE = pywikibot.Site("test", "wikidata")
 REPO = SITE.data_repository()
 SCHEMA_DIRECTORY_PATH = 'wikidp/schemas/'
 
+
 def search_item_by_string(search_string):
-    """User posts a string and returns list of json of (id, label, description, aliases)"""
+    """Post string, returns list of json of (id, label, desc, aliases) ."""
     logging.debug("Processing user POST request.")
     string = search_string.strip()
-    output = DF.search_result_list(string)
+    output = search_controller.search_result_list(string)
     return jsonify(output)
+
 
 def get_item_label(qid):
     """User posts a item-id and returns json of (id, label, description, aliases)"""
@@ -40,12 +43,14 @@ def get_item_label(qid):
     output = DF.qid_to_basic_details(qid)
     return jsonify(output)
 
+
 def load_schema(schema_name):
     try:
         with open(SCHEMA_DIRECTORY_PATH+schema_name) as data_file:
             return json.load(data_file)
     except Exception as e:
         return False
+
 
 def get_schema_properties(schema_name):
     data = load_schema(schema_name)
@@ -65,10 +70,12 @@ def get_schema_properties(schema_name):
     output = remove_duplicates_from_list(exps)
     return output
 
+
 def get_property(pid, source='client'):
     property_details = sparql_controller.get_property_details_by_pid_list([pid])
     output = property_details['results']['bindings'][0]
     return jsonify(output) if source is 'client' else output
+
 
 def get_property_checklist_from_schema(schema_name, source='client'):
     pid_list = get_schema_properties(schema_name)
@@ -79,11 +86,12 @@ def get_property_checklist_from_schema(schema_name, source='client'):
         output = []
     return jsonify(output) if source is 'client' else output
 
+
 def write_claims_to_item(qid):
     logging.debug("Processing user POST request.")
     user_claims = request.get_json()
     successful_claims, failure_claims = [], []
-    item = pywikibot.ItemPage(REPO, u"Q175461") # WIKIDATA TESTING ITEM
+    item = pywikibot.ItemPage(REPO, u"Q175461")  # WIKIDATA TESTING ITEM
     # item = pywikibot.ItemPage(REPO, qid)
     for user_claim in user_claims:
         write_status = write_claim(item, user_claim['pid'], user_claim['value'], user_claim['type'])
@@ -94,17 +102,19 @@ def write_claims_to_item(qid):
     output = {'status': 'success', 'successful_claims': successful_claims, 'failure_claims':failure_claims}
     return jsonify(output)
 
+
 def write_claim(item, property, value, type, meta=False):
-    '''Function for writing a claim to WikiData
+    """Write a claim to WikiData.
 
     Args:
         item (pywikibot.ItemPage): Wikidata Item Model
         property (str): Wikidata Property Identifier [ex. 'P1234']
-        value (str): Value matching accepted property type (could be other datatypes)
-        meta (dict, optional): Contains information about qualifiers/references/summaries
+        value (str): Value matching accepted property type (could be other
+        datatypes) meta (dict, optional): Contains information about
+        qualifiers/references/summaries
     Returns:
         bool: True if successful, False otherwise
-    '''
+    """
     try:
         # TODO: Account for all dataTypes
         claim = pywikibot.Claim(REPO, property)
@@ -117,5 +127,5 @@ def write_claim(item, property, value, type, meta=False):
         claim.setTarget(target)
         item.addClaim(claim, summary=u'Adding claim')
         return True
-    except Exception as e:
+    except Exception:
         return False

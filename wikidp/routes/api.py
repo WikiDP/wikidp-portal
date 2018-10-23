@@ -9,28 +9,34 @@
 # License, Version 3. See the text file "COPYING" for further details
 # about the terms of this license.
 #
-""" Flask application api routes for Wikidata portal. """
+"""Flask application api routes for Wikidata portal."""
+
 from wikidp import APP
 from wikidp.controllers import api as api_controller
+
 
 @APP.route("/api/")
 def route_api_welcome():
     """Landing Page API index"""
     return 'Welcome to the WikiDP API'
 
-@APP.route("/api/search/<search_string>", methods=['GET','POST'])
+
+@APP.route("/api/search/<search_string>", methods=['GET', 'POST'])
 def route_api_search_item_by_string(search_string):
-    """User posts a string and returns list of json of (id, label, description, aliases)"""
+    """Post string, returns list of json of (id, label, desc, aliases) ."""
     return api_controller.search_item_by_string(search_string)
+
 
 @APP.route("/api/<item:qid>/label", methods=['GET', 'POST'])
 def route_api_get_item_label(qid):
-    """User posts a item-id and returns json of (id, label, description, aliases)"""
+    """User posts a item-id and returns json of (id, label, desc, aliases) ."""
     return api_controller.get_item_label(qid)
+
 
 @APP.route("/api/<prop:pid>", methods=['GET', 'POST'])
 def route_api_get_property(pid):
     return api_controller.get_property(pid)
+
 
 @APP.route("/api/schema/<path:schema_name>/properties")
 def route_api_get_properties_by_schema(schema_name):
