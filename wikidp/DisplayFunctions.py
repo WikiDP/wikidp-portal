@@ -15,7 +15,6 @@ import logging
 import os
 import errno
 import json
-import pickle
 import urllib.request
 import datetime
 from lxml import html
@@ -31,11 +30,15 @@ from wikidp.utils import (
     time_formatter
 )
 
+from wikidp.controllers import (
+    wikimedia as wikimedia_controller,
+    api as api_controller
+)
+
 # Global Variables:
-URL_CACHE, PID_CACHE = {}, {}
 LANG = APP.config[ConfKey.WIKIDATA_LANG]
 FALLBACK_LANG = APP.config[ConfKey.WIKIDATA_FB_LANG]
-CACHE_DIR = APP.config['CACHE_DIR']
+
 
 def item_detail_parse(qid):
     """Uses the JSON representation of wikidataintegrator to parse the item ID specified (qid)
@@ -45,7 +48,7 @@ def item_detail_parse(qid):
     except:
         logging.exception("Exception reading QID: %s", qid)
         return False
-    load_caches()
+
     label = item.get_label(lang=LANG) if item.get_label(lang=LANG) != '' else item.get_label(lang=FALLBACK_LANG)
     item = item.wd_json_representation
     output_dict = {'label': [qid, label], 'claims':{}, 'refs':{},
@@ -60,11 +63,13 @@ def item_detail_parse(qid):
         output_dict['description'] = [x['value'] for x in item['descriptions'].get(LANG) or item['descriptions'][FALLBACK_LANG]]
     except:
         pass
+    properties = api_controller.get_property([claim for claim in item['claims']], source="server", multiple=True)
+    cached_property_labels = {prop['id']['value']: prop['propertyLabel']['value'] for prop in properties}
     for claim in item['claims']:
         count = 0
-        label = pid_label(claim)
+        property_label = cached_property_labels[claim]
         for json_details in item['claims'][claim]:
-            count = parse_claims(claim, label, json_details, count, output_dict)
+            count = parse_claims(claim, property_label, json_details, count, output_dict, cached_property_labels)
             if count > 0:
                 count_dict[claim] = count
     output_dict['claims'] = OrderedDict(sorted(output_dict['claims'].items()))
@@ -72,11 +77,10 @@ def item_detail_parse(qid):
                                                key=dict_sorting_by_length))
     output_dict['categories'] = sorted(sorted(output_dict['categories']),
                                        key=list_sorting_by_length)
-    save_caches()
     output_dict['prop-counts'] = count_dict
     return output_dict
 
-def parse_claims(claim, label, json_details, count, output_dict):
+def parse_claims(claim, property_label, json_details, count, output_dict, cached_property_labels):
     """ Uses the json_details dictionary of a single claim and outputs
     the parsed data into the output_dict. """
     #Parsing references
@@ -89,8 +93,8 @@ def parse_claims(claim, label, json_details, count, output_dict):
             ref_list = json_details['references'][0]
             for snak in ref_list['snaks-order']:
                 pid = ref_list['snaks'][snak][0]['property']
-                ref_val = parse_by_datatype(ref_list['snaks'][snak][0]['datavalue']['value'])
-                reference.append((pid, pid_label(pid), ref_val))
+                ref_val = parse_by_datatype(ref_list['snaks'][snak][0]['datavalue']['value'], cached_property_labels)
+                reference.append((pid, pid_label(pid, cached_property_labels), ref_val))
                 ref_num += 1
         val = ["error at the "]
         size = 1
@@ -98,20 +102,20 @@ def parse_claims(claim, label, json_details, count, output_dict):
         if 'datavalue' in json_details['mainsnak']:
             data_type = json_details['mainsnak']['datavalue']['type']
             data_value = json_details['mainsnak']['datavalue']['value']
-            val, size = get_value_of_claim(data_type, data_value)
+            val, size = get_value_of_claim(data_type, data_value, cached_property_labels)
         try:
             data_type = json_details['mainsnak']['datatype']
             if data_type == 'external-id':
-                output_dict['ex-ids'][(claim, label, val, url_formatter(claim, val))].append(val)
+                output_dict['ex-ids'][(claim, property_label, val, format_url_from_property(claim, val))].append(val)
             else:
-                output_dict['claims'][(claim, label, size)].append(val)
+                output_dict['claims'][(claim, property_label, size)].append(val)
             if ref_num > 0:
                 output_dict['refs'][(claim, val[0])] = reference
         except:
             if data_type == 'external-id':
-                output_dict['ex-ids'][(claim, label, val, url_formatter(claim, val))] = [val]
+                output_dict['ex-ids'][(claim, property_label, val, format_url_from_property(claim, val))] = [val]
             else:
-                output_dict['claims'][(claim, label, size)] = [val]
+                output_dict['claims'][(claim, property_label, size)] = [val]
             if ref_num > 0:
                 output_dict['refs'][(claim, val[0])] = reference
         #Determining the 'category' of the item from the 'instance of' and 'subclass of' properties
@@ -120,14 +124,14 @@ def parse_claims(claim, label, json_details, count, output_dict):
             #In the event the value is a image file, it converts the title to the image's url
         elif claim in ["P18", "P154"]:
             original = json_details['mainsnak']['datavalue']['value']
-            output_dict["claims"][(claim, label, size)].append(image_url(original))
-            output_dict["claims"][(claim, label, size)].remove(original)
+            output_dict["claims"][(claim, property_label, size)].append(wikimedia_controller.get_image_url_from_title(original))
+            output_dict["claims"][(claim, property_label, size)].remove(original)
         count += 1
     except Exception as _e:
         logging.exception("Unexpected exception parsing claims.")
     return count
 
-def parse_by_datatype(data):
+def parse_by_datatype(data, cached_property_labels=False):
     """ Checks the datatype of the current data value to determine how
     to return as a string or ID-label tuple. """
     data_type = type(data)
@@ -143,10 +147,10 @@ def parse_by_datatype(data):
             data = time_formatter(data['time'])
         elif 'entity-type' in keys:
             if 'id' in keys:
-                data = id_to_label_list(data['id'])
+                data = id_to_label_list(data['id'], cached_property_labels)
     return data
 
-def get_value_of_claim(data_type, data_value):
+def get_value_of_claim(data_type, data_value, cached_property_labels):
     """Uses a data type to determine how to format the value in the dictionary"""
     val, size = ["error at the "], 1
     if data_type == 'string':
@@ -158,7 +162,7 @@ def get_value_of_claim(data_type, data_value):
             size = 2
         elif data_value['entity-type'] == 'property':
             val = 'P'+str(data_value['numeric-id'])
-            val = [val, pid_label(val)]
+            val = [val, pid_label(val, cached_property_labels)]
             size = 2
         else:
             val = [val[0]+"entity-type level"]
@@ -168,136 +172,38 @@ def get_value_of_claim(data_type, data_value):
         val = [val[0] + "type level " + data_type]
     return val, size
 
-def _setup_cache_dir():
-    try:
-        os.makedirs(CACHE_DIR)
-    except OSError as _e:
-        if _e.errno != errno.EEXIST:
-            logging.exception("Cannot create cache directory %s", CACHE_DIR)
-            raise
 
-def load_caches():
-    """Uses pickle to load all caching files as global variables"""
-    logging.debug("Loading the caches with LANG %s", LANG)
-    global URL_CACHE, PID_CACHE
-
-    URL_CACHE = _pickle_cache_read("url-formats")
-    PID_CACHE = _pickle_cache_read("property-labels")
-
-def _pickle_cache_read(cache_name):
-    pickle_file = os.path.join(CACHE_DIR, cache_name)
-    try:
-        with open(pickle_file, "rb") as _f:
-            return pickle.load(_f)
-    except FileNotFoundError:
-        logging.info("Cache file not found: %s.", pickle_file)
-    return {}
-
-def save_caches():
-    """Uses pickle to save global variables to caching files in order to update"""
-    global URL_CACHE, PID_CACHE
-    _pickle_cache_persist("url-formats", URL_CACHE)
-    _pickle_cache_persist("property-labels", PID_CACHE)
-
-def _pickle_cache_persist(cache_name, cache_dict):
-    pickle_file = os.path.join(CACHE_DIR, cache_name)
-    with open(pickle_file, "wb") as _f:
-        pickle.dump(cache_dict, _f)
-
-def id_to_label_list(wikidata_id):
+def id_to_label_list(wikidata_id, cached_property_labels=False):
     """Takes in an id (P## or Q##) and returns a list of that entity's label and id"""
     if wikidata_id[0].lower() == 'p':
-        return [wikidata_id, pid_label(wikidata_id)]
+        return [wikidata_id, pid_label(wikidata_id, cached_property_labels)]
     return [wikidata_id]
     # return [wikidata_id, qid_label(wikidata_id)]
 
-def qid_label(qid):
-    """Converts item identifier (Q###) to a label and updates the cache"""
-    ## TO DO: Add step to try using wikidataintegrator as second option
-    try:
-        item = pywikibot.ItemPage(pywikibot.Site('wikidata', 'wikidata').data_repository(), qid)
-        item.get()
-        label = item.labels[LANG]
-        return label
-    except:
-        try:
-            item = pywikibot.ItemPage(pywikibot.Site('wikidata', 'wikidata').data_repository(), qid)
-            item.get()
-            label = item.labels.get(LANG, item.labels[FALLBACK_LANG]) # get the item in the language or in the fallback
-            return label
-        except:
-            logging.exception("Unexpected exception finding QID label: %s", qid)
-            return "Unknown Item Label"
+def pid_label(pid, cached_values=False):
+    """Convert property identifier (P###) to a label and updates the cache."""
+    if cached_values is not False and pid in cached_values:
+        return cached_values[pid]
+    property = api_controller.get_property(pid, source='server')
+    if property is False:
+        property_label = "property "+pid
+    else:
+        property_label = property['propertyLabel']['value']
+    if cached_values is not False:
+        cached_values[pid] = property_label
+    return property_label
 
 
-def pid_label(pid):
-    """Converts property identifier (P###) to a label and updates the cache"""
-    global PID_CACHE
-    try:
-        return PID_CACHE[pid]
-    except:
-        try:
-            # Use the API in order to get the full Property in JSON with all the language alternatives
-            payload = {
-                'action': 'wbgetentities',
-                'ids': pid,
-                'languages': '|'.join([LANG, FALLBACK_LANG]),
-                'languagefallback': 'true',
-                'props': 'labels',
-                'format': 'json'
-            }
-            page = requests.get('https://www.wikidata.org/w/api.php', params=payload)
-            jpage = page.json()
-            labels=jpage['entities'][pid]['labels']
-            title = labels.get(LANG, labels.get(FALLBACK_LANG))['value']
-            # title = title[0][:-10]
-            PID_CACHE[pid] = title
-            return title
-        except:
-            logging.exception("Error finding property label: %s", pid)
-            return "Unknown Property Label"
-
-
-def url_formatter(pid, value):
+def format_url_from_property(pid, value):
     """Inputs property identifier (P###) for a given url type, lookes up that
     pid's url format (P1630) and creates a url with the value using the format"""
-    global URL_CACHE
     value = value.strip()
-    if pid in URL_CACHE:
-        base = URL_CACHE[pid]
+    property = api_controller.get_property(pid, source='server')
+    if 'formatter_url' in property:
+        return property['formatter_url']['value'].replace("$1", value)
     else:
-        try:
-            url = urllib.request.urlopen("https://www.wikidata.org/wiki/Special:EntityData/%s.json"%(pid))
-            base = json.loads(url.read().decode())
-            URL_CACHE[pid] = base['entities'][pid]['claims']['P1630'][0]['mainsnak']['datavalue']['value']
-        except:
-            return "unavailable"
-    base = base.replace("$1", value)
-    return base
+        return "unavailable"
 
-def image_url(title):
-    """Converts the title of an image to the url location of that file it describes"""
-    # TO DO: Url's do not work with non-ascii characters
-    #    For example, the title of the image for Q267193 [Submlime Text]
-    #    is "Скриншот sublime text 2.png"
-    title = title.replace(" ", "_")
-    url = "https://commons.wikimedia.org/w/api.php?action=query&prop=imageinfo&iiprop=url&titles=File:%s&format=json"%(title)
-    try:
-        url = urllib.request.urlopen(url)
-        base = json.loads(url.read().decode())["query"]["pages"]
-        for item in base:
-            out = base[item]["imageinfo"][0]["url"]
-        return out
-    except:
-        return "https://commons.wikimedia.org/wiki/File:"+title
-
-
-def caching_label(label_id, label, file_name):
-    """Auxiliary function to cache information {not currently called by any function}"""
-    url = "wikidp/caches/"+file_name
-    props = pickle.load(open(url, "rb"))
-    props[label_id] = label
-    pickle.dump(props, open(url, "wb"))
 
 def qid_to_basic_details(qid):
     """Input item qid and returns a tuple: (qid, label, description) using WikiDataIntegrator"""
@@ -309,15 +215,3 @@ def qid_to_basic_details(qid):
         "description": (item.get_description(lang=LANG) or item.get_description(lang=FALLBACK_LANG)).replace("'","&#39;"),
         "aliases": item.get_aliases(lang=LANG) or item.get_aliases(lang=FALLBACK_LANG)
     }
-
-_setup_cache_dir()
-load_caches()
-
-# Testing function calls/data structure references:
-# -------------------------------------------------
-# search_result_list("Debian")
-# search_result_list("google")
-# item_detail_parse("Q131346")
-# ('P31', 'Instance of', 2)
-# ('P279', 'Subclass of', 2)
-# item_detail_parse("Q7593")

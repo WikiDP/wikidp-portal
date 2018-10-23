@@ -12,11 +12,14 @@ def convert_list_to_value_string(lst):
 def get_property_details_by_pid_list(pid_list):
     values = convert_list_to_value_string(pid_list)
     query_string = """
-            SELECT  (STRAFTER(STR(?property), 'entity/') as ?id) ?property ?propertyType ?propertyLabel ?propertyDescription ?propertyAltLabel  (STRAFTER(STR(?propertyType), '#') as ?valueType)
+            SELECT  (STRAFTER(STR(?property), 'entity/') as ?id) ?property ?propertyType ?propertyLabel ?propertyDescription ?propertyAltLabel  (STRAFTER(STR(?propertyType), '#') as ?valueType) ?formatter_url
             WHERE {{
             VALUES (?property) {{ {values} }}
             ?property wikibase:propertyType ?propertyType .
-              SERVICE wikibase:label {{ bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }}
+            OPTIONAL {{
+              ?property wdt:P1630 ?formatter_url.
+            }}
+            SERVICE wikibase:label {{ bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }}
             }}
             ORDER BY ASC(xsd:integer(STRAFTER(STR(?property), 'P')))
         """.format(values=values)

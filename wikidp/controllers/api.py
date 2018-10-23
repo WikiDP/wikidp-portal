@@ -71,9 +71,13 @@ def get_schema_properties(schema_name):
     return output
 
 
-def get_property(pid, source='client'):
-    property_details = sparql_controller.get_property_details_by_pid_list([pid])
-    output = property_details['results']['bindings'][0]
+def get_property(pid, source='client', multiple=False):
+    if multiple is False:
+        pid = [pid]
+    property_details = sparql_controller.get_property_details_by_pid_list(pid)
+    output = property_details['results']['bindings']
+    if multiple is False:
+        output = output[0]
     return jsonify(output) if source is 'client' else output
 
 
