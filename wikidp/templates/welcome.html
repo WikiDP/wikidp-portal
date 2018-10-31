@@ -6,8 +6,8 @@
 	<div class="greeting-message"><img alt="Portal logo." title="portal logo" src="{{ url_for('static', filename='img/WikiData_Logo.png') }}" /> </div>
 	<div id="searchbar_container">
 		<form action="/search" method="POST" role="search">
-		<input class="welcome-searchbar" type="" name="userInput" placeholder="search for file formats, software applications, software environments, etc ....">
-		<button type="submit">
+		<input class="welcome-searchbar" type="" name="userInput" aria-label="site search input" placeholder="search for file formats, software applications, software environments, etc ....">
+		<button name="submit-search" type="submit" aria-label="site search submit">
 		<span class="glyphicon glyphicon-search"></span> </button>
 		</form>
 	</div>

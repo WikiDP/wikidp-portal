@@ -10,7 +10,7 @@
 		{% endif %}
 		<div id="languageSelectDiv">
 			Language:
-			<select name="" id="languageSelect">
+			<select name="" id="languageSelect"  aria-label="Select a Language for Item Labels">
 				<option value="en">English</option>
 				<option value="fr">French</option>
 				<option value="es">Spanish</option>
@@ -27,7 +27,7 @@
 					<table  class="table claims-table table-responsive table-striped table-hover">
 
 				{% for clm in selected['claims']%}
-					<tr>
+					<tr data-pid="{{clm[0]}}">
 						<td class="invert-col">
 							{{ clm[1] }}
 							<a target="_blank" href="https://wikidata.org/wiki/property:{{clm[0]}}" class="">
@@ -52,7 +52,7 @@
 									{% elif clm[2] == 1%}
 										{% if clm[0] == 'P18' or clm[0] == 'P154' %}
 											<a target="_blank" href="{{sub}}">
-												<img class="property-image" src="{{sub}}" style="border:0;" width="80%">
+												<img class="property-image" src="{{sub}}" style="border:0;" width="80%" alt="image for {{selected['label'][1]}}">
 											</a>
 										{% else %}
 											{{ sub }}
@@ -172,6 +172,14 @@
 	form.submit();
 	})
 	}
+	function sidebar_property_click(elm){
+		if($(elm).data('count') > 0){
+			$(`.claims-table tr[data-pid="${$(elm).data('pid')}"]`)[0].scrollIntoView({behavior: "smooth"})
+		}
+		else{
+			alert('There are currently no statements with this property recorded. If you know of some to add, click the contribute button to create a statement for this property.')
+		}
+  }
 		$('select#option-select').change(function(){
 			var list = $('option.item-option')
 			var options = []

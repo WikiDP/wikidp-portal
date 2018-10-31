@@ -16,7 +16,7 @@
   <!-- selected item -->
   <div class="selected-item-div">
     <div class="sidebar-header">selected item</div>
-    <select id="option-select" value="">
+    <select id="option-select" value=""  aria-label="Select an alternative wikidata item option">
     {% for option in options %}
     {% if option[0] != selected['label'][0] %}
 
@@ -31,26 +31,35 @@
     {% endfor %}
     </select>
   </div>
-
+  <!-- schema gallery -->
+  <div class="schema-gallery-div">
+    <div class="sidebar-header">selected schema</div>
+    <select id="schema-select" value="" aria-label="Select a Property Checklist Schema" onchange="load_property_checklist_by_schema(this.value)">
+      {% for schema in schemas %}
+        {% if schema is string %}
+          <option class="item-schema" data-schema_name="{{schema}}"  title="{{schema | file_to_label }}" value="{{schema}}">
+            {{schema | file_to_label }}
+          </option>
+        {% else %}
+          <optgroup label="{{schema[0] | file_to_label}}">
+            {% for sub_schema in schema[1] %}
+              {% if sub_schema is string %}
+                <option class="item-schema" data-schema_name="{{sub_schema}}"  title="{{sub_schema | file_to_label }}" value="{{schema[0]}}/{{sub_schema}}">
+                  {{sub_schema | file_to_label }}
+                </option>
+              {% endif %}
+            {% endfor %}
+          </optgroup>
+        {% endif %}
+      {% endfor %}
+    </select>
+  </div>
   <!-- property overview -->
   <div class="property-overview-div">
     <div class="sidebar-header">property checklist</div>
     <div id="sidebar-property-scroller" class="scroller">
     <ul id="sidebar-property-list" value="">
-      {% for property in selected['properties'] %}
-          {% if property[2] == 0%}
-            <li class="sidebar-property-li" data-pid="{{property[0]}}">
-              <span title="{{property[1]}} ({{property[0]}})" data-content-start="{{property[1]}} ({{property[0]}}) "
-data-content-end=  ""></span> <div class="sidebar-property-count">: 0</div>
 
-            </li>
-          {% else %}
-            <li class="sidebar-property-li property-ok" data-pid="{{property[0]}}">
-              <span title="{{property[1]}} ({{property[0]}})" data-content-start="{{property[1]}} ({{property[0]}}) "
-data-content-end=  ""></span> <div class="sidebar-property-count">: {{property[2]}} </div>
-            </li>
-          {% endif %}
-        {% endfor %}
     </ul></div>
   </div>
 </div>

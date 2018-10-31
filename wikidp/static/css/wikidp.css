@@ -211,21 +211,23 @@ div#sidebar-div {
     height: 100%;
     padding: 0;
     position: relative;
+    overflow-y: scroll;
 }
-div#sidebar-frame select#option-select {
+div#sidebar-frame select#option-select, div#sidebar-frame select#schema-select {
     width: 95%;
     background: none;
-    color: white;
+    color: #3a3a3a;
     font-size: 20px;
     font-weight: 300;
     letter-spacing: 1px;
     outline: none;
-    border: 1px solid rgba(84, 84, 84, 0.34);
+    border: none;
+    margin: 5px;
 }
 
 .sidebar-header {
     /*color: rgba(45, 116, 117, 0.61);*/
-    color: rgba(58, 58, 58, 0.33);
+    color: rgba(58, 58, 58, 1);
     letter-spacing: 2px;
     font-size: 14px;
     font-weight: 500;
@@ -238,29 +240,30 @@ div#sidebar-frame select#option-select {
 
 div#content-frame {
     width: 85%;
-    height: 100%;
+    min-height: 100%;
     padding-top: 20px;
     color: white;
+    overflow-y: scroll;
 }
 
 
-select#option-select {
+select#option-select, select#schem-select {
     width: 95%;
 }
 
 
 .property-overview-div {
-	    height: calc(100% - 236px);
+	    /* height: calc(100% - 236px); */
 	    /*overflow-y: scroll;*/
-	margin: 0 5px;
-    padding: 15px 5px;
-    color: white;
-    font-size: 13px;
-    font-weight: 400;
-    letter-spacing: 1px;
-    line-height: 1.8;
-    border-bottom: 1px solid rgba(220, 220, 220, 0.63);
-    border-top: 1px solid rgba(220, 220, 220, 0.63);
+	    margin: 10px 5px;
+	    padding: 15px 5px;
+	    color: white;
+	    font-size: 13px;
+	    font-weight: 400;
+	    letter-spacing: 1px;
+	    line-height: 1.8;
+	    border-bottom: 1px solid rgba(220, 220, 220, 0.63);
+	    border-top: 1px solid rgba(220, 220, 220, 0.63);
 }
 div#sidebar-property-scroller {
     overflow-y: scroll;
@@ -270,6 +273,7 @@ div#sidebar-property-scroller {
     display: block;
     color: rgb(255, 255, 255);
     text-align: left;
+		cursor: pointer;
 }
 .sidebar-property-count {
     display: inline;
@@ -521,11 +525,12 @@ div#statement-creation-frame ul {
 
 }
 div#creation-div {
-    background: #455b6d;
-    height: 100px;
+    background: #32434f;
+    min-height: 100px;
     /* border-bottom: 1px solid; */
     margin-bottom: 15px;
     opacity: 1;
+    padding: 20px 0;
 }
 div#creation-div:hover, div#creation-div:focus {
     opacity: 1;
@@ -565,8 +570,9 @@ button#addClaimButton.off {
 
 
 div#claims-list {
-	background: #455b6d;
-	height: calc(100% - 115px);
+	background: #32434f;
+	min-height: calc(100% - 115px);
+	padding: 20px 0;
 }
 
 div#lookup-header-div {
@@ -575,7 +581,7 @@ div#lookup-header-div {
     letter-spacing: 1px;
     text-transform: uppercase;
     font-size: 12px;
-    padding-top:  5px;
+    padding-top: 20px;
 }
 
 span.creation-section-header{
@@ -583,6 +589,7 @@ span.creation-section-header{
     font-weight: bold;
     letter-spacing: 2px;
     font-size: 18px;
+    margin-top: 40px;
 }
 span.creation-section-subtitle {
     font-weight: 100;
@@ -618,36 +625,44 @@ div.added-property-div {
     flex: 1;
     display: inline-block;
     padding: 15px;
+    background: #747b80;
 }
-li.string div.added-property-div {
+li.String div.added-property-div {
     background: #4bded4;
 }
 li.url div.added-property-div {
     background: #9864cc;
 }
-li.item div.added-property-div {
+li.WikibaseItem div.added-property-div {
     background: rgb(228, 174, 43);
 }
+li.ExternalId div.added-property-div {
+    background: #ce3c55;
+}
 div.added-value-div {
-	line-height: 1.2;
-	position: relative;
+    line-height: 1.2;
+    position: relative;
     width: 70%;
     display: inline-block;
     padding: 15px;
     flex:3;
+    background: #676e73c4;
 }
 #added-claims li i {
     font-size: 12px;
     letter-spacing: 1.5px;
 }
-li.string div.added-value-div {
+li.String div.added-value-div {
     background: rgba(76, 221, 211, 0.5);
 }
 li.url div.added-value-div {
     background: rgba(171, 114, 230, 0.43);
 }
-li.item div.added-value-div {
+li.WikibaseItem div.added-value-div {
     background: rgba(228, 174, 43, 0.7);
+}
+li.ExternalId div.added-value-div {
+    background: #d63056b5;
 }
 input#lookup-input {
 	padding-top: 10px;
@@ -737,6 +752,10 @@ div.about-page, div.reports-page {
 }
 div.about-page .center, div.reports-page .center{
     text-align: center;
+}
+.about-page a {
+	color: #95dcff;
+	font-weight: 400;
 }
 /*End About Page*/
 /*Reports Page */

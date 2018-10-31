@@ -24,6 +24,7 @@ setup(
         'pywikibot',
         'pylint',
         'pytest',
+        'pytest-cov',
         'tqdm'
         #
         # carl@openpreservation.org removed these dependencies as almost certainly
