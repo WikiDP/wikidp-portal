@@ -810,3 +810,27 @@ div#queries ul{
 .reports-section ul li {
     margin-bottom: 10px;
 }
+.modal-header{
+	padding:35px 50px;
+}
+.modal-body{
+	padding:40px 50px;
+}
+.modal-header, h4, .close {
+		background-color: #319992;
+		color:white !important;
+		text-align: center;
+		font-size: 30px;
+}
+.modal-footer {
+		background-color: #f9f9f9;
+}
+#loginModal button.btn.btn-success.btn-block {
+    background: #009c93;
+    border-color: #009f93;
+}
+
+#loginModal button.btn.btn-danger.btn-default.pull-left {
+        background: #a5a5a5;
+    border-color: #a5a5a5;
+}
