@@ -14,7 +14,7 @@
 """Initialisation module for package, kicks of the flask app."""
 import logging
 import os
-import getpass
+from getpass import getpass
 
 from flask import Flask
 # Load the application
@@ -37,13 +37,20 @@ try:
     with open('user-config.py') as file:
         logging.info("user-config.py available")
 except IOError:
+    template_username = '<username>'
+    template_password = '<password>'
     # generate the user-config.py based on keyboard prompts if not exist
     logging.info("user-config.py unavailable")
-    user_username = input('What is your Wikimedia Username? ')
-    user_password = getpass.getpass(prompt='What is your Wikimedia Password? ',)
+    user_username = APP.config.get('WIKIDATA_USER_NAME')
+    if not user_username or user_username == template_username:
+        user_username = input('What is your Wikimedia Username? ')
+    user_password = APP.config.get('WIKIDATA_PASSWORD')
+    if not user_password or user_password == template_password:
+        user_password = getpass(prompt='What is your Wikimedia Password? ')
     with open('user-config.py.template', 'r') as template:
         logging.info("user-config.py available")
-        data=template.read().replace('<username>', user_username).replace('<password>', user_password)
+        data=template.read().replace('<username>', user_username)\
+                            .replace('<password>', user_password)
         new_file = open("user-config.py","w+")
         new_file.write(data)
         new_file.close()
