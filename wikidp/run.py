@@ -27,4 +27,4 @@ from wikidp.template_filters import *
 
 if __name__ == "__main__":
     logging.debug("Running Flask App")
-    APP.run(host='0.0.0.0')
+    APP.run(host='0.0.0.0',  port=APP.config.get('PORT'))

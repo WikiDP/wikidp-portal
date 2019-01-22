@@ -45,6 +45,8 @@ def configure_app(app):
     """Grabs the environment variable for app config or defaults to dev."""
     config_name = os.getenv('WIKIDP_CONFIG', 'dev')
     app.config.from_object(CONFIGS[config_name])
+    # Bind to PORT if defined, otherwise default to 5000.
+    app.config['PORT'] = int(os.environ.get('PORT', 5000))
     app.config['WIKIDATA_USER_NAME'] = os.getenv('WIKIDP_BOT_USER', BaseConfig.WIKIDATA_USER_NAME)
     app.config['WIKIDATA_PASSWORD'] = os.getenv('WIKIDP_BOT_PASSWORD', BaseConfig.WIKIDATA_PASSWORD)
     if os.getenv('WIKIDP_CONFIG_FILE'):

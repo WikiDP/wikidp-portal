@@ -1,1 +1,1 @@
-web: flask run --port=$PORT
+web: python wikidp/run.py
