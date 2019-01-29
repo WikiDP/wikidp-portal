@@ -14,6 +14,7 @@ These need to map to the names used in the default config file, but better
 than multiple hardcoded strings in code.
 """
 
+
 class ConfKey(object):
     """Config key string constants"""
     LOG_FORMAT = 'LOG_FORMAT'

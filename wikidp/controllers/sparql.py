@@ -2,6 +2,7 @@
 
 from wikidataintegrator import wdi_core
 
+
 def convert_list_to_value_string(lst):
     """
         Arg: lst, ex: ['P31', 'P5', 'P123']
@@ -9,10 +10,12 @@ def convert_list_to_value_string(lst):
     """
     return '(wd:{0})'.format(')(wd:'.join(map(str, lst)))
 
+
 def get_property_details_by_pid_list(pid_list):
     values = convert_list_to_value_string(pid_list)
     query_string = """
-            SELECT  (STRAFTER(STR(?property), 'entity/') as ?id) ?property ?propertyType ?propertyLabel ?propertyDescription ?propertyAltLabel  (STRAFTER(STR(?propertyType), '#') as ?valueType) ?formatter_url
+            SELECT  (STRAFTER(STR(?property), 'entity/') as ?id) ?property ?propertyType ?propertyLabel 
+            ?propertyDescription ?propertyAltLabel (STRAFTER(STR(?propertyType), '#') as ?valueType) ?formatter_url
             WHERE {{
             VALUES (?property) {{ {values} }}
             ?property wikibase:propertyType ?propertyType .

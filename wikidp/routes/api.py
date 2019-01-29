@@ -11,7 +11,7 @@
 #
 """Flask application api routes for Wikidata portal."""
 
-from wikidp import APP
+from wikidp.config import APP
 from wikidp.controllers import api as api_controller
 
 

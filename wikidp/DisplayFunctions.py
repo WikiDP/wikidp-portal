@@ -12,14 +12,6 @@
 """ Template display helper functions. """
 from collections import OrderedDict
 import logging
-import os
-import errno
-import json
-import urllib.request
-import datetime
-from lxml import html
-import pywikibot
-import requests
 from wikidataintegrator import wdi_core
 
 from wikidp import APP
@@ -208,10 +200,8 @@ def format_url_from_property(pid, value):
 def qid_to_basic_details(qid):
     """Input item qid and returns a tuple: (qid, label, description) using WikiDataIntegrator"""
     item = wdi_core.WDItemEngine(wd_item_id=qid)
+    item_id = item.wd_item_id.replace("'", "&#39;")
     label = item.get_label(lang=LANG) if item.get_label(lang=LANG) != '' else item.get_label(lang=FALLBACK_LANG)
-    return {
-        "id": item.wd_item_id,
-        "label": label.replace("'", "&#39;"),
-        "description": (item.get_description(lang=LANG) or item.get_description(lang=FALLBACK_LANG)).replace("'","&#39;"),
-        "aliases": item.get_aliases(lang=LANG) or item.get_aliases(lang=FALLBACK_LANG)
-    }
+    desc = (item.get_description(lang=LANG) or item.get_description(lang=FALLBACK_LANG)).replace("'", "&#39;")
+    aliases = item.get_aliases(lang=LANG) or item.get_aliases(lang=FALLBACK_LANG)
+    return {"id": item_id, "label": label, "description": desc, "aliases": aliases}

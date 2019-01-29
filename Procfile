@@ -1,1 +1,1 @@
-web: python wikidp/run.py
+web: python wikidp/__init__.py

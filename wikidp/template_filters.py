@@ -13,6 +13,7 @@
 from wikidp import APP
 from wikidp.utils import remove_extension_from_filename
 
+
 @APP.template_filter('file_to_label')
 def template_filter_file_to_label(filename):
     output = remove_extension_from_filename(filename)
