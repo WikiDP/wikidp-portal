@@ -18,7 +18,7 @@ def route_site_search():
     search_string = request.args.get('string', default=0, type=str)
     context = search_controller.get_search_result_context(search_string)
     if len(context) == 1:
-        return redirect('/'+context[0]['id'])
+        return redirect('/{}'.format(context[0].get('qid')))
     return render_template('search_results.html', options=context)
 
 

@@ -5,13 +5,13 @@ from flask import (
 
 from wikidp import APP
 from wikidp.const import ConfKey
-from wikidp.model import FileFormat
+from wikidp.models import FileFormat
 from wikidp.controllers.api import get_property_checklist_from_schema
-from wikidp.DisplayFunctions import (
+from wikidp.utils import (
     item_detail_parse,
-    qid_to_basic_details,
+    get_directory_filenames_with_subdirectories,
+    get_item_property_counts,
 )
-from wikidp.utils import get_directory_filenames_with_subdirectories
 
 SCHEMA_DIRECTORY_PATH = 'wikidp/schemas/'
 
@@ -23,32 +23,31 @@ def get_browse_context():
 
 def get_item_context(qid):
     selected_item = item_detail_parse(qid)
-    if selected_item is False:
-        return False
-    options = request.args.get('options', default=0, type=str)
-    if type(options) is str:
-        options = json.loads(options)
-    else:
-        basic_details = qid_to_basic_details(qid)
-        options = [[qid, basic_details['label'], basic_details['description']]]
-    schemas = get_schema_list()
+    options = None
+    schemas = None
+    if selected_item:
+        options = request.args.get('options', default=0, type=str)
+        if type(options) is str:
+            options = json.loads(options)
+        else:
+            options = [[qid, selected_item.get('label'), selected_item.get('description')]]
+        schemas = get_schema_list()
     return selected_item, options, schemas
 
 
 def get_checklist_context(qid, schema):
-    checklist = get_property_checklist_from_schema(schema, source='server')
-    if not checklist:
-        return []
-    selected_item = item_detail_parse(qid)
-    counts = selected_item['prop-counts']
-    output = [{
-                "pid": prop['id']['value'],
-                "label": prop['propertyLabel']['value'],
-                "description": prop['propertyDescription']['value'],
-                "type": prop["valueType"]['value'],
-                "count": counts[prop['id']['value']] if prop['id']['value'] in counts else 0
-                } for prop in checklist]
-    return output
+    checklist = get_property_checklist_from_schema(schema)
+    if checklist:
+        counts = get_item_property_counts(qid)
+        output = [{
+                    "pid": prop['id']['value'],
+                    "label": prop['propertyLabel']['value'],
+                    "description": prop['propertyDescription']['value'],
+                    "type": prop["valueType"]['value'],
+                    "count": counts.get(prop['id']['value'], 0)
+                    } for prop in checklist]
+        return output
+    return []
 
 
 def get_schema_list():

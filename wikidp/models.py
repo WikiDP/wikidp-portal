@@ -65,9 +65,10 @@ class FileFormat(object):
 
 class PuidSearchResult(object):
     """Encapsulates a file format plus wikidata query magic for formats."""
-    def __init__(self, wd_format, label, mime, puid):
+    def __init__(self, wd_format, label, description, mime, puid):
         self._format = wd_format
         self._label = label
+        self._description = description
         self._mime = mime
         self._puid = puid
 
@@ -80,6 +81,11 @@ class PuidSearchResult(object):
     def label(self):
         """The formats WikiData label."""
         return self._label
+
+    @property
+    def description(self):
+        """The description type of the format."""
+        return self._description
 
     @property
     def mime(self):
@@ -114,10 +120,10 @@ class PuidSearchResult(object):
     @staticmethod
     def _concat_query(values_clause="", lang="en"):
         query = [
-            "SELECT DISTINCT ?format ?formatLabel ?mime ?puid",
+            "SELECT DISTINCT ?format ?formatLabel ?formatDescription ?mime ?puid",
             "WHERE {",
             "?format wdt:P2748 ?puid.",
-            "?format wdt:P1163 ?mime.",
+            "OPTIONAL{?format wdt:P1163 ?mime.}",
             "SERVICE wikibase:label {{ bd:serviceParam wikibase:language '{}' }}".format(lang),
             values_clause,
             "}"
@@ -129,7 +135,8 @@ class PuidSearchResult(object):
         results = [PuidSearchResult(
             x['format']['value'].replace('http://www.wikidata.org/entity/', ''),
             x['formatLabel']['value'],
-            x['mime']['value'],
+            x['formatDescription']['value'],
+            x['mime']['value'] if 'mime' in x else 'unknown',
             x['puid']['value'])
                    for x in results_json['results']['bindings']]
         return results

@@ -2,7 +2,7 @@
 {% block item_content %}
   <script src="{{ url_for('static',filename='js/clipboard.min.js') }}"></script>
   <div id="header-text">
-    <span id="preview-item-name">{{selected['label'][1]}}<a class="wd-id" href="https://wikidata.org/wiki/{{selected['label'][0]}}" target="_blank"> ({{selected['label'][0]}})</a></span>
+    <span id="preview-item-name">{{selected['label']}}<a class="wd-id" href="https://wikidata.org/wiki/{{selected['qid']}}" target="_blank"> ({{selected['qid']}})</a></span>
     <br>
     {% if selected['description'] != []%}
       <span id="preview-item-description" title="{{selected['description']}}">{{selected['description']}}</span>
@@ -288,7 +288,7 @@ return array
     console.log('STR->', JSON.stringify(data))
     $.ajax({
       type: 'POST',
-      url: "/api/{{selected['label'][0]}}/claims/write",
+      url: "/api/{{selected['qid']}}/claims/write",
       dataType: 'json',
       contentType: 'application/json; charset=utf-8',
       data: JSON.stringify(data),

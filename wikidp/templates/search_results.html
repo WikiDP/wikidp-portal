@@ -13,8 +13,8 @@
 	<div class="search-results-div">
 		<ul id="search-option-list">
 		{% for option in options %}
-		<li class="option-li" id="li-{{option['id']}}" data-qid="{{option['id']}}"  data-label="{{option['label']}}" data-description="{{option['description']}}" onclick="selectResult($(this).data('qid'))">
-			<span class="search-result-label">{{option['label']}}<span class="search-result-id"> ({{option['id']}})</span>
+		<li class="option-li" id="li-{{option['qid']}}" data-qid="{{option['qid']}}"  data-label="{{option['label'] | url_encode}}" data-description="{{option['description'] | url_encode}}" onclick="selectResult($(this).data('qid'))">
+			<span class="search-result-label">{{option['label']}}<span class="search-result-id"> ({{option['qid']}})</span>
 			</span>
 			<br>
 			&mdash;<span class="search-result-description"> {{option['description']}} </span>&mdash;

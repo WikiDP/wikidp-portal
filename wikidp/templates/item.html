@@ -1,7 +1,7 @@
 {% extends "page.html" %}
-{% block title %}{{page}} {% endblock %}
+{% block title %}{{selected['label']}} ({{selected['qid']}}): {{page}} {% endblock %}
 {% block page_content %}
-<div id="panel-frame" class="{{page}}-page" data-qid="{{selected['label'][0]}}">
+<div id="panel-frame" class="{{page}}-page" data-qid="{{selected['qid']}}">
   <div id="sidebar-frame">
 		{% include "sidebar.html" %}
   </div>
@@ -29,7 +29,7 @@ function initialize_contribute_property_selector(){
 function load_property_checklist_by_schema(schema){
   console.log('Loading schema-> ', schema)
   $('ul#sidebar-property-list').html('')
-  $.get('/{{selected['label'][0]}}/checklist/'+schema, function(response){
+  $.get('/{{selected['qid']}}/checklist/'+schema, function(response){
     $('ul#sidebar-property-list').html(response)
     initialize_contribute_property_selector()
 

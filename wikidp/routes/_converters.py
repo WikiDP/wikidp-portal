@@ -10,7 +10,11 @@
 # about the terms of this license.
 #
 """ Flask application custom url converters for Wikidata portal. """
-from wikidp.utils import ITEM_REGEX, PROPERTY_REGEX
+from wikidp import APP
+from wikidp.const import (
+    ITEM_REGEX,
+    PROPERTY_REGEX,
+)
 from werkzeug.routing import BaseConverter
 
 
@@ -46,3 +50,8 @@ class WikidataPropertyConverter(BaseConverter):
     def to_url(self, value):
         """Value should be string with capital letters for consistency."""
         return value.upper()
+
+
+# Custom Routing Converters
+APP.url_map.converters['item'] = WikidataItemConverter
+APP.url_map.converters['prop'] = WikidataPropertyConverter

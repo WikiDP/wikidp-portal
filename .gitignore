@@ -99,6 +99,9 @@ ENV/
 # mkdocs documentation
 /site
 
+# PyCharm files
+.idea/
+
 # Application odds and ends
 .pytest_cache/
 apicache/

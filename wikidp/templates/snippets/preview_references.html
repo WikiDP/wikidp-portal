@@ -1,0 +1,30 @@
+{% if key in reference_set %}
+    <table class="reference-table  table-responsive table-striped table-hover">
+        {%for x in reference_set[key] %}
+            <tr>
+                <td>
+                    {{ x[1] }}
+                    <a target="_blank" href="{{x[0] | entity_url}}" class="">
+                        ({{ x[0] }})
+                    </a>
+                </td>
+                <td>
+                    {% if x[2] is string %}
+                        {{x[2]}}
+                    {% else %}
+                            {% if x[2][0][0] == 'Q' %}
+                                <a target="_blank" href="{{x[2][0] | entity_url}}"class="">
+                                    <span class="qlabel" its-ta-ident-ref="{{x[2][0] | entity_url}}">{{x[2][1]}}</span>
+                                </a>
+                            {% else %}
+                                <a target="_blank" href="{{x[2][0] | entity_url}}" class="">
+                                    {{x[2][0]}}
+                                </a>
+                            {% endif %}
+
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endif %}

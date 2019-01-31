@@ -43,28 +43,28 @@ def test_route_page_welcome(client):
     """Test the client loads the homepage title  """
     response = client.get('/')
     assert response.status_code == 200
-    assert b'WikiDP | Home' in response.data
+    assert b'Home | WikiDP' in response.data
 
 
 def test_route_page_about(client):
     """Test the client loads the about title  """
     response = client.get('/about')
     assert response.status_code == 200
-    assert b'WikiDP | About' in response.data
+    assert b'About Wikidata For Digital Preservation | WikiDP' in response.data
 
 
 def test_route_page_reports(client):
     """Test the client loads the reports title  """
     response = client.get('/reports')
     assert response.status_code == 200
-    assert b'WikiDP | Reports' in response.data
+    assert b'Reports | WikiDP' in response.data
 
 
 def test_route_page_browse(client):
     """Test the client loads the browse title  """
     response = client.get('/browse')
     assert response.status_code == 200
-    assert b'WikiDP | Browse' in response.data
+    assert b'Browse Formats | WikiDP' in response.data
 
 
 def test_route_page_unauthorized(client):
@@ -203,10 +203,10 @@ def test_route_api_search_item_by_string(client):
     assert len(json_response(response)) > 0
 
 
-def test_route_api_get_item_label(client):
-    response = client.get('/api/Q7715973/label')
+def test_route_api_get_item(client):
+    response = client.get('/api/Q7715973')
     assert response.status_code == 200
-    assert json_response(response)['id'] == 'Q7715973'
+    assert json_response(response)['qid'] == 'Q7715973'
 
 
 def test_route_api_get_property(client):

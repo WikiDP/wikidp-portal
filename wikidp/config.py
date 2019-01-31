@@ -18,10 +18,7 @@ from getpass import getpass
 from flask import Flask
 
 from .const import ConfKey
-from .routing_converters import (
-    WikidataItemConverter,
-    WikidataPropertyConverter,
-)
+
 
 # Template these values for flexible install
 HOST = 'localhost'
@@ -40,6 +37,8 @@ class BaseConfig(object):
     WIKIDATA_PASSWORD = '<password>'
     WIKIDATA_LANG = 'en'
     WIKIDATA_FB_LANG = 'en'
+    ITEM_REGEX = r'(Q|q)\d+'
+    PROPERTY_REGEX = r'(P|p)\d+'
 
 
 class DevConfig(BaseConfig):
@@ -73,9 +72,6 @@ def configure_app(app):
     else:
         app.config['WIKIBASE_LANGUAGE'] = app.config['WIKIDATA_LANG']
 
-    # Custom Routing Converters
-    app.url_map.converters['item'] = WikidataItemConverter
-    app.url_map.converters['prop'] = WikidataPropertyConverter
     # Checking for user-config.py
     try:
         with open('user-config.py'):

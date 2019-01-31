@@ -7,7 +7,11 @@ from flask import (
 )
 
 from wikidp.config import APP
-from wikidp.controllers import pages as pages_controller
+from wikidp.controllers.pages import (
+    get_browse_context,
+    get_checklist_context,
+    get_item_context,
+)
 
 
 @APP.route("/")
@@ -31,7 +35,7 @@ def route_page_reports():
 @APP.route("/browse")
 def route_page_browse():
     """Displays a list of extensions and media types."""
-    formats = pages_controller.get_browse_context()
+    formats = get_browse_context()
     return render_template('browse.html', formats=formats)
 
 
@@ -56,29 +60,27 @@ def route_page_selected_item(qid):
 @APP.route("/<item:qid>/preview")
 def route_item_preview(qid):
     """If the item ID is already known, the user can enter in the url"""
-    try:
-        selected_item, options, schemas = pages_controller.get_item_context(qid)
+    selected_item, options, schemas = get_item_context(qid)
+    if selected_item:
         return render_template('preview-item.html', selected=selected_item, options=options, schemas=schemas,
                                page='preview')
-    except Exception:
-        return abort(404)
+    return abort(404)
 
 
 @APP.route("/<item:qid>/contribute")
 def route_item_contribute(qid):
     """Handles a user's contributed statements."""
-    try:
-        selected_item, options, schemas = pages_controller.get_item_context(qid)
+    selected_item, options, schemas = get_item_context(qid)
+    if selected_item:
         return render_template('contribute.html', selected=selected_item, options=options, schemas=schemas,
                                page='contribute')
-    except:
-        return abort(404)
+    return abort(404)
 
 
 @APP.route("/<item:qid>/checklist/<path:schema>")
 def route_item_checklist_by_schema(qid, schema):
     """ """
-    properties = pages_controller.get_checklist_context(qid, schema)
+    properties = get_checklist_context(qid, schema)
     return render_template('checklist_items.html', properties=properties)
 
 
@@ -97,7 +99,7 @@ def route_page_error__unauthorized(e):
 
 @APP.errorhandler(500)
 @APP.errorhandler(Exception)
-def route_page_error__internal(e):
+def route_page_error__internal_error(e):
     logging.debug('Internal Error: {}'.format(str(e)))
     message = "Internal Error. Please Help us by reporting this to our admin team! Thank you."
     return render_template('error.html', message=message), 500
