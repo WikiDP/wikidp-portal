@@ -3,9 +3,6 @@ from flask import (
     request,
 )
 
-from wikidp import APP
-from wikidp.const import ConfKey
-from wikidp.models import FileFormat
 from wikidp.controllers.api import get_property_checklist_from_schema
 from wikidp.utils import (
     item_detail_parse,
@@ -14,11 +11,6 @@ from wikidp.utils import (
 )
 
 SCHEMA_DIRECTORY_PATH = 'wikidp/schemas/'
-
-
-def get_browse_context():
-    context = FileFormat.list_formats(lang=APP.config[ConfKey.WIKIBASE_LANGUAGE])
-    return context
 
 
 def get_item_context(qid):

@@ -19,6 +19,7 @@ from flask import (
 )
 import pywikibot
 
+from wikidp.models import FileFormat
 from wikidp.utils import (
     get_pid_from_string,
     get_property_details_by_pid_list,
@@ -118,3 +119,8 @@ def write_claim(item, prop_string, value, data_type, meta=False):
         return True
     except (TypeError, Exception):
         return False
+
+
+def get_all_file_formats():
+    formats = FileFormat.list_formats()
+    return formats

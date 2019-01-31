@@ -14,13 +14,15 @@ import logging
 
 from wikidataintegrator import wdi_core
 
+from wikidp.const import LANG
+
 
 class FileFormat(object):
     """Encapsulates a file format plus wikidata query magic for formats."""
     def __init__(self, qid, name, media_types=None):
         self._qid = qid
         self._name = name
-        self._media_types = media_types if media_types is not None else []
+        self._media_types = media_types if media_types else []
 
     @property
     def qid(self):
@@ -41,9 +43,14 @@ class FileFormat(object):
         _media_types = '|'.join(self.media_types)
         return "FileFormat : [qid={}, name={}, media_types=[{}]]".format(self.qid, self.name, _media_types)
 
+    def api_dict(self):
+        return {'qid': self.qid, 'name': self.name, 'media_types': self.media_types}
+
     @classmethod
-    def list_formats(cls, lang="en"):
+    def list_formats(cls, lang=None):
         """Queries Wikidata for formats and returns a list of FileFormat instances."""
+        if not lang:
+            lang = LANG
         query = [
             "SELECT ?idFileFormat ?idFileFormatLabel",
             "(GROUP_CONCAT(DISTINCT ?mediaType; SEPARATOR='|') AS ?mediaTypes)",
@@ -58,7 +65,7 @@ class FileFormat(object):
         results_json = wdi_core.WDItemEngine.execute_sparql_query(" ".join(query))
         results = [cls(x['idFileFormat']['value'].replace('http://www.wikidata.org/entity/', ''),
                        x['idFileFormatLabel']['value'],
-                       x['mediaTypes']['value'].split('|'))
+                       x['mediaTypes']['value'].split('|') if x['mediaTypes']['value'] else [])
                    for x in results_json['results']['bindings']]
         return results
 

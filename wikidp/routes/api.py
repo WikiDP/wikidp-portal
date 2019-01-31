@@ -14,13 +14,14 @@ from flask import jsonify
 
 from wikidp.config import APP
 from wikidp.controllers.api import (
+    get_all_file_formats,
     get_property_checklist_from_schema,
     write_claims_to_item,
 )
 from wikidp.controllers.search import search_result_list
 from wikidp.utils import (
-    item_detail_parse,
     get_property,
+    item_detail_parse,
 )
 
 
@@ -61,3 +62,9 @@ def route_api_search_item_by_string(search_string):
 def route_api_get_properties_by_schema(schema_name):
     prop_list = get_property_checklist_from_schema(schema_name)
     return jsonify(prop_list)
+
+
+@APP.route("/api/browse/file_format", methods=['GET', 'POST'])
+def route_api_browse_file_format():
+    format_list = get_all_file_formats()
+    return jsonify([x.api_dict() for x in format_list])

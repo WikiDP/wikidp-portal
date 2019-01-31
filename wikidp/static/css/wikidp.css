@@ -52,6 +52,11 @@ a.wd-id {
     color: #00e6ea;
     opacity: .9;
 }
+.scroll-highlight {
+    text-shadow: 0 0 6px #f0f8ff;
+    border: 10px solid #f0f8ff;
+    transition: all 0.2s ease-in-out 0.2s;
+}
 /*welcome page*/
 	div.welcome-div{
 		    padding-top: 5%;

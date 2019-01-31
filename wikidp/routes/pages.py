@@ -4,11 +4,11 @@ from flask import (
     abort,
     redirect,
     render_template,
+    send_from_directory,
 )
 
 from wikidp.config import APP
 from wikidp.controllers.pages import (
-    get_browse_context,
     get_checklist_context,
     get_item_context,
 )
@@ -18,6 +18,11 @@ from wikidp.controllers.pages import (
 def route_page_welcome():
     """Landing Page for first time"""
     return render_template('welcome.html')
+
+
+@APP.route('/favicon.ico')
+def route_favicon():
+    return send_from_directory(APP.config['STATIC_DIR'], 'img/favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 
 @APP.route("/about")
@@ -30,13 +35,6 @@ def route_page_about():
 def route_page_reports():
     """Rendering the reports page"""
     return render_template('reports.html')
-
-
-@APP.route("/browse")
-def route_page_browse():
-    """Displays a list of extensions and media types."""
-    formats = get_browse_context()
-    return render_template('browse.html', formats=formats)
 
 
 @APP.route("/unauthorized")

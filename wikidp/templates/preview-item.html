@@ -158,13 +158,20 @@
 	})
 	}
 	function sidebar_property_click(elm){
-		if($(elm).data('count') > 0){
-			$(`.claims-table tr[data-pid="${$(elm).data('pid')}"]`)[0].scrollIntoView({behavior: "smooth"})
-		}
+        let $elm = $(elm);
+        if($elm.data('count') > 0){
+            let this_pid = $elm.data('pid');
+            let $scrollDiv = $(`.claims-table tr[data-pid="${this_pid}"]`);
+            $scrollDiv[0].scrollIntoView({behavior: "smooth"});
+            $scrollDiv.addClass('scroll-highlight');
+            setTimeout(function(){
+                $scrollDiv.removeClass('scroll-highlight');
+            }, 1000)
+        }
 		else{
 			alert('There are currently no statements with this property recorded. If you know of some to add, click the contribute button to create a statement for this property.')
 		}
-  }
+    }
 		$('select#option-select').change(function(){
 			var list = $('option.item-option')
 			var options = []
@@ -173,16 +180,14 @@
 				options.push([$(list[i]).data('qid').replace("'","&#39;"), $(list[i]).data('label').replace("'","&#39;"), $(list[i]).data('description').replace("'","&#39;") ])
 			}
 			options = JSON.stringify(options)
-			console.log(options)
-			console.log($(this).val())
 
-	var form = $('<form action="/preview" method="post">' +
-	  '<input type="text" name="qid" value="' + $(this).val() + '" />' +
-	  '<input type="text" name="optionList" '+"value='"+options+"' />" +
-	  '</form>').hide(0);
-	pageTransition(form)
-			// return $.post("/preview", {qid:qid})
-		});
+            var form = $('<form action="/preview" method="post">' +
+              '<input type="text" name="qid" value="' + $(this).val() + '" />' +
+              '<input type="text" name="optionList" '+"value='"+options+"' />" +
+              '</form>').hide(0);
+            pageTransition(form)
+                    // return $.post("/preview", {qid:qid})
+                });
 
 		$('li#contribute-action').click(function(){
 			var list = $('option.item-option')

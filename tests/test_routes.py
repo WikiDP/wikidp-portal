@@ -60,13 +60,6 @@ def test_route_page_reports(client):
     assert b'Reports | WikiDP' in response.data
 
 
-def test_route_page_browse(client):
-    """Test the client loads the browse title  """
-    response = client.get('/browse')
-    assert response.status_code == 200
-    assert b'Browse Formats | WikiDP' in response.data
-
-
 def test_route_page_unauthorized(client):
     """Test the client loads the 403 page  """
     response = client.get('/unauthorized', follow_redirects=True)
@@ -187,9 +180,8 @@ def test_route_search_by_puid(client):
     assert response.status_code == 200
     assert b'Q26543628' in response.data
 
+
 # API TESTS
-
-
 def test_route_api_welcome(client):
     """Test the client loads the homepage title  """
     response = client.get('/api/')
@@ -237,6 +229,18 @@ def test_route_api_get_properties_by_schema__fake_schema(client):
     assert response.status_code == 200
     assert len(json_response(response)) == 0
     assert json_response(response) == []
+
+
+def test_route_api_browse_file_format(client):
+    """Test the client loads file format dictionaries"""
+    response = client.get('/api/browse/file_format')
+    assert response.status_code == 200
+    data = json_response(response)
+    assert len(data) > 100
+    first_data = data[0]
+    assert 'name' in first_data
+    assert 'qid' in first_data
+    assert 'media_types' in first_data
 
 # TODO: MOCK Wikidata Requests/Responses
 # def test_route_api_write_claims_to_item(client):
