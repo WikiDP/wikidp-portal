@@ -13,8 +13,8 @@ from wikidp.utils import (
 SCHEMA_DIRECTORY_PATH = 'wikidp/schemas/'
 
 
-def get_item_context(qid):
-    selected_item = item_detail_parse(qid)
+def get_item_context(qid, with_claims=True):
+    selected_item = item_detail_parse(qid, with_claims=with_claims)
     options = None
     schemas = None
     if selected_item:

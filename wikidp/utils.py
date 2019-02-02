@@ -1,14 +1,18 @@
-from collections import OrderedDict
 from datetime import datetime
 import json
 import logging
 from os import listdir
-from os.path import isfile, join, splitext
+from os.path import (
+    isfile,
+    join,
+    splitext,
+)
 import re
 from string import Template
 
 from urllib import request as urllib_request
 from wikidataintegrator.wdi_core import WDItemEngine
+import validators
 
 from wikidp.const import (
     ITEM_REGEX,
@@ -17,10 +21,6 @@ from wikidp.const import (
     FALLBACK_LANG,
 )
 from wikidp.sparql import PROPERTY_QUERY
-
-
-def remove_duplicates_from_list(lst):
-    return list(dict.fromkeys(lst))
 
 
 def flatten_string(_string):
@@ -35,6 +35,10 @@ def get_pid_from_string(input_string):
 def get_qid_from_string(input_string):
     regex_search = re.search(ITEM_REGEX, input_string)
     return regex_search.group() if regex_search else False
+
+
+def entity_id_to_int(entity):
+    return int(entity[1:])
 
 
 def get_property(pid):
@@ -69,16 +73,6 @@ def get_directory_filenames_with_subdirectories(directory_path):
 
 def remove_extension_from_filename(filename_string):
     return splitext(filename_string)[0]
-
-
-def list_sorting_by_length(elem):
-    """Auxiliary sorting key function at the list level"""
-    return len(elem[0])
-
-
-def dict_sorting_by_length(elem):
-    """Auxiliary sorting key function at the dictionary level"""
-    return len(elem[0][0])
 
 
 def time_formatter(time):
@@ -158,24 +152,31 @@ def item_detail_parse(qid, with_claims=True):
         description = parse_wd_response_by_key(item, 'descriptions', default='')
         output_dict = {'qid': qid, 'label': label, 'aliases': aliases, 'description': description}
         if with_claims:
-            output_dict['claims'] = {}
-            output_dict['refs'] = {}
-            output_dict['properties'] = {}
-            output_dict['ex-ids'] = {}
-            output_dict['categories'] = []
+            claim_list = []
+            ex_list = []
+            categories = []
             claims = get_claims_from_json(item)
             properties = get_property_details_by_pid_list(claims.keys())
             cached_property_labels = {prop['id']['value']: prop['propertyLabel']['value'] for prop in properties}
-            for claim in claims:
-                property_label = cached_property_labels[claim]
-                for json_details in claims[claim]:
-                    output_dict = parse_claims(claim, property_label, json_details, output_dict,
-                                               cached_property_labels)
-            output_dict['claims'] = OrderedDict(sorted(output_dict['claims'].items()))
-            output_dict['claims'] = OrderedDict(sorted(output_dict['claims'].items(),
-                                                       key=dict_sorting_by_length))
-            output_dict['categories'] = sorted(sorted(output_dict['categories']),
-                                               key=list_sorting_by_length)
+            for pid, claim_dict in sorted(claims.items(), key=lambda x: entity_id_to_int(x[0])):
+                property_label = cached_property_labels.get(pid)
+                value_list = []
+                add_to_ex_list = False
+                for json_details in claim_dict:
+                    val = parse_claim(pid, json_details, cached_property_labels)
+                    if val:
+                        value_list.append(val)
+                        if val.get('parse_type') == 'external-id':
+                            add_to_ex_list = True
+                        #  Determining the 'category' of the item from the 'instance of' and 'subclass of' properties
+                        elif pid in ['P31', 'P279']:
+                            categories.append(val)
+                parsed_claim = {'pid': pid, 'label': property_label, 'values': value_list}
+                ex_list.append(parsed_claim) if add_to_ex_list else claim_list.append(parsed_claim)
+            output_dict['external_links'] = ex_list
+            output_dict['claims'] = claim_list
+            output_dict['categories'] = categories
+            output_dict['properties'] = properties
         return output_dict
     return False
 
@@ -247,41 +248,54 @@ def get_references_from_item_json(item_json, cached_property_labels=None):
     return output
 
 
-def parse_claims(claim, property_label, json_details, output_dict, cached_property_labels):
+def parse_claim(claim, json_details, cached_property_labels):
     """ Uses the json_details dictionary of a single claim and outputs
     the parsed data into the output_dict. """
     try:
         main_snak = json_details.get('mainsnak')
         if main_snak['snaktype'] == 'novalue' or 'datavalue' not in main_snak:
-            return output_dict
+            return None
         #  Parsing the statements & values by data type
-        data_type = main_snak['datavalue']['type']
-        data_value = main_snak['datavalue']['value']
-        val, depth = get_value_of_claim(data_type, data_value, cached_property_labels)
+        parse_type = main_snak.get('datatype')
+        data_type = main_snak['datavalue'].get('type')
+        data_value = main_snak['datavalue'].get('value')
+
         #  In the event the value is an image file name, convert the title to the image's url
         if claim in ["P18", "P154"]:
-            val = get_wikimedia_image_url_from_title(val)
-        #  Determining the 'category' of the item from the 'instance of' and 'subclass of' properties
-        elif claim in ['P31', 'P279']:
-            output_dict['categories'].append(val)
-        if data_type == 'external-id':
-            ex_id_key = (claim, property_label, val, format_url_from_property(claim, val))
-            if ex_id_key in output_dict.get('ex-ids'):
-                output_dict['ex-ids'][ex_id_key].append(val)
+            val = get_wikimedia_image_url_from_title(data_value)
+            parse_type = 'image'
+        elif parse_type == 'external-id':
+            val = {'url': format_url_from_property(claim, data_value), 'label': data_value}
+        elif data_type == 'string':
+            val = data_value
+            if validators.url(val):
+                parse_type = 'url'
+        elif data_type == 'wikibase-entityid':
+            parse_type = data_value.get('entity-type')
+            if parse_type == 'property':
+                pid = 'P{}'.format(data_value.get('numeric-id'))
+                label = pid_label(pid, cached_property_labels)
+                val = {'pid': pid, 'label': label}
             else:
-                output_dict['ex-ids'][ex_id_key] = [val]
+                val = data_value.get('id')
+        elif data_type == 'time':
+            val = time_formatter(data_value.get('time'))
+            parse_type = 'time'
+        elif data_type == 'quantity' and 'amount' in data_value:
+            num = data_value.get('amount')
+            try:
+                val = int(num)
+            except ValueError:
+                val = float(num)
+        elif data_type == 'monolingualtext':
+            val = '"{}" (language: {})'.format(data_value.get('text', ''), data_value.get('language', 'unknown'))
         else:
-            claim_key = (claim, property_label, depth)
-            if claim_key in output_dict.get('claims'):
-                output_dict['claims'][claim_key].append(val)
-            else:
-                output_dict['claims'][claim_key] = [val]
+            val = "Unable To Parse Value {}".format(data_type)
         references = get_references_from_item_json(json_details, cached_property_labels)
-        if references:
-            output_dict['refs'][(claim, val if type(val) is not list else val[0])] = references
+        return {'value': val, 'parse_type': parse_type, 'type': data_type, 'references': references}
     except (KeyError, Exception):
         logging.exception("Unexpected exception parsing claims.")
-    return output_dict
+        return None
 
 
 def parse_by_data_type(data, cached_property_labels=None):
@@ -296,30 +310,6 @@ def parse_by_data_type(data, cached_property_labels=None):
         elif 'entity-type' in data and 'id' in data:
             return id_to_label_list(data.get('id'), cached_property_labels)
     return data
-
-
-def get_value_of_claim(data_type, data_value, cached_property_labels):
-    """Uses a data type to determine how to format the value in the dictionary"""
-    if data_type == 'string':
-        return data_value, 1
-    elif data_type == 'wikibase-entityid':
-        entity_type = data_value.get('entity-type')
-        if entity_type == 'item':
-            return [data_value.get('id')], 2
-        elif entity_type == 'property':
-            val = 'P{}'.format(data_value.get('numeric-id'))
-            return [val, pid_label(val, cached_property_labels)], 2
-    elif data_type == 'time':
-        return time_formatter(data_value['time']), 1
-    elif data_type == 'quantity' and 'amount' in data_value:
-        num = data_value.get('amount')
-        try:
-            return int(num), 1
-        except ValueError:
-            return float(num), 1
-    elif data_type == 'monolingualtext':
-        return '"{}" (language: {})'.format(data_value.get('text', ''), data_value.get('language', 'unknown')), 1
-    return "Unable To Parse Value {}".format(data_type), 1
 
 
 def id_to_label_list(wikidata_id, cached_property_labels):
@@ -346,8 +336,8 @@ def format_url_from_property(pid, value):
     value = value.strip()
     prop = get_property(pid)
     if 'formatter_url' in prop:
-        return prop['formatter_url']['value'].replace("$1", value)
-    return "unavailable"
+        return prop['formatter_url'].get("value").replace("$1", value)
+    return None
 
 
 def create_query_template(_string):

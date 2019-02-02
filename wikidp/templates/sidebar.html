@@ -18,7 +18,7 @@
     <div class="sidebar-header">selected item</div>
     <select id="option-select" value=""  aria-label="Select an alternative wikidata item option">
     {% for option in options %}
-    {% if option[0] != selected['label'][0] %}
+    {% if option[0] != item.label %}
 
     <option class="item-option" data-qid="{{option[0]}}"  data-label="{{option[1]}}" data-description="{{option[2]}}" title="{{option[2]}}" value="{{option[0]}}">
       {{option[1]}}<span class="select-item-id"> ({{option[0]}})</span>

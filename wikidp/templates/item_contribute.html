@@ -1,11 +1,12 @@
 {% extends "item.html" %}
+
 {% block item_content %}
-  <script src="{{ url_for('static',filename='js/clipboard.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/clipboard.min.js') }}"></script>
   <div id="header-text">
-    <span id="preview-item-name">{{selected['label']}}<a class="wd-id" href="https://wikidata.org/wiki/{{selected['qid']}}" target="_blank"> ({{selected['qid']}})</a></span>
+    <span id="preview-item-name">{{item.label}}<a class="wd-id" href="https://wikidata.org/wiki/{{item.qid}}" target="_blank"> ({{item.qid}})</a></span>
     <br>
-    {% if selected['description'] != []%}
-      <span id="preview-item-description" title="{{selected['description']}}">{{selected['description']}}</span>
+    {% if item.description != []%}
+      <span id="preview-item-description" title="{{item.description}}">{{item.description}}</span>
     {% endif %}
   </div>
   <div id="statement-creation-frame">
@@ -16,11 +17,6 @@
           <div id="creation-content-div"><div id="creation-property-div">
           <select id="create-claim-property"  aria-label="Select a Property">
             <option class="default" data-type="default" >select a property</option>
-            {% for property in selected['properties'] %}
-              <option class="" value="{{property[0]}}"  data-pid="{{property[0]}}" data-count="{{property[2]}}" data-type="{{property[3]}}">
-                {{property[1]}}
-              </option>
-            {% endfor %}
           </select> :</div>
           <div id="create-claim-value-div"> </div>
         </div>
@@ -288,7 +284,7 @@ return array
     console.log('STR->', JSON.stringify(data))
     $.ajax({
       type: 'POST',
-      url: "/api/{{selected['qid']}}/claims/write",
+      url: "/api/{{item.qid}}/claims/write",
       dataType: 'json',
       contentType: 'application/json; charset=utf-8',
       data: JSON.stringify(data),

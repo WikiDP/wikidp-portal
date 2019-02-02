@@ -25,7 +25,8 @@ setup(
         'pylint',
         'pytest',
         'pytest-cov',
-        'tqdm'
+        'tqdm',
+        'validators=0.12.4'
         #
         # carl@openpreservation.org removed these dependencies as almost certainly
         # unused on 2nd Oct 2017, commenting for safety.
