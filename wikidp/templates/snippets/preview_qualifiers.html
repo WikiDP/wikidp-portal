@@ -1,0 +1,19 @@
+<table class="reference-table qualifier-table  table-responsive table-striped table-hover">
+    {%for x in qualifiers %}
+        <tr>
+            <td>
+                {{ x.label }}
+                <a target="_blank" href="{{x.pid | entity_url}}" class="">
+                    ({{ x.pid }})
+                </a>
+            </td>
+            <td>
+                {% for claim_value in x['values']  %}
+                    <span class="detail-row">
+                        {% include "snippets/preview_claim_value.html" %}
+                    </span>
+                {% endfor %}
+            </td>
+        </tr>
+    {% endfor %}
+</table>

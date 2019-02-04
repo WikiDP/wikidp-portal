@@ -163,8 +163,14 @@ def item_detail_parse(qid, with_claims=True):
                 value_list = []
                 add_to_ex_list = False
                 for json_details in claim_dict:
-                    val = parse_claim(pid, json_details, cached_property_labels)
+                    val = parse_snak(pid, json_details.get('mainsnak'), cached_property_labels)
                     if val:
+                        references = get_references_from_item_json(json_details, cached_property_labels)
+                        if references:
+                            val['references'] = references
+                        qualifiers = parse_qualifiers(json_details.get('qualifiers', []), cached_property_labels)
+                        if qualifiers:
+                            val['qualifiers'] = qualifiers
                         value_list.append(val)
                         if val.get('parse_type') == 'external-id':
                             add_to_ex_list = True
@@ -179,6 +185,20 @@ def item_detail_parse(qid, with_claims=True):
             output_dict['properties'] = properties
         return output_dict
     return False
+
+
+def parse_qualifiers(qualifier_set, cached_property_labels):
+    qualifiers = []
+    for pid, snak_list in qualifier_set.items():
+        label = pid_label(pid, cached_property_labels)
+        values = []
+        for snak in snak_list:
+            val = parse_snak(pid, snak, cached_property_labels)
+            if val:
+                values.append(val)
+        if values:
+            qualifiers.append({'pid': pid, 'label': label, 'values': values})
+    return qualifiers
 
 
 def get_item_json(qid):
@@ -248,24 +268,23 @@ def get_references_from_item_json(item_json, cached_property_labels=None):
     return output
 
 
-def parse_claim(claim, json_details, cached_property_labels):
+def parse_snak(pid, snak, cached_property_labels):
     """ Uses the json_details dictionary of a single claim and outputs
     the parsed data into the output_dict. """
     try:
-        main_snak = json_details.get('mainsnak')
-        if main_snak['snaktype'] == 'novalue' or 'datavalue' not in main_snak:
+        if snak['snaktype'] == 'novalue' or 'datavalue' not in snak:
             return None
         #  Parsing the statements & values by data type
-        parse_type = main_snak.get('datatype')
-        data_type = main_snak['datavalue'].get('type')
-        data_value = main_snak['datavalue'].get('value')
+        parse_type = snak.get('datatype')
+        data_type = snak['datavalue'].get('type')
+        data_value = snak['datavalue'].get('value')
 
         #  In the event the value is an image file name, convert the title to the image's url
-        if claim in ["P18", "P154"]:
+        if pid in ["P18", "P154"]:
             val = get_wikimedia_image_url_from_title(data_value)
             parse_type = 'image'
         elif parse_type == 'external-id':
-            val = {'url': format_url_from_property(claim, data_value), 'label': data_value}
+            val = {'url': format_url_from_property(pid, data_value), 'label': data_value}
         elif data_type == 'string':
             val = data_value
             if validators.url(val):
@@ -291,8 +310,7 @@ def parse_claim(claim, json_details, cached_property_labels):
             val = '"{}" (language: {})'.format(data_value.get('text', ''), data_value.get('language', 'unknown'))
         else:
             val = "Unable To Parse Value {}".format(data_type)
-        references = get_references_from_item_json(json_details, cached_property_labels)
-        return {'value': val, 'parse_type': parse_type, 'type': data_type, 'references': references}
+        return {'value': val, 'parse_type': parse_type, 'type': data_type}
     except (KeyError, Exception):
         logging.exception("Unexpected exception parsing claims.")
         return None

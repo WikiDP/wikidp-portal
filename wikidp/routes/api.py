@@ -34,7 +34,7 @@ def route_api_welcome():
 @APP.route("/api/<item:qid>", methods=['GET', 'POST'])
 def route_api_get_item(qid):
     """User posts a item-id and returns json of (id, label, desc, aliases) ."""
-    item = item_detail_parse(qid, with_claims=False)
+    item = item_detail_parse(qid, with_claims=True)
     return jsonify(item)
 
 

@@ -44,30 +44,13 @@
                                 </a>
                             </td>
                             <td>
-                                {% for sub in clm['values'] %}
+                                {% for claim_value in clm['values'] %}
                                     <span class="detail-row">
-                                        {% if sub.parse_type == 'item' %}
-                                            <span class="qlabel" its-ta-ident-ref="{{sub.value | entity_url}}">
-                                                {{sub.value}}
-                                            </span>
-                                            <a href="/{{sub.value}}" class="p_or_q_id">
-                                                ({{ sub.value }})
-                                            </a>
-                                        {% elif sub.parse_type == 'property' %}
-                                            {{ sub.value }}
-                                            <a target="_blank" href="{{sub.value.pid | entity_url}}" class="">
-                                                ({{sub.value.label}})
-                                            </a>
-                                        {% elif sub.parse_type == 'url'  %}
-                                            <a target="_blank" href="{{sub.value}}">{{sub.value}}</a>
-                                        {% elif sub.parse_type == 'image'  %}
-                                            <a target="_blank" href="{{sub.value}}">
-                                                <img class="property-image" src="{{sub.value}}" style="border:0;" width="80%" alt="image for {{item.label}}">
-                                            </a>
-                                        {% else %}
-                                            {{ sub.value }}
-                                        {% endif %}
-                                        {% with references = sub.references  %}
+                                        {% include "snippets/preview_claim_value.html" %}
+                                        {% with qualifiers = claim_value.qualifiers  %}
+                                            {% include "snippets/preview_qualifiers.html" %}
+                                        {% endwith %}
+                                        {% with references = claim_value.references  %}
                                             {% include "snippets/preview_references.html" %}
                                         {% endwith %}
                                         </br>
