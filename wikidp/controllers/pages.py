@@ -32,11 +32,11 @@ def get_checklist_context(qid, schema):
     if checklist:
         counts = get_item_property_counts(qid)
         output = [{
-                    "pid": prop['id']['value'],
-                    "label": prop['propertyLabel']['value'],
-                    "description": prop['propertyDescription']['value'],
-                    "type": prop["valueType"]['value'],
-                    "count": counts.get(prop['id']['value'], 0)
+                    "pid": prop['id'],
+                    "label": prop['propertyLabel'],
+                    "description": prop['propertyDescription'],
+                    "type": prop["valueType"],
+                    "count": counts.get(prop['id'], 0)
                     } for prop in checklist]
         return output
     return []

@@ -51,42 +51,51 @@
     initializeClaim();
   }
 
-  function initializeClaim(){
-   var type = $('select#create-claim-property :selected').data('type').toLowerCase();
+  function initializeClaim() {
+      let $option = $('select#create-claim-property :selected');
+      var type = $option.data('type').toLowerCase();
+      let pid = $option.data('pid');
 
-    $('select#create-claim-property option.default').prop('disabled', true)
-    console.log('...initialing data-type: '+type);
-    var div = $('div#create-claim-value-div').fadeOut(400, function(){
-      div.empty();
-      switch(type){
-        case 'string':
-            console.log('STRING');
-            div.append($('<input/>').attr({'placeholder':'enter value here', 'id':'claim-value'}));
-            bindAddButton();
-            break;
-        case 'externalid':
-            console.log('EXID');
-            div.append($('<input/>').attr({'placeholder':'enter value here', 'id':'claim-value'}));
-            bindAddButton();
-            break;
-        case 'wikibaseitem':
-            console.log('ITEM');
-            div.append('Q',$('<input/>').attr({'placeholder':'1234', 'id':'claim-value', 'type':'number'}));
-            bindAddButton();
-            break;
-        case 'url':
-            console.log('URL');
-            div.append('https://',$('<input/>').attr({'placeholder':'www.website.com/', 'id':'claim-value', 'type':'url'}))
-            bindAddButton();
-            break;
-        default:
-            console.log('NONE OF THE ABOVE');
-            break;
-      }
-      div.fadeIn('slow');
-    });
+      $('select#create-claim-property option.default').prop('disabled', true)
+      console.log('...initialing data-type: ' + type);
+      var div = $('div#create-claim-value-div').fadeOut(400, function () {
+          div.empty();
+          switch (type) {
+              case 'string':
+                  console.log('STRING');
+                  div.append($('<input/>').attr({'placeholder': 'enter value here', 'id': 'claim-value'}));
+                  bindAddButton();
+                  break;
+              case 'externalid':
+                  console.log('EXID');
+                  div.append($('<input/>').attr({'placeholder': 'enter value here', 'id': 'claim-value'}));
+                  bindAddButton();
+                  break;
+              case 'wikibaseitem':
+                  console.log('ITEM');
+                  div.append('Q', $('<input/>').attr({'placeholder': '1234', 'id': 'claim-value', 'type': 'number'}));
+                  bindAddButton();
+                  break;
+              case 'url':
+                  console.log('URL');
+                  div.append('https://', $('<input/>').attr({
+                      'placeholder': 'www.website.com/',
+                      'id': 'claim-value',
+                      'type': 'url'
+                  }))
+                  bindAddButton();
+                  break;
+              default:
+                  console.log('NONE OF THE ABOVE');
+                  break;
+          }
+          div.fadeIn('slow');
+      });
+
+      $.getJSON('/api/' + pid + '/qualifiers', function (data) {
+          console.log('HEEREEEEEE-> ', data)
+      });
   }
-
   $('select#option-select').change(function(){
     var list = $('option.item-option')
     var options = []

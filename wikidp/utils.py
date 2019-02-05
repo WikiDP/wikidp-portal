@@ -20,7 +20,11 @@ from wikidp.const import (
     LANG,
     FALLBACK_LANG,
 )
-from wikidp.sparql import PROPERTY_QUERY
+from wikidp.sparql import (
+    ALL_QUALIFIER_PROPERTIES,
+    PROPERTY_ALLOWED_QUALIFIERS,
+    PROPERTY_QUERY,
+)
 
 
 def flatten_string(_string):
@@ -54,11 +58,31 @@ def convert_list_to_value_string(lst):
     return '(wd:{0})'.format(')(wd:'.join(map(str, lst)))
 
 
+def format_wikidata_bindings(bindings):
+    return [{k: v.get('value') for k, v in res.items()} for res in bindings]
+
+
+def process_query_string(query):
+    result = WDItemEngine.execute_sparql_query(query)
+    bindings = result['results'].get('bindings')
+    return format_wikidata_bindings(bindings)
+
+
+def get_all_qualifier_properties():
+    query = flatten_string(ALL_QUALIFIER_PROPERTIES)
+    return process_query_string(query)
+
+
+def get_allowed_qualifiers_by_pid(pid):
+    value = convert_list_to_value_string([pid])
+    query = PROPERTY_ALLOWED_QUALIFIERS_TEMPLATE.substitute(values=value)
+    return process_query_string(query)
+
+
 def get_property_details_by_pid_list(pid_list):
     values = convert_list_to_value_string(pid_list)
-    query_string = PROPERTY_QUERY_TEMPLATE.substitute(values=values)
-    result = WDItemEngine.execute_sparql_query(query_string)
-    return result['results'].get('bindings')
+    query = PROPERTY_QUERY_TEMPLATE.substitute(values=values)
+    return process_query_string(query)
 
 
 def get_directory_filenames_with_subdirectories(directory_path):
@@ -157,7 +181,7 @@ def item_detail_parse(qid, with_claims=True):
             categories = []
             claims = get_claims_from_json(item)
             properties = get_property_details_by_pid_list(claims.keys())
-            cached_property_labels = {prop['id']['value']: prop['propertyLabel']['value'] for prop in properties}
+            cached_property_labels = {prop['id']: prop['propertyLabel'] for prop in properties}
             for pid, claim_dict in sorted(claims.items(), key=lambda x: entity_id_to_int(x[0])):
                 property_label = cached_property_labels.get(pid)
                 value_list = []
@@ -342,7 +366,7 @@ def pid_label(pid, cached_values):
     if pid not in cached_values:
         prop = get_property(pid)
         default_label = "property {}".format(pid)
-        property_label = prop['propertyLabel'].get('value', default_label) if prop else default_label
+        property_label = prop.get('propertyLabel', default_label) if prop else default_label
         cached_values[pid] = property_label
         return property_label
     return cached_values.get(pid)
@@ -354,7 +378,7 @@ def format_url_from_property(pid, value):
     value = value.strip()
     prop = get_property(pid)
     if 'formatter_url' in prop:
-        return prop['formatter_url'].get("value").replace("$1", value)
+        return prop.get("formatter_url").replace("$1", value)
     return None
 
 
@@ -365,3 +389,4 @@ def create_query_template(_string):
 
 # Register Template Queries Here
 PROPERTY_QUERY_TEMPLATE = create_query_template(PROPERTY_QUERY)
+PROPERTY_ALLOWED_QUALIFIERS_TEMPLATE = create_query_template(PROPERTY_ALLOWED_QUALIFIERS)
