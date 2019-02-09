@@ -1,0 +1,68 @@
+{% raw %}
+    <script id="wikidp-contribute-input" type="text/template">
+        <div id="creation-content-div" class="contribute-input-div">
+            <div id="creation-property-div">
+                <label for="{{uuid}}" class="property-input-label">{{type}}</label><br>
+                <select id="{{uuid}}" class="property-selector {{type}}-selectize" title="{{type}} Property"
+                        aria-label="Select Property">
+                </select> :
+            </div>
+            <div id="{{uuid}}-value-div" class="create-claim-value-div">
+            </div>
+        </div>
+    </script>
+
+    <script id="wikidp-added-claim-li" type="text/template">
+        <li class="added-claim-li {{type}}" data-pid="{{pid}}" data-value="{{value}}" data-type="{{type}}">
+            <div class="row-div">
+                <div class="added-property-div">
+                    {{pidLabel}}
+                    <a class="wd-id" href="https://wikidata.org/wiki/Property:{{pid}}" target="_blank">
+                        ({{pid}})
+                    </a>
+                </div>
+                <div class="added-value-div">
+                    <span class="added-label">{{label}}</span>
+                    {{#description}}
+                        <br/>
+                        <i> &mdash; {{description}} &mdash; </i>
+                    {{/description}}
+                    {{#aliases}}
+                        <br/>
+                        <span class="sub-aka"><b>Also Referred To As:</b> {{aliases}}</span>
+                    {{/aliases}}
+                    <br/>
+                    {{#qualifiers}}
+                        <div class="claim-li-qualifier" data-value="{{value}}" data-property_id="{{pid}}">
+                            {{pidLabel}}: {{ label }}
+                        </div>
+                    {{/qualifiers}}
+                </div>
+            </div>
+        </li>
+    </script>
+
+    <script id="wikidp-property-autocomplete" type="text/template">
+        <div>
+            <span class="title">
+                <span class="name">{{label}}</span>
+                <span class="by">{{id}}</span>
+            </span>
+            <span class="description">{{description}}</span>
+            <ul class="meta">
+                {{#language}}
+                    <li class="language">{{language}}</li>
+                {{/language}}
+                <li class="watchers">
+                    value type: <span>{{value_type}}</span>
+                </li>
+                {{#count}}
+                    <li class="forks">
+                       <br/>
+                       This item currently has <span>{{count}}</span> value(s) with this property.
+                    </li>
+                {{/count}}
+            </ul>
+        </div>
+    </script>
+{% endraw %}

@@ -40,6 +40,13 @@ def route_api_get_item(qid):
     return jsonify(item)
 
 
+@APP.route("/api/<item:qid>/summary", methods=['GET', 'POST'])
+def route_api_get_item_summary(qid):
+    """User posts a item-id and returns json of (id, label, desc, aliases) ."""
+    item = item_detail_parse(qid, with_claims=False)
+    return jsonify(item)
+
+
 @APP.route("/api/<item:qid>/claims/write", methods=['POST'])
 def route_api_write_claims_to_item(qid):
     """ User posts a JSON object of claims to contribute to an item"""

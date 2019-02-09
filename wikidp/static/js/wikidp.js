@@ -35,3 +35,17 @@ $('div.side-icon-div i#searchToggle').on('click', function(){
 })
 $.qLabel.switchLanguage('en')
 $(document).ready(function(){$('div.page-container').fadeIn(500)});
+
+function get_item_summary(qid, callback){
+    $.get(`/api/${qid}/summary`,  (item) => {
+            if (callback) return callback(item);
+            else return item;
+        }).fail((error) => console.log(error));
+}
+
+
+function selector_to_data_array(selector){
+    let output = [];
+    $(selector).each((index, elem) => output.push($(elem).data()));
+    return output;
+}
