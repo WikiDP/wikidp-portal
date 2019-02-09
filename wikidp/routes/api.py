@@ -20,6 +20,8 @@ from wikidp.controllers.api import (
 )
 from wikidp.controllers.search import search_result_list
 from wikidp.utils import (
+    get_all_qualifier_properties,
+    get_allowed_qualifiers_by_pid,
     get_property,
     item_detail_parse,
 )
@@ -38,6 +40,13 @@ def route_api_get_item(qid):
     return jsonify(item)
 
 
+@APP.route("/api/<item:qid>/summary", methods=['GET', 'POST'])
+def route_api_get_item_summary(qid):
+    """User posts a item-id and returns json of (id, label, desc, aliases) ."""
+    item = item_detail_parse(qid, with_claims=False)
+    return jsonify(item)
+
+
 @APP.route("/api/<item:qid>/claims/write", methods=['POST'])
 def route_api_write_claims_to_item(qid):
     """ User posts a JSON object of claims to contribute to an item"""
@@ -48,6 +57,18 @@ def route_api_write_claims_to_item(qid):
 def route_api_get_property(pid):
     prop = get_property(pid)
     return jsonify(prop)
+
+
+@APP.route("/api/<prop:pid>/qualifiers", methods=['GET', 'POST'])
+def route_api_get_allowed_qualifiers_by_pid(pid):
+    output = get_allowed_qualifiers_by_pid(pid)
+    return jsonify(output)
+
+
+@APP.route("/api/property/qualifiers", methods=['GET', 'POST'])
+def route_api_get_all_qualifier_properties():
+    output = get_all_qualifier_properties()
+    return jsonify(output)
 
 
 @APP.route("/api/search/<search_string>", methods=['GET', 'POST'])

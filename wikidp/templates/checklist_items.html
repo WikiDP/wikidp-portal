@@ -1,10 +1,14 @@
 {% if properties|count > 0%}
-  {% for property in properties %}
-        <li class="sidebar-property-li {% if property.count > 0 %}property-ok{% endif %}" data-pid="{{property.pid}}" data-label="{{property.label}}" data-count="{{property.count}}" data-type="{{property.type}}" onclick="sidebar_property_click(this)">
-          <span title="{{property.label}} ({{property.pid}}): {{property.description}}" data-content-start="{{property.label}} ({{property.pid}}) "
-  data-content-end=  ""></span> <div class="sidebar-property-count">: {{property.count}} </div>
+    {% for property in properties %}
+        <li class="sidebar-property-li {% if property.count > 0 %}property-ok{% endif %}" data-id="{{property.id}}"
+            data-label="{{property.label}}" data-count="{{property.count}}" data-value_type="{{property.type}}"
+            data-description="{{property.description}}" onclick="sidebar_property_click(this)">
+            <span title="{{property.label}} ({{property.id}}): {{property.description}}"
+                  data-content-start="{{property.label}} ({{property.id}}) " data-content-end="">
+            </span>
+            <div class="sidebar-property-count">: {{property.count}} </div>
         </li>
-  {% endfor %}
+    {% endfor %}
 {% else %}
-  no suggested properties in this schema
+    no suggested properties in this schema
 {% endif %}

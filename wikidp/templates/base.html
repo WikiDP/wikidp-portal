@@ -10,7 +10,7 @@
   <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}" type="image/x-icon" />
   <title>{% block title %}{% endblock %} | WikiDP </title>
   <!-- jQuery -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
   <!-- Bootstrap -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
   <!-- Optional theme -->
@@ -23,12 +23,9 @@
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
   <![endif]-->
 
-  <!-- OLD STYLE -->
-  <!-- <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='css/usersheet.css') }}"/> -->
   <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='css/navbar.css') }}"/>
   <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='css/wikidp.css') }}"/>
   <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>  <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
   <script src="{{ url_for('static',filename='js/jquery.qlabel.js') }}"></script>
 </head>
@@ -38,7 +35,6 @@
 
   <!-- Include all compiled plugins (below), or include individual files as needed -->
   <!-- Latest compiled and minified JavaScript -->
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>  <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
   <script src="{{ url_for('static', filename='js/wikidp.js') }}" type="text/javascript"></script>
   {% block page_scripts %}{% endblock %}
 </body>

@@ -204,7 +204,7 @@ def test_route_api_get_item(client):
 def test_route_api_get_property(client):
     response = client.get('/api/'+settings.SAMPLE_PID_STRING)
     assert response.status_code == 200
-    assert json_response(response)['id']['value'] == settings.SAMPLE_PID_STRING
+    assert json_response(response)['id'] == settings.SAMPLE_PID_STRING
     assert 'propertyLabel' in json_response(response)
 
 

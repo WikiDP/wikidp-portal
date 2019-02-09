@@ -81,8 +81,9 @@ def write_claims_to_item(qid):
     item = pywikibot.ItemPage(REPO, u"Q175461")  # WIKIDATA TESTING ITEM
     # item = pywikibot.ItemPage(REPO, qid)
     for user_claim in user_claims:
-        write_status = write_claim(item, user_claim['pid'], user_claim['value'], user_claim['type'])
-        if write_status is True:
+        write_status = write_claim(item, user_claim.get('pid'), user_claim.get('value'), user_claim.get('type'),
+                                   user_claim.get('qualifiers'))
+        if write_status:
             successful_claims.append(user_claim)
         else:
             failure_claims.append(user_claim)
@@ -90,14 +91,22 @@ def write_claims_to_item(qid):
     return jsonify(output)
 
 
-def write_claim(item, prop_string, value, data_type, meta=False):
-    """Write a claim to WikiData.
+def get_target_by_type(value_type, value):
+    if value_type == 'WikibaseItem':
+        return pywikibot.ItemPage(REPO, value)
+    # elif data_type == 'Coordinate'
+    return value
 
+
+def write_claim(item, prop_string, value, data_type, qualifiers, meta=False):
+    """Write a claim to WikiData.
+    TODO: Use wikidataintegrator2 here and account for qualifiers and references
     Args:
         item (pywikibot.ItemPage): Wikidata Item Model
         prop_string (str): Wikidata Property Identifier [ex. 'P1234']
         value (str): Value matching accepted property
         data_type: (could be other data types)
+        qualifiers (list): list of data about qualifier claims
         meta (dict, optional): Contains information about qualifiers/references/summaries
     Returns:
         bool: True if successful, False otherwise
@@ -105,13 +114,15 @@ def write_claim(item, prop_string, value, data_type, meta=False):
     try:
         # TODO: Account for all dataTypes
         claim = pywikibot.Claim(REPO, prop_string)
-        if data_type == 'WikibaseItem':
-            target = pywikibot.ItemPage(REPO, value)
-        # elif data_type == 'Coordinate'
-        # elif data_type == 'String'
-        else:
-            target = value
+        target = get_target_by_type(data_type, value)
         claim.setTarget(target)
+
+        for q_data in qualifiers:
+            qualifier = pywikibot.Claim(REPO, q_data.get('pid'))
+            target = get_target_by_type(q_data.get('type'), q_data.get('value'))
+            qualifier.setTarget(target)
+            claim.addQualifier(qualifier, summary=u'Adding a qualifier.')
+
         if meta:
             # TODO: Add Ability to include references, summaries, and qualifiers
             pass
