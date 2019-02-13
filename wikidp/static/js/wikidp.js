@@ -1,45 +1,24 @@
-// TODO: Bring inline javascript into js file
-$(document).ready(function(){
-    $("#loginBtn").click(function(){
-        $("#loginModal").modal();
-    });
-});
-$("form#navbarSearch").submit(function(){
-  $('div.page-container').fadeOut(500);
-  $('form.navbar-form.navbar-right').fadeOut('slow');
-
+$(document).ready(() => {
+    let $page_container = $('div.page-container');
+    $("form#navbarSearch").submit(() => $page_container.fadeOut(500));
+    $('div.side-icon-div i#searchToggle').click(toggle_search_form);
+    $("#loginBtn").click(() => $("#loginModal").modal());
+    $page_container.fadeIn(500);
 
 });
-$('div.side-icon-div i#searchToggle').on('click', function(){
-  var icon = $(this);
-  if(icon.hasClass('fa-search')){
-    $('div.outer-list-div').hide(1000, function(){
-      $('form.navbar-form.navbar-right').fadeIn(500);
-      icon.fadeOut('slow', function(){
-        icon.removeClass('fa-search');
-        icon.addClass('fa-times-circle-o');
-        icon.fadeIn('slow');
-      });
-    });
-  }
-  else{
-    $('form.navbar-form.navbar-right').fadeOut('slow', function(){
-      $('div.outer-list-div').show(1000)
-      icon.fadeOut('slow', function(){
-        icon.removeClass('fa-times-circle-o')
-        icon.addClass('fa-search')
-        icon.fadeIn('slow')
-      });
-    });
-  }
-})
-$.qLabel.switchLanguage('en')
-$(document).ready(function(){$('div.page-container').fadeIn(500)});
+
+
+function toggle_search_form(){
+    let $icon = $('div.side-icon-div i#searchToggle').fadeOut('slow');
+    $('div.outer-list-div').toggle(1000, () => $('form.navbar-form.navbar-right').fadeToggle(500));
+    $icon.toggleClass('fa-search').toggleClass('fa-times-circle-o').fadeIn('slow');
+}
+
 
 function get_item_summary(qid, callback){
     $.get(`/api/${qid}/summary`,  (item) => {
             if (callback) return callback(item);
-            else return item;
+            return item;
         }).fail((error) => console.log(error));
 }
 

@@ -65,4 +65,26 @@
             </ul>
         </div>
     </script>
+
+
+    <script id="wikidp-lookup-item" type="text/template">
+        <li class="lookup-result-li">
+            <div class="result-main" id="result-main-{{qid}}" data-qid="{{qid}}">
+                <button data-clipboard-text="{{qid}}" class="pull-left clipboardBtn" id="clipboardBtn-{{qid}}" data-qid="{{qid}}">
+                    <i class="fa fa-clipboard"></i>
+                </button>
+                <span class="result-label">{{label}}</span><br/>
+                {{qid}} <span class="glyphicon glyphicon-menu-down"></span>
+            </div>
+            <div class="result-sub" id="result-sub-{{qid}}">
+                {{#description}}
+                    <i> &mdash; {{description}} &mdash; </i><br/>
+                {{/description}}
+                {{#aliases}}
+                    <br/>
+                    <span class="sub-aka"><b>Also Referred To As:</b> {{aliases}}</span>
+                {{/aliases}}
+            </div>
+        </li>
+    </script>
 {% endraw %}
