@@ -1,12 +1,11 @@
 {% extends "base.html" %}
-{% block title %}Page{% endblock %}
 {% block page_header %}
-  {% include "navbar.html" %}
+    {% include "navbar.html" %}
 {% endblock %}
 {% block page_layout %}
-  <div class="page-container" role="main">
-    {% block page_content %}
-    {% endblock page_content %}
-  </div>
-  {% include "login.html" %}
+    <div class="page-container" role="main">
+        {% block page_content %}
+        {% endblock page_content %}
+    </div>
+    {% include "login.html" %}
 {% endblock page_layout %}

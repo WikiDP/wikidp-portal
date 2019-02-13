@@ -1,0 +1,18 @@
+<form class="navbar-form navbar-right" role="search" action="{{ url_for('route_process_site_search') }}"
+      method="POST" id="navbarSearch">
+    <div class="input-group">
+        <input type="text" name="userInput" class="form-control" placeholder="search here">
+        <span class="input-group-btn">
+            <button type="reset" class="btn btn-default" id="search-reset">
+                <span class="glyphicon glyphicon-remove">
+                    <span class="sr-only">Close</span>
+                </span>
+            </button>
+            <button type="submit" class="btn btn-default" id="search-btn">
+                <span class="glyphicon glyphicon-search">
+                    <span class="sr-only">Search</span>
+                </span>
+            </button>
+        </span>
+    </div>
+</form>

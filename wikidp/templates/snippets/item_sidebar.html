@@ -17,24 +17,18 @@
   <div class="selected-item-div">
     <div class="sidebar-header">selected item</div>
     <select id="option-select" value=""  aria-label="Select an alternative wikidata item option">
-    {% for option in options %}
-    {% if option[0] != item.label %}
-
-    <option class="item-option" data-qid="{{option[0]}}"  data-label="{{option[1]}}" data-description="{{option[2]}}" title="{{option[2]}}" value="{{option[0]}}">
-      {{option[1]}}<span class="select-item-id"> ({{option[0]}})</span>
-    </option>
-    {% else %}
-    <option class="item-option" data-qid="{{option[0]}}"  data-label="{{option[1]}}" data-description="{{option[2]}}" title="{{option[2]}}" value="{{option[0]}}" selected="true">
-      {{option[1]}}<span class="select-item-id"> ({{option[0]}})</span>
-    </option>
-    {% endif %}
-    {% endfor %}
+        {% for option in options %}
+            <option class="item-option" data-qid="{{option[0]}}"  data-label="{{option[1]}}" title="{{option[2]}}"
+                    data-description="{{option[2]}}" value="{{option[0]}}" {% if option[0] == item.qid %}selected={% endif %}>
+              {{option[1]}}<span class="select-item-id"> ({{option[0]}})</span>
+            </option>
+        {% endfor %}
     </select>
   </div>
   <!-- schema gallery -->
   <div class="schema-gallery-div">
     <div class="sidebar-header">selected schema</div>
-    <select id="schema-select" value="" aria-label="Select a Property Checklist Schema" onchange="load_property_checklist_by_schema(this.value)">
+    <select id="schema-select" value="" aria-label="Select a Property Checklist Schema">
       {% for schema in schemas %}
         {% if schema is string %}
           <option class="item-schema" data-schema_name="{{schema}}"  title="{{schema | file_to_label }}" value="{{schema}}">
@@ -58,7 +52,7 @@
   <div class="property-overview-div">
     <div class="sidebar-header">property checklist</div>
     <div id="sidebar-property-scroller" class="scroller">
-    <ul id="sidebar-property-list" value="">
+    <ul id="sidebar-property-list">
 
     </ul></div>
   </div>
