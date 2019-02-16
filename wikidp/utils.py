@@ -189,58 +189,53 @@ def item_detail_parse(qid, with_claims=True):
             ex_list = []
             categories = []
             claims = get_claims_from_json(item)
-            properties = get_property_details_by_pid_list(claims.keys())
-            cached_property_labels = {prop['id']: prop['propertyLabel'] for prop in properties}
             for pid, claim_dict in sorted(claims.items(), key=lambda x: entity_id_to_int(x[0])):
-                property_label = cached_property_labels.get(pid)
                 value_list = []
                 add_to_ex_list = False
                 for json_details in claim_dict:
-                    val = parse_snak(pid, json_details.get('mainsnak'), cached_property_labels)
+                    val = parse_snak(pid, json_details.get('mainsnak'))
                     if val:
-                        val['references'] = parse_references(json_details, cached_property_labels)
-                        val['qualifiers'] = parse_qualifiers(json_details, cached_property_labels)
+                        val['references'] = parse_references(json_details)
+                        val['qualifiers'] = parse_qualifiers(json_details)
                         value_list.append(val)
                         if val.get('parse_type') == 'external-id':
                             add_to_ex_list = True
                         #  Determining the 'category' of the item from the 'instance of' and 'subclass of' properties
                         elif pid in ['P31', 'P279']:
                             categories.append(val)
-                parsed_claim = {'pid': pid, 'label': property_label, 'values': value_list}
+                parsed_claim = {'pid': pid, 'values': value_list}
                 ex_list.append(parsed_claim) if add_to_ex_list else claim_list.append(parsed_claim)
             output_dict['external_links'] = ex_list
             output_dict['claims'] = claim_list
             output_dict['categories'] = categories
-            output_dict['properties'] = properties
         return output_dict
     return False
 
 
-def parse_qualifiers(json_details, cached_property_labels):
+def parse_qualifiers(json_details):
     qualifier_set = json_details.get('qualifiers')
-    return parse_snak_set(qualifier_set, cached_property_labels)
+    return parse_snak_set(qualifier_set)
 
 
-def parse_references(json_details, cached_property_labels):
+def parse_references(json_details):
     reference_list = json_details.get('references')
     if reference_list:
         reference_set = reference_list[0].get('snaks')
-        return parse_snak_set(reference_set, cached_property_labels)
+        return parse_snak_set(reference_set)
     return []
 
 
-def parse_snak_set(snak_set, cached_property_labels):
+def parse_snak_set(snak_set):
     parsed_snaks = []
     if snak_set:
         for pid, snak_list in snak_set.items():
-            label = pid_label(pid, cached_property_labels)
             values = []
             for snak in snak_list:
-                val = parse_snak(pid, snak, cached_property_labels)
+                val = parse_snak(pid, snak)
                 if val:
                     values.append(val)
             if values:
-                parsed_snaks.append({'pid': pid, 'label': label, 'values': values})
+                parsed_snaks.append({'pid': pid, 'values': values})
     return parsed_snaks
 
 
@@ -290,7 +285,7 @@ def get_claims_from_json(item_json):
     return item_json.get('claims', {})
 
 
-def parse_snak(pid, snak, cached_property_labels):
+def parse_snak(pid, snak):
     """ Uses the json_details dictionary of a single claim and outputs
     the parsed data into the output_dict. """
     try:
@@ -314,9 +309,7 @@ def parse_snak(pid, snak, cached_property_labels):
         elif data_type == 'wikibase-entityid':
             parse_type = data_value.get('entity-type')
             if parse_type == 'property':
-                pid = 'P{}'.format(data_value.get('numeric-id'))
-                label = pid_label(pid, cached_property_labels)
-                val = {'pid': pid, 'label': label}
+                val = 'P{}'.format(data_value.get('numeric-id'))
             else:
                 val = data_value.get('id')
         elif data_type == 'time':
@@ -336,38 +329,6 @@ def parse_snak(pid, snak, cached_property_labels):
     except (KeyError, Exception):
         logging.exception("Unexpected exception parsing claims.")
         return None
-
-
-def parse_by_data_type(data, cached_property_labels=None):
-    """ Checks the data type of the current data value to determine how
-    to return as a string or ID-label tuple. """
-    data_type = type(data)
-    if data_type is dict:
-        if 'text' in data:
-            return data['text']
-        elif 'time' in data:
-            return time_formatter(data.get('time'))
-        elif 'entity-type' in data and 'id' in data:
-            return id_to_label_list(data.get('id'), cached_property_labels)
-    return data
-
-
-def id_to_label_list(wikidata_id, cached_property_labels):
-    """Takes in an id (P## or Q##) and returns a list of that entity's label and id"""
-    if wikidata_id[0].lower() == 'p':
-        return [wikidata_id, pid_label(wikidata_id, cached_property_labels)]
-    return [wikidata_id]
-
-
-def pid_label(pid, cached_values):
-    """Convert property identifier (P###) to a label and updates the cache."""
-    if pid not in cached_values:
-        prop = get_property(pid)
-        default_label = "property {}".format(pid)
-        property_label = prop.get('propertyLabel', default_label) if prop else default_label
-        cached_values[pid] = property_label
-        return property_label
-    return cached_values.get(pid)
 
 
 def format_url_from_property(pid, value):

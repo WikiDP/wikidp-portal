@@ -15,9 +15,9 @@
 
 {% macro parse_claim_value(claim_value, internal_link=False, label_link=False) %}
     {% if claim_value.parse_type == 'item' %}
-        {{ wikidata_entity(claim_value.value, claim_value.value, internal_link=internal_link, label_link=label_link) }}
+        {{ wikidata_entity(claim_value.value, internal_link=internal_link, label_link=label_link) }}
     {% elif claim_value.parse_type == 'property' %}
-        {{ wikidata_entity(claim_value.value.pid, claim_value.value.label) }}
+        {{ wikidata_entity(claim_value.value) }}
     {% elif claim_value.parse_type == 'url'  %}
         {{ claim_value.value|urlize(target='_blank') }}
     {% elif claim_value.parse_type == 'external-id' %}
@@ -42,7 +42,7 @@
 {% macro make_value_table(table_name, items, classes=None, internal_link=False, label_link=True, meta=None)  %}
     <table class="{{ classes if classes }} {{table_name}}-table">
         {% for x in items %}
-            {% call(claim_value) value_table_row(wikidata_entity(x.pid, x.label), x['values'])  %}
+            {% call(claim_value) value_table_row(wikidata_entity(x.pid), x['values'])  %}
                 {{ parse_claim_value(claim_value, internal_link=internal_link, label_link=label_link) }}
                 {% if meta %}
                     {% for meta_type in meta %}
