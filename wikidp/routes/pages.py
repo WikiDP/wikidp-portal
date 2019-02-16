@@ -79,7 +79,7 @@ def route_item_contribute(qid):
 def route_item_checklist_by_schema(qid, schema):
     """ """
     properties = get_checklist_context(qid, schema)
-    return render_template('checklist_items.html', properties=properties)
+    return render_template('snippets/property_checklist.html', properties=properties)
 
 
 @APP.errorhandler(400)

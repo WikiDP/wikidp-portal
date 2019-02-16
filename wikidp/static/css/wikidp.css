@@ -45,7 +45,7 @@ a.wd-id:hover {
 }
 
 a.wd-id {
-    font-size: 40%;
+    font-size: 75%;
     text-decoration: none;
     color: #00e6ea;
     opacity: .9;
@@ -404,6 +404,10 @@ div#preview-div {
     color: #0ff2f8;
 }
 
+.table-header-div a {
+    color: inherit;
+}
+
 div#header-text {
     height: 120px;
     width: calc(100%);
@@ -475,21 +479,24 @@ div#preview-div tr {
 .table-striped>tbody>tr:nth-of-type(even) {
     background-color: rgba(179, 202, 220, 0.12);
 }
-#claims-scroller table.reference-table.table-responsive.table-hover {
+#claims-scroller .metadata-table {
     width: 85%;
     font-size: 11px;
     margin: 5px auto;
     border: 0;
 }
-#preview-div .reference-table tr td {
-    padding: 0px 2px;
+#preview-div .metadata-table tr td {
+    padding: 10px 2px;
 }
-#preview-div .reference-table tr {
+#preview-div .metadata-table tr {
     border-top: none;
+    border-bottom: 1px solid;
     background: none;
 }
 img.property-image{
     display: none;
+    width: 80%;
+    border: 0;
 }
 /*end preview page*/
 

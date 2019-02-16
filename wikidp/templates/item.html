@@ -1,7 +1,7 @@
 {% extends "page.html" %}
 
 {% block title %}
-    {{item.label}} ({{item.qid}}): {{page}}
+    {{item.label}} ({{item.qid}}): {{page|capitalize}}
 {% endblock title %}
 
 {% block page_content %}
@@ -13,21 +13,18 @@
         <div id="{{page}}-div">
             <div id="header-text">
                 <span id="preview-item-name">
-                    <span class="qlabel" its-ta-ident-ref="{{item.qid | entity_url}}">
-                        {{item.label}}
-                    </span>
-                    <a class="wd-id" href="{{item.qid | entity_url}}" target="_blank">
-                        ({{item.qid}})
-                    </a>
+                    {{wikidata_entity(item.qid, item.label)}}
                 </span>
                 <br>
                 {% if item.description %}
                     <span id="preview-item-description" title="{{item.description}}">
+                        {# TODO: Support Translation of Descriptions #}
                         {{item.description}}
                     </span>
                 {% endif %}
                 <div id="languageSelectDiv">
                     Language:
+                    {# TODO: Make API Call to Sync with all Wikidata Languages #}
                     <select name="" id="languageSelect"  aria-label="Select a Language for Item Labels">
                         <option value="en">English</option>
                         <option value="fr">French</option>

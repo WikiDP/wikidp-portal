@@ -1,39 +1,17 @@
 {% extends "item.html" %}
 
+{% from 'snippets/macros.html' import make_value_table, value_table_row, table_row %}
+
 {% block item_content %}
     <div id="claims-div">
         <div class="table-header-div">
             <span class="tbl-cat">
-                    Current Data About <span class="qlabel" its-ta-ident-ref="{{item.qid | entity_url}}">{{item.label}}</span>
-                </span></div>
-                <div id="claims-scroller" class="scroller">
-
-                    <table  class="table claims-table table-responsive table-striped table-hover">
-                {% for clm in item.claims %}
-                    <tr data-pid="{{clm.pid}}">
-                        <td class="invert-col">
-                            {{ clm.label }}
-                            <a target="_blank" href="{{clm.pid | entity_url}}" class="">
-                                ({{clm.pid}})
-                            </a>
-                        </td>
-                        <td>
-                            {% for claim_value in clm['values'] %}
-                                <span class="detail-row">
-                                    {% include "snippets/preview_claim_value.html" %}
-                                    {% with qualifiers = claim_value.qualifiers  %}
-                                        {% include "snippets/preview_qualifiers.html" %}
-                                    {% endwith %}
-                                    {% with references = claim_value.references  %}
-                                        {% include "snippets/preview_references.html" %}
-                                    {% endwith %}
-                                    </br>
-                                </span>
-                            {% endfor %}
-                        </td>
-                    </tr>
-                {% endfor %}
-            </table>
+                Current Data About {{wikidata_entity(item.qid, item.label, label_link=True)}}
+            </span>
+        </div>
+        <div id="claims-scroller" class="scroller">
+            {{make_value_table('claims', item.claims, classes="table table-responsive table-striped",
+                               internal_link=True, meta=['qualifiers', 'references'], label_link=False) }}
         </div>
     </div>
     <div id="other-info-div">
@@ -44,62 +22,16 @@
         </div>
         <div id="other-info-scroller" class="scroller">
             <table class="selected-table table-responsive table-striped table-hover">
-                {%if item.aliases %}
-                    <tr>
-                        <td>
-                            Aliases
-                        </td>
-                        <td>
-                            {%for p in item.aliases%}
-                                {{p}}
-                            {%endfor%}
-                        </td>
-                    </tr>
-                {%endif%}
-                {%if item.description != []%}
-                    <tr>
-                        <td>
-                            Description
-                        </td>
-                        <td id="sub_description">
-                            {{item.description}}
-                        </td>
-                    </tr>
-                {%endif%}
+                {{ value_table_row('aliases', item.aliases) if item.aliases}}
+                {{ table_row('description', item.description) if item.description}}
             </table>
             {%if item.external_links %}
-            <br>
-
-            <span class="tbl-cat">External Links </span>
-            <table class="ex-links-table  table-responsive table-striped table-hover">
-                {%for ex in item.external_links %}
-                    <tr>
-                        <td>
-                            {{ex.label}}
-                            <a target="_blank" href="{{ex.pid | entity_url}}" class="">
-                                ({{ex.pid }})
-                            </a>
-                        </td>
-                        <td>
-                            {% for ex_link in ex['values']%}
-                                {% if ex_link.value.url %}
-                                    <a target="_blank" href="{{ex_link.value.url }}">{{ex_link.value.label}}</a>
-                                {%else%}
-                                    {{ex_link.value.label}}
-                                {%endif%}
-                            {% endfor %}
-                        </td>
-                    </tr>
-                {%endfor%}
-            </table>
+                <br/>
+                <span class="tbl-cat">External Links </span>
+                {{make_value_table('ex-links', item.external_links, classes="table-responsive table-striped")}}
             {%endif%}
-            </div>
-
+        </div>
 	</div>
-	<script type="text/javascript">
-
-	</script>
-    <!-- end preview page specific -->
 {% endblock item_content %}
 
 {% block item_page_scripts %}

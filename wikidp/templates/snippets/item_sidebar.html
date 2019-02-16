@@ -1,59 +1,61 @@
 <div id="sidebar-div">
-  <!-- action buttons-->
-  <div class="actions-div">
-    <ul id="sidebar-action-list" value="">
-      <li class="sidebar-action-li" id="explore-action">
-        explore
-      </li>
-      <li class="sidebar-action-li {% if page == 'preview' %}preview-on{% endif %}" id="preview-action">
-        preview
-      </li>
-      <li class="sidebar-action-li {% if page == 'contribute' %}contribute-on{% endif %}" id="contribute-action" onclick="">
-        contribute
-      </li>
-    </ul>
-  </div>
-  <!-- selected item -->
-  <div class="selected-item-div">
-    <div class="sidebar-header">selected item</div>
-    <select id="option-select" value=""  aria-label="Select an alternative wikidata item option">
-        {% for option in options %}
-            <option class="item-option" data-qid="{{option[0]}}"  data-label="{{option[1]}}" title="{{option[2]}}"
-                    data-description="{{option[2]}}" value="{{option[0]}}" {% if option[0] == item.qid %}selected={% endif %}>
-              {{option[1]}}<span class="select-item-id"> ({{option[0]}})</span>
-            </option>
-        {% endfor %}
-    </select>
-  </div>
-  <!-- schema gallery -->
-  <div class="schema-gallery-div">
-    <div class="sidebar-header">selected schema</div>
-    <select id="schema-select" value="" aria-label="Select a Property Checklist Schema">
-      {% for schema in schemas %}
-        {% if schema is string %}
-          <option class="item-schema" data-schema_name="{{schema}}"  title="{{schema | file_to_label }}" value="{{schema}}">
-            {{schema | file_to_label }}
-          </option>
-        {% else %}
-          <optgroup label="{{schema[0] | file_to_label}}">
-            {% for sub_schema in schema[1] %}
-              {% if sub_schema is string %}
-                <option class="item-schema" data-schema_name="{{sub_schema}}"  title="{{sub_schema | file_to_label }}" value="{{schema[0]}}/{{sub_schema}}">
-                  {{sub_schema | file_to_label }}
+    <!-- action buttons-->
+    <div class="actions-div">
+        <ul id="sidebar-action-list">
+            <li class="sidebar-action-li" id="explore-action">
+                explore
+            </li>
+            <li class="sidebar-action-li {% if page == 'preview' %}preview-on{% endif %}" id="preview-action">
+                preview
+            </li>
+            <li class="sidebar-action-li {% if page == 'contribute' %}contribute-on{% endif %}" id="contribute-action">
+                contribute
+            </li>
+        </ul>
+    </div>
+    <!-- selected item -->
+    <div class="selected-item-div">
+        <label class="sidebar-header" for="option-select">selected item</label>
+        <select id="option-select"  aria-label="Select an alternative wikidata item option">
+            {% for option in options %}
+                <option class="item-option" data-qid="{{option[0]}}" data-label="{{option[1]}}" title="{{option[2]}}"
+                        data-description="{{option[2]}}" value="{{option[0]}}"
+                        {% if option[0] == item.qid %}selected{% endif %}>
+                    {{option[1]}}<span class="select-item-id"> ({{option[0]}})</span>
                 </option>
-              {% endif %}
             {% endfor %}
-          </optgroup>
-        {% endif %}
-      {% endfor %}
-    </select>
-  </div>
-  <!-- property overview -->
-  <div class="property-overview-div">
-    <div class="sidebar-header">property checklist</div>
-    <div id="sidebar-property-scroller" class="scroller">
-    <ul id="sidebar-property-list">
-
-    </ul></div>
-  </div>
+        </select>
+    </div>
+    <!-- schema gallery -->
+    <div class="schema-gallery-div">
+        <label class="sidebar-header" for="schema-select">selected schema</label>
+        <select id="schema-select" aria-label="Select a Property Checklist Schema">
+            {% for s in schemas %}
+                {% if s.type == 'file' %}
+                    <option class="item-schema" data-schema_name="{{s.name}}" title="{{s.label}}" value="{{s.name}}">
+                        {{s.label}}
+                    </option>
+                {% else %}
+                    <optgroup label="{{s.label}}">
+                        {% for sub_s in s.files %}
+                            {% if sub_s.type == 'file' %}
+                                <option class="item-schema" data-schema_name="{{sub_s.name}}"  title="{{sub_s.label }}"
+                                        value="{{s.name}}/{{sub_s.name}}">
+                                    {{sub_s.label}}
+                                </option>
+                            {% endif %}
+                        {% endfor %}
+                    </optgroup>
+                {% endif %}
+            {% endfor %}
+        </select>
+    </div>
+    <!-- property overview -->
+    <div class="property-overview-div">
+        <div class="sidebar-header">property checklist</div>
+        <div id="sidebar-property-scroller" class="scroller">
+            <ul id="sidebar-property-list">
+            </ul>
+        </div>
+    </div>
 </div>

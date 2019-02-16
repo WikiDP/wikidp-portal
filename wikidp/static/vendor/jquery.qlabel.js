@@ -101,24 +101,35 @@ var checkLoader = $.isFunction;
 // Wikidata loader
 
 var wikidataTester = function(URI) {
-    var pattern1 = /^Q\d+$/i;
+    var pattern1 = /^(Q|P)\d+$/i;
     if (pattern1.test(URI)) return URI;
-    var pattern2 = /^https?:\/\/(?:www\.)?wikidata\.org\/(?:wiki|entity)\/(Q\d+)$/i;
+    var pattern2 = /^https?:\/\/(?:www\.)?wikidata\.org\/(?:wiki|entity)\/((Q|P)\d+)$/i;
     var m = URI.match(pattern2);
     if (m === null) return undefined;
     return m[1];
 };
 
 var wikidataLoader = function(URIs) {
-    return $.getJSON(`https://query.wikidata.org/sparql?query=PREFIX%20rdfs%3A%20%3Chttp%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23%3E%0ASELECT%20DISTINCT%20%3Fitem%20%3Flabel%20(lang(%3Flabel)%20as%20%3Flang)%7B%0AVALUES%3Fitem%7Bwd%3A${URIs.join('%20wd%3A')}%7D%0A%3Fitem%20rdfs%3Alabel%20%3Flabel%7D&format=json`, {
-    }, function(data) {
-      // TODO handle errors and exceptions
-      $.each(data.results.bindings, function(id, entity) {
-        temp_uri = entity.item.value.split("http://www.wikidata.org/entity/").pop();
-        setLabel(temp_uri, entity.lang.value, entity.label.value);
-
-      });
+    let fetch_chunks = [];
+    //Remove duplicates
+    let uri_list = [];
+    $.each(URIs, function(i, el){
+        if($.inArray(el, uri_list) === -1) uri_list.push(el);
     });
+    while (uri_list.length) {
+        let uri_chunk = uri_list.splice(0, 250); // Chunk size may need to be smaller
+        fetch_chunks.push(
+            $.getJSON(`https://query.wikidata.org/sparql?query=PREFIX%20rdfs%3A%20%3Chttp%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23%3E%0ASELECT%20DISTINCT%20%3Fitem%20%3Flabel%20(lang(%3Flabel)%20as%20%3Flang)%7B%0AVALUES%3Fitem%7Bwd%3A${uri_chunk.join('%20wd%3A')}%7D%0A%3Fitem%20rdfs%3Alabel%20%3Flabel%7D&format=json`,
+            function(data) {
+                // TODO handle errors and exceptions
+                $.each(data.results.bindings, function(id, entity) {
+                    let temp_uri = entity.item.value.split("http://www.wikidata.org/entity/").pop();
+                    setLabel(temp_uri, entity.lang.value, entity.label.value);
+                });
+            })
+        );
+    }
+    return $.when.apply(null, fetch_chunks).done(() => true);
 };
 
 // Freebase loader

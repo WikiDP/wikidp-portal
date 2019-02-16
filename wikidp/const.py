@@ -13,11 +13,9 @@
 These need to map to the names used in the default config file, but better
 than multiple hardcoded strings in code.
 """
-
+ENTITY_URL_PATTERN = 'http://www.wikidata.org/entity/$1'
 ITEM_REGEX = r'(Q|q)\d+'
-ITEM_URL_PATTERN = 'http://www.wikidata.org/entity/$1'
 PROPERTY_REGEX = r'(P|p)\d+'
-PROPERTY_URL_PATTERN = 'https://wikidata.org/wiki/property:$1'
 LANG = 'en'
 FALLBACK_LANG = 'en'
 

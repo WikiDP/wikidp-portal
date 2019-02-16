@@ -27,12 +27,6 @@ setup(
         'pytest-cov',
         'tqdm',
         'validators==0.12.4'
-        #
-        # carl@openpreservation.org removed these dependencies as almost certainly
-        # unused on 2nd Oct 2017, commenting for safety.
-        # 'wtforms',
-        # 'requests==2.13.0',
-        # 'simplejson==3.10.0',
     ],
 )
 

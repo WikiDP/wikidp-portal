@@ -15,14 +15,10 @@ from urllib.parse import quote_plus
 
 
 from wikidp import APP
-from wikidp.const import (
-    ITEM_URL_PATTERN,
-    PROPERTY_URL_PATTERN,
-)
+from wikidp.const import ENTITY_URL_PATTERN
 from wikidp.utils import (
     get_pid_from_string,
     get_qid_from_string,
-    remove_extension_from_filename,
 )
 
 
@@ -35,10 +31,17 @@ def template_filter_url_encode(s):
     return Markup(s)
 
 
-@APP.template_filter('file_to_label')
-def template_filter_file_to_label(filename):
-    output = remove_extension_from_filename(filename)
-    return output.replace('_', ' ').title()
+@APP.template_filter('qlabel_attributes')
+def template_qlabel_attributes(url):
+    """
+    Add tag attributes for qlabel.js
+    Args:
+        url (str): Text for the label and titles
+
+    Returns:
+        str: HTML tag attributes
+    """
+    return "class=qlabel its-ta-ident-ref={}".format(url)
 
 
 @APP.template_filter('entity_url')
@@ -52,9 +55,6 @@ def template_filter_entity_url(entity_id):
         str: http url destination for the entity
     """
     valid_string = get_qid_from_string(entity_id)
-    if valid_string:
-        return ITEM_URL_PATTERN.replace('$1', valid_string)
-    valid_string = get_pid_from_string(entity_id)
-    if valid_string:
-        return PROPERTY_URL_PATTERN.replace('$1', valid_string)
-    return '#'
+    if not valid_string:
+        valid_string = get_pid_from_string(entity_id)
+    return ENTITY_URL_PATTERN.replace('$1', valid_string) if valid_string else '#'

@@ -31,6 +31,11 @@ def flatten_string(_string):
     return " ".join(_string.split())
 
 
+def file_to_label(filename):
+    output = remove_extension_from_filename(filename)
+    return output.replace('_', ' ').title()
+
+
 def get_pid_from_string(input_string):
     regex_search = re.search(PROPERTY_REGEX, input_string)
     return regex_search.group() if regex_search else False
@@ -88,10 +93,14 @@ def get_property_details_by_pid_list(pid_list):
 def get_directory_filenames_with_subdirectories(directory_path):
     output = []
     for item in listdir(directory_path):
-        if isfile(join(directory_path, item)):
-            output.append(item)
+        i = {'name': item, 'label': file_to_label(item)}
+        this_path = join(directory_path, item)
+        if isfile(this_path):
+            i['type'] = 'file'
         else:
-            output.append([item, get_directory_filenames_with_subdirectories(join(directory_path, item))])
+            i['type'] = 'directory'
+            i['files'] = get_directory_filenames_with_subdirectories(this_path)
+        output.append(i)
     return output
 
 
@@ -189,12 +198,8 @@ def item_detail_parse(qid, with_claims=True):
                 for json_details in claim_dict:
                     val = parse_snak(pid, json_details.get('mainsnak'), cached_property_labels)
                     if val:
-                        references = get_references_from_item_json(json_details, cached_property_labels)
-                        if references:
-                            val['references'] = references
-                        qualifiers = parse_qualifiers(json_details.get('qualifiers', []), cached_property_labels)
-                        if qualifiers:
-                            val['qualifiers'] = qualifiers
+                        val['references'] = parse_references(json_details, cached_property_labels)
+                        val['qualifiers'] = parse_qualifiers(json_details, cached_property_labels)
                         value_list.append(val)
                         if val.get('parse_type') == 'external-id':
                             add_to_ex_list = True
@@ -211,18 +216,32 @@ def item_detail_parse(qid, with_claims=True):
     return False
 
 
-def parse_qualifiers(qualifier_set, cached_property_labels):
-    qualifiers = []
-    for pid, snak_list in qualifier_set.items():
-        label = pid_label(pid, cached_property_labels)
-        values = []
-        for snak in snak_list:
-            val = parse_snak(pid, snak, cached_property_labels)
-            if val:
-                values.append(val)
-        if values:
-            qualifiers.append({'pid': pid, 'label': label, 'values': values})
-    return qualifiers
+def parse_qualifiers(json_details, cached_property_labels):
+    qualifier_set = json_details.get('qualifiers')
+    return parse_snak_set(qualifier_set, cached_property_labels)
+
+
+def parse_references(json_details, cached_property_labels):
+    reference_list = json_details.get('references')
+    if reference_list:
+        reference_set = reference_list[0].get('snaks')
+        return parse_snak_set(reference_set, cached_property_labels)
+    return []
+
+
+def parse_snak_set(snak_set, cached_property_labels):
+    parsed_snaks = []
+    if snak_set:
+        for pid, snak_list in snak_set.items():
+            label = pid_label(pid, cached_property_labels)
+            values = []
+            for snak in snak_list:
+                val = parse_snak(pid, snak, cached_property_labels)
+                if val:
+                    values.append(val)
+            if values:
+                parsed_snaks.append({'pid': pid, 'label': label, 'values': values})
+    return parsed_snaks
 
 
 def get_item_json(qid):
@@ -269,27 +288,6 @@ def get_claims_from_json(item_json):
         Dictionary of {k:v} where k is property id and v is list of value dictionaries
     """
     return item_json.get('claims', {})
-
-
-def get_references_from_item_json(item_json, cached_property_labels=None):
-    """
-    Get references from WD Item Json Representation
-    Args:
-        item_json (dict): Returned value of WDItemEngine().wd_json_representation
-        cached_property_labels (Optional): Set of property label kv's
-
-    Returns:
-        [{}]: List of reference dictionaries
-    """
-    output = []
-    json_references = item_json.get('references')
-    if json_references:
-        ref_list = json_references[0]
-        for snak in ref_list['snaks-order']:
-            pid = ref_list['snaks'][snak][0]['property']
-            ref_val = parse_by_data_type(ref_list['snaks'][snak][0]['datavalue']['value'], cached_property_labels)
-            output.append((pid, pid_label(pid, cached_property_labels), ref_val))
-    return output
 
 
 def parse_snak(pid, snak, cached_property_labels):

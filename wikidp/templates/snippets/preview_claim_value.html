@@ -1,20 +1,12 @@
 {% if claim_value.parse_type == 'item' %}
-    <span class="qlabel" its-ta-ident-ref="{{claim_value.value | entity_url}}">
-        {{claim_value.value}}
-    </span>
-    <a href="/{{claim_value.value}}" class="p_or_q_id">
-        ({{ claim_value.value }})
-    </a>
+    {{ wikidata_entity(claim_value.value, claim_value.value, internal_link=True) }}
 {% elif claim_value.parse_type == 'property' %}
-    {{ claim_value.value }}
-    <a target="_blank" href="{{claim_value.value.pid | entity_url}}" class="">
-        ({{claim_value.value.label}})
-    </a>
+    {{ wikidata_entity(claim_value.value.pid, claim_value.value.label) }}
 {% elif claim_value.parse_type == 'url'  %}
     <a target="_blank" href="{{claim_value.value}}">{{claim_value.value}}</a>
 {% elif claim_value.parse_type == 'image'  %}
     <a target="_blank" href="{{claim_value.value}}">
-        <img class="property-image" src="{{claim_value.value}}" style="border:0;" width="80%" alt="image for {{item.label}}">
+        <img class="property-image" src="{{claim_value.value}}" alt="image for {{item.label}}">
     </a>
 {% else %}
     {{ claim_value.value }}

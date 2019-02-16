@@ -43,5 +43,4 @@ def get_checklist_context(qid, schema):
 
 
 def get_schema_list():
-    raw_list = get_directory_filenames_with_subdirectories(SCHEMA_DIRECTORY_PATH)
-    return raw_list
+    return get_directory_filenames_with_subdirectories(SCHEMA_DIRECTORY_PATH)
