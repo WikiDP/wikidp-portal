@@ -1,0 +1,206 @@
+{
+  "type": "Schema",
+  "start": "https://rawgit.com/shexSpec/shex.js/wikidata/doc/shex-simple.html#wikidata-software",
+  "shapes": [
+    {
+      "id": "https://rawgit.com/shexSpec/shex.js/wikidata/doc/shex-simple.html#wikidata-software",
+      "type": "Shape",
+      "expression": {
+        "type": "EachOf",
+        "expressions": [
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/P178",
+            "valueExpr": "https://rawgit.com/shexSpec/shex.js/wikidata/doc/shex-simple.html#P178_developer",
+            "min": 0,
+            "max": -1
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/P306",
+            "valueExpr": "https://rawgit.com/shexSpec/shex.js/wikidata/doc/shex-simple.html#P306_operating_system",
+            "min": 0,
+            "max": -1
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/P577",
+            "valueExpr": "https://rawgit.com/shexSpec/shex.js/wikidata/doc/shex-simple.html#P577_publication_date",
+            "min": 0,
+            "max": -1
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/P1072",
+            "valueExpr": "https://rawgit.com/shexSpec/shex.js/wikidata/doc/shex-simple.html#P1072_readable_file_format",
+            "min": 0,
+            "max": -1
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/P1073",
+            "valueExpr": "https://rawgit.com/shexSpec/shex.js/wikidata/doc/shex-simple.html#P1073_writable_file_format",
+            "min": 0,
+            "max": -1
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/P144",
+            "valueExpr": "https://rawgit.com/shexSpec/shex.js/wikidata/doc/shex-simple.html#P144_based_on",
+            "min": 0,
+            "max": -1
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/P277",
+            "valueExpr": "https://rawgit.com/shexSpec/shex.js/wikidata/doc/shex-simple.html#P277_programming_language",
+            "min": 0,
+            "max": -1
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/P973",
+            "valueExpr": "https://rawgit.com/shexSpec/shex.js/wikidata/doc/shex-simple.html#P973_described_at_URL",
+            "min": 0,
+            "max": -1
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/P1343",
+            "valueExpr": "https://rawgit.com/shexSpec/shex.js/wikidata/doc/shex-simple.html#P1343_described_by_source",
+            "min": 0,
+            "max": -1
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/P348",
+            "valueExpr": "https://rawgit.com/shexSpec/shex.js/wikidata/doc/shex-simple.html#P348_software_version",
+            "min": 0,
+            "max": -1
+          }
+        ]
+      }
+    },
+    {
+      "id": "https://rawgit.com/shexSpec/shex.js/wikidata/doc/shex-simple.html#P178_developer",
+      "type": "Shape",
+      "expression": {
+        "type": "TripleConstraint",
+        "predicate": "http://www.wikidata.org/prop/statement/P178",
+        "valueExpr": {
+          "type": "NodeConstraint",
+          "nodeKind": "iri"
+        }
+      }
+    },
+    {
+      "id": "https://rawgit.com/shexSpec/shex.js/wikidata/doc/shex-simple.html#P306_operating_system",
+      "type": "Shape",
+      "expression": {
+        "type": "TripleConstraint",
+        "predicate": "http://www.wikidata.org/prop/statement/P306",
+        "valueExpr": {
+          "type": "NodeConstraint",
+          "nodeKind": "iri"
+        }
+      }
+    },
+    {
+      "id": "https://rawgit.com/shexSpec/shex.js/wikidata/doc/shex-simple.html#P577_publication_date",
+      "type": "Shape",
+      "expression": {
+        "type": "TripleConstraint",
+        "predicate": "http://www.wikidata.org/prop/statement/P577",
+        "valueExpr": {
+          "type": "NodeConstraint",
+          "nodeKind": "literal"
+        }
+      }
+    },
+    {
+      "id": "https://rawgit.com/shexSpec/shex.js/wikidata/doc/shex-simple.html#P1072_readable_file_format",
+      "type": "Shape",
+      "expression": {
+        "type": "TripleConstraint",
+        "predicate": "http://www.wikidata.org/prop/statement/P1072",
+        "valueExpr": {
+          "type": "NodeConstraint",
+          "nodeKind": "iri"
+        }
+      }
+    },
+    {
+      "id": "https://rawgit.com/shexSpec/shex.js/wikidata/doc/shex-simple.html#P1073_writable_file_format",
+      "type": "Shape",
+      "expression": {
+        "type": "TripleConstraint",
+        "predicate": "http://www.wikidata.org/prop/statement/P1073",
+        "valueExpr": {
+          "type": "NodeConstraint",
+          "nodeKind": "iri"
+        }
+      }
+    },
+    {
+      "id": "https://rawgit.com/shexSpec/shex.js/wikidata/doc/shex-simple.html#P144_based_on",
+      "type": "Shape",
+      "expression": {
+        "type": "TripleConstraint",
+        "predicate": "http://www.wikidata.org/prop/statement/P144",
+        "valueExpr": {
+          "type": "NodeConstraint",
+          "nodeKind": "iri"
+        }
+      }
+    },
+    {
+      "id": "https://rawgit.com/shexSpec/shex.js/wikidata/doc/shex-simple.html#P277_programming_language",
+      "type": "Shape",
+      "expression": {
+        "type": "TripleConstraint",
+        "predicate": "http://www.wikidata.org/prop/statement/P277",
+        "valueExpr": {
+          "type": "NodeConstraint",
+          "nodeKind": "iri"
+        }
+      }
+    },
+    {
+      "id": "https://rawgit.com/shexSpec/shex.js/wikidata/doc/shex-simple.html#P973_described_at_URL",
+      "type": "Shape",
+      "expression": {
+        "type": "TripleConstraint",
+        "predicate": "http://www.wikidata.org/prop/statement/P973",
+        "valueExpr": {
+          "type": "NodeConstraint",
+          "nodeKind": "literal"
+        }
+      }
+    },
+    {
+      "id": "https://rawgit.com/shexSpec/shex.js/wikidata/doc/shex-simple.html#P1343_described_by_source",
+      "type": "Shape",
+      "expression": {
+        "type": "TripleConstraint",
+        "predicate": "http://www.wikidata.org/prop/statement/P1343",
+        "valueExpr": {
+          "type": "NodeConstraint",
+          "nodeKind": "iri"
+        }
+      }
+    },
+    {
+      "id": "https://rawgit.com/shexSpec/shex.js/wikidata/doc/shex-simple.html#P348_software_version",
+      "type": "Shape",
+      "expression": {
+        "type": "TripleConstraint",
+        "predicate": "http://www.wikidata.org/prop/statement/P348",
+        "valueExpr": {
+          "type": "NodeConstraint",
+          "nodeKind": "literal"
+        }
+      }
+    }
+  ],
+  "@context": "http://www.w3.org/ns/shex.jsonld"
+}
