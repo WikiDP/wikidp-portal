@@ -1,7 +1,7 @@
 {% if properties|count > 0%}
     {#    TODO: Connect this to qlabel for translation support #}
     {% for property in properties %}
-        <li class="sidebar-property-li {% if property.count > 0 %}property-ok{% endif %}" data-id="{{property.id}}"
+        <li class="sidebar-property-li white click {% if property.count > 0 %}property-ok{% endif %}" data-id="{{property.id}}"
             data-label="{{property.label}}" data-count="{{property.count}}" data-value_type="{{property.type}}"
             data-description="{{property.description}}" onclick="sidebar_property_click(this)">
             <span title="{{property.label}} ({{property.id}}): {{property.description}}"

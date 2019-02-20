@@ -1,10 +1,10 @@
 {% extends "item.html" %}
 
 {% block item_content %}
-    <div id="statement-creation-frame">
+    <div id="statement-creation-frame" class="no-pad">
         <div id="creation-panel">
             <div id="creation-div">
-                <span class="creation-section-header">CREATE A CLAIM</span><br>
+                <span class="creation-section-header text-medium">CREATE A CLAIM</span><br>
                 <span class="creation-section-subtitle">
                     Select a property below and we will provide you with a pre-formatted textbox.
                 </span><br>
@@ -13,18 +13,18 @@
                 <div id="statement-actions"></div>
             </div>
             <div id="claims-list">
-                <span class="creation-section-header">MY CLAIMS</span><br>
+                <span class="creation-section-header text-medium">MY CLAIMS</span><br>
                 <ul id="added-claims">
                   <li id="saveClaimsLi" style="display:none">
-                      <button id="saveClaimsBtn" onclick="save_claims()">SAVE TO WIKIDATA</button>
+                      <button id="saveClaimsBtn" class="white" onclick="save_claims()">SAVE TO WIKIDATA</button>
                   </li>
                 </ul>
             </div>
         </div>
         <div class="" id="lookup-panel">
-          <div id="lookup-header-div">
+          <div id="lookup-header-div" class="text-small">
             looking for an item id?<br>
-             <input id="lookup-input" name="" aria-label="Item Lookup Input" placeholder="search here">
+             <input id="lookup-input" class="center glow white" aria-label="Item Lookup Input" placeholder="search here">
           </div>
           <div id="lookup-results-div">
             <ul id="lookup-results-list">

@@ -13,11 +13,11 @@
     </script>
 
     <script id="wikidp-added-claim-li" type="text/template">
-        <li class="added-claim-li {{type}}" data-pid="{{pid}}" data-value="{{value}}" data-type="{{type}}">
+        <li class="added-claim-li white {{type}} text-medium" data-pid="{{pid}}" data-value="{{value}}" data-type="{{type}}">
             <div class="row-div">
                 <div class="added-property-div">
                     {{pidLabel}}
-                    <a class="wd-id" href="https://wikidata.org/wiki/Property:{{pid}}" target="_blank">
+                    <a class="wd-id glow" href="https://wikidata.org/wiki/Property:{{pid}}" target="_blank">
                         ({{pid}})
                     </a>
                 </div>
@@ -25,11 +25,11 @@
                     <span class="added-label">{{label}}</span>
                     {{#description}}
                         <br/>
-                        <i> &mdash; {{description}} &mdash; </i>
+                        <i class="text-small"> &mdash; {{description}} &mdash; </i>
                     {{/description}}
                     {{#aliases}}
                         <br/>
-                        <span class="sub-aka"><b>Also Referred To As:</b> {{aliases}}</span>
+                        <span class="sub-aka text-small"><b>Also Referred To As:</b> {{aliases}}</span>
                     {{/aliases}}
                     <br/>
                     {{#qualifiers}}
@@ -46,18 +46,18 @@
         <div>
             <span class="title">
                 <span class="name">{{label}}</span>
-                <span class="by">{{id}}</span>
+                <span class="by text-small">{{id}}</span>
             </span>
-            <span class="description">{{description}}</span>
-            <ul class="meta">
+            <span class="description text-small">{{description}}</span>
+            <ul class="meta no-pad">
                 {{#language}}
-                    <li class="language">{{language}}</li>
+                    <li class="language no-pad">{{language}}</li>
                 {{/language}}
-                <li class="watchers">
+                <li class="watchers no-pad">
                     value type: <span>{{value_type}}</span>
                 </li>
                 {{#count}}
-                    <li class="forks">
+                    <li class="forks no-pad">
                        <br/>
                        This item currently has <span>{{count}}</span> value(s) with this property.
                     </li>
@@ -67,10 +67,10 @@
     </script>
 
     <script id="wikidp-lookup-item" type="text/template">
-        <li class="lookup-result-li">
-            <div class="result-main" id="result-main-{{qid}}" data-qid="{{qid}}">
-                <button data-clipboard-text="{{qid}}" class="pull-left clipboardBtn" id="clipboardBtn-{{qid}}"
-                        data-qid="{{qid}}">
+        <li class="lookup-result-li glow">
+            <div class="result-main click text-medium" id="result-main-{{qid}}" data-qid="{{qid}}">
+                <button data-clipboard-text="{{qid}}" class="pull-left clipboardBtn glow no-pad"
+                        id="clipboardBtn-{{qid}}" data-qid="{{qid}}">
                     <i class="fa fa-clipboard"></i>
                 </button>
                 <span class="result-label">{{label}}</span><br/>
@@ -82,7 +82,7 @@
                 {{/description}}
                 {{#aliases}}
                     <br/>
-                    <span class="sub-aka"><b>Also Referred To As:</b> {{aliases}}</span>
+                    <span class="sub-aka text-small"><b>Also Referred To As:</b> {{aliases}}</span>
                 {{/aliases}}
             </div>
         </li>

@@ -5,19 +5,19 @@
 {% endblock title %}
 
 {% block page_content %}
-    <div id="panel-frame" class="{{page}}-page" data-qid="{{item.qid}}" data-item_page="{{page}}">
+    <div id="panel-frame" class="{{page}}-page center" data-qid="{{item.qid}}" data-item_page="{{page}}">
       <div id="sidebar-frame">
             {% include "snippets/item_sidebar.html" %}
       </div>
-      <div id="content-frame">
+      <div id="content-frame" class="white">
         <div id="{{page}}-div">
-            <div id="header-text">
+            <div id="header-text" class="center">
                 <span id="preview-item-name">
                     {{wikidata_entity(item.qid, item.label)}}
                 </span>
                 <br>
                 {% if item.description %}
-                    <span id="preview-item-description" title="{{item.description}}">
+                    <span id="preview-item-description" class="text-medium" title="{{item.description}}">
                         {# TODO: Support Translation of Descriptions #}
                         {{item.description}}
                     </span>

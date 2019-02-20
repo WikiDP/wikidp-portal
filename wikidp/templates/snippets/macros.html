@@ -1,10 +1,10 @@
 {% macro wikidata_entity(id, label=None, label_link=False, internal_link=False) %}
     {% with url=id|entity_url, link=url_for('route_page_selected_item', qid=id) if internal_link else id|entity_url %}
         {% if label_link %}
-            <a href="{{link}}" target="_blank">{{qlabel(url, label)}}</a>
+            <a href="{{link}}" data-entity-id="{{id}}" target="_blank">{{qlabel(url, label)}}</a>
         {% else %}
             {{qlabel(url, label)}}
-            <a class="wd-id {{"p_or_q_id" if internal_link}}" href="{{link}}" target="_blank">({{id}})</a>
+            <a class="wd-id glow {{"p_or_q_id" if internal_link}}" href="{{link}}" data-entity-id="{{id}}" target="_blank">({{id}})</a>
         {% endif %}
     {% endwith %}
 {% endmacro %}
@@ -36,7 +36,8 @@
 {% endmacro %}
 
 {% macro metadata_table(table_name, items) %}
-    {{make_value_table(table_name, items, classes='metadata-table  table-responsive table-striped table-hover') }}
+    {{make_value_table(table_name, items,
+                        classes='metadata-table table-responsive table-striped table-hover text-small')}}
 {% endmacro %}
 
 {% macro make_value_table(table_name, items, classes=None, internal_link=False, label_link=True, meta=None)  %}

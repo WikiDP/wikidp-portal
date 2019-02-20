@@ -10,7 +10,7 @@ $(document).ready(() => {
 
 function toggle_search_form(){
     let $icon = $('div.side-icon-div i#searchToggle').fadeOut('slow');
-    $('div.outer-list-div').toggle(1000, () => $('form.navbar-form.navbar-right').fadeToggle(500));
+    $('#main-nav-tabs-container').toggle(1000, () => $('#navbarSearch').fadeToggle(500));
     $icon.toggleClass('fa-search').toggleClass('fa-times-circle-o').fadeIn('slow');
 }
 

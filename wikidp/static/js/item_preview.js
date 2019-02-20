@@ -10,8 +10,7 @@ function sidebar_property_click(elm){
     let $elm = $(elm);
     if($elm.data('count') > 0){
         let this_pid = $elm.data('id');
-        let $scrollDiv = $(`.claims-table tr[data-pid="${this_pid}"]`);
-        $scrollDiv.addClass('scroll-highlight');
+        let $scrollDiv = $(`.claims-table a[data-entity-id="${this_pid}"]`).parents('tr').addClass('scroll-highlight');
         $('#claims-scroller').scrollTo($scrollDiv, 1000, {
             onAfter: () =>  setTimeout(() => $scrollDiv.removeClass('scroll-highlight'), 1000)
         })

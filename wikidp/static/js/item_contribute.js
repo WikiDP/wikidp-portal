@@ -19,7 +19,7 @@ function statement_property_change(uuid, property_id){
     $('.add-claim-btn, .add-qualifier-btn').fadeOut('slow').remove();
     bindAddButton(uuid);
     fetch_qualifier_properties(property_id, (data) => {
-        $('<button class="add-qualifier-btn" />').html('add qualifier').prependTo('#statement-actions')
+        $('<button class="add-qualifier-btn glow" />').html('add qualifier').prependTo('#statement-actions')
             .click(() => render_property_picker('#statement-div', 'Qualifier', data, true, null));
     });
 }
@@ -89,7 +89,7 @@ function initializeClaim(uuid_selector) {
         $div.empty();
         switch (type) {
             case 'WikibaseItem':
-                let $input = $('<input class="claim-value" placeholder="1234" type="number"/>').change(() => {
+                let $input = $('<input class="claim-value text-medium" placeholder="1234" type="number"/>').change(() => {
                     set_add_claim_button(false);
                     get_item_summary('Q'+$input.val(), (item) => {
                         $input.data('item', item);
@@ -99,12 +99,12 @@ function initializeClaim(uuid_selector) {
                 $div.append('Q', $input);
                 break;
             case 'url':
-                $div.append('https://', $('<input class="claim-value" placeholder="www.website.com" type="url"/>'));
+                $div.append('https://', $('<input class="claim-value text-medium" placeholder="www.website.com" type="url"/>'));
                 break;
             case 'ExternalId':
             case 'String':
             default:
-                $div.append($('<input class="claim-value" placeholder="enter value here"/>'));
+                $div.append($('<input class="claim-value text-medium" placeholder="enter value here"/>'));
         }
         $div.fadeIn('slow');
     });
@@ -129,7 +129,7 @@ function clear_claim_constructor(){
 
 function bindAddButton(uuid){
     // TO DO: Let the user submit by enter, below this code does not perform quite as expected
-    $('<button class="add-claim-btn btn-on" data-uuid="'+uuid+'"/>').click(claimFormValidation).html('add claim')
+    $('<button class="add-claim-btn btn-on glow" data-uuid="'+uuid+'"/>').click(claimFormValidation).html('add claim')
         .appendTo('#statement-actions');
 }
 

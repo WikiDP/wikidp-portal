@@ -2,11 +2,13 @@
 {% block title %}Home{% endblock %}
 {% block page_content %}
 
-<div class="welcome-div">
-	<div class="greeting-message"><img alt="Portal logo." title="portal logo" src="{{ url_for('static', filename='img/logo.png') }}" /> </div>
-	<div id="searchbar_container">
+<div class="welcome-div middle center">
+	<div class="middle">
+        <img id="welcome-logo" alt="Portal logo." title="portal logo" src="{{ url_for('static', filename='img/logo.png') }}" />
+    </div>
+	<div id="searchbar-container" class="glow text-medium center middle">
 		<form action="/search" method="POST" role="search">
-		<input class="welcome-searchbar" type="" name="userInput" aria-label="site search input" placeholder="search for file formats, software applications, software environments, etc ....">
+		<input class="welcome-searchbar white center" name="userInput" aria-label="site search input" placeholder="search for file formats, software applications, software environments, etc ....">
 		<button name="submit-search" type="submit" aria-label="site search submit">
 		<span class="glyphicon glyphicon-search"></span> </button>
 		</form>

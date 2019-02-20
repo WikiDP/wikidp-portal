@@ -1,64 +1,64 @@
 {% extends "page.html" %}
 {% block title %}Reports{% endblock %}
 {% block page_content %}
-<div class="reports-page" id="content-frame">
-  <div id="header-text">
+<div class="reports-page middle white" id="content-frame">
+  <div id="header-text" class="center">
     <span id="preview-item-name" class="reports-header">Reports</span>
     <br>
-    <span id="preview-item-description">Need a description summarizing the purpose of the queries
+    <span id="preview-item-description" class="text-medium">Need a description summarizing the purpose of the queries
     . Lorem ipsum dolor sit amet, consectetur adipisicing elit. Repudiandae, unde!</span>
   </div>
   <div class="reports-section" id="queries">
     <div class="reports-section-header">
       Wikidata Queries
     </div>
-    <ul>
+    <ul class="no-pad">
       <li>
-        <div class="query-title" onclick="addQuery('query1', 1); $(this).next().animate({height: 'toggle', opacity: 'toggle',}, 'slow')">
+        <div class="query-title glow click" onclick="addQuery('query1', 1); $(this).next().animate({height: 'toggle', opacity: 'toggle',}, 'slow')">
           Number of software titles recorded <span id="count1" />
         </div>
-        <div class="wd-iframe-container" hidden>
-          <iframe name="query1" id="query1" style="width: 80vw; height: 50vh; border: none;" src="" referrerpolicy="origin" sandbox="allow-scripts allow-same-origin allow-popups"></iframe>
+        <div class="center" hidden>
+          <iframe name="query1" id="query1" class="query-frame middle center" src="" referrerpolicy="origin" sandbox="allow-scripts allow-same-origin allow-popups"></iframe>
         </div>
       </li>
       <li>
-        <div class="query-title" onclick="addQuery('query2', 2); $(this).next().animate({height: 'toggle', opacity: 'toggle',}, 'slow')">
+        <div class="query-title glow click" onclick="addQuery('query2', 2); $(this).next().animate({height: 'toggle', opacity: 'toggle',}, 'slow')">
           Number of file formats recorded <span id="count2" />
         </div>
-        <div class="wd-iframe-container" hidden>
-          <iframe name="query2" id="query2" style="width: 80vw; height: 50vh; border: none;" src="" referrerpolicy="origin" sandbox="allow-scripts allow-same-origin allow-popups"></iframe>
+        <div class="center" hidden>
+          <iframe name="query2" id="query2"  class="query-frame middle center" src="" referrerpolicy="origin" sandbox="allow-scripts allow-same-origin allow-popups"></iframe>
         </div>
       </li>
       <li>
-        <div class="query-title" onclick="addQuery('query3', 3); $(this).next().animate({height: 'toggle', opacity: 'toggle',}, 'slow')">
+        <div class="query-title glow click" onclick="addQuery('query3', 3); $(this).next().animate({height: 'toggle', opacity: 'toggle',}, 'slow')">
           Number of PRONOM Unique Identifiers recorded <span id="count3" />
         </div>
-        <div class="wd-iframe-container" hidden>
-          <iframe name="query3" id="query3" style="width: 80vw; height: 50vh; border: none;" src="" referrerpolicy="origin" sandbox="allow-scripts allow-same-origin allow-popups"></iframe>
+        <div class="center" hidden>
+          <iframe name="query3" id="query3" class="query-frame middle center" src="" referrerpolicy="origin" sandbox="allow-scripts allow-same-origin allow-popups"></iframe>
         </div>
       </li>
       <li>
-        <div class="query-title" onclick="addQuery('query4', 4); $(this).next().animate({height: 'toggle', opacity: 'toggle',}, 'slow')">
+        <div class="query-title glow click" onclick="addQuery('query4', 4); $(this).next().animate({height: 'toggle', opacity: 'toggle',}, 'slow')">
           Number of file signatures described <span id="count4" />
         </div>
-        <div class="wd-iframe-container" hidden>
-          <iframe name="query4" id="query4" style="width: 80vw; height: 50vh; border: none;" src="" referrerpolicy="origin" sandbox="allow-scripts allow-same-origin allow-popups"></iframe>
+        <div class="center" hidden>
+          <iframe name="query4" id="query4" class="query-frame middle center" src="" referrerpolicy="origin" sandbox="allow-scripts allow-same-origin allow-popups"></iframe>
         </div>
       </li>
       <li>
-        <div class="query-title" onclick="addQuery('query5', 5); $(this).next().animate({height: 'toggle', opacity: 'toggle',}, 'slow')">
+        <div class="query-title glow click" onclick="addQuery('query5', 5); $(this).next().animate({height: 'toggle', opacity: 'toggle',}, 'slow')">
           Number of emulators recorded <span id="count5" />
         </div>
-        <div class="wd-iframe-container" hidden>
-          <iframe name="query5" id="query5" style="width: 80vw; height: 50vh; border: none;" src="" referrerpolicy="origin" sandbox="allow-scripts allow-same-origin allow-popups"></iframe>
+        <div class="center" hidden>
+          <iframe name="query5" id="query5" class="query-frame middle center" src="" referrerpolicy="origin" sandbox="allow-scripts allow-same-origin allow-popups"></iframe>
         </div>
       </li>
       <li>
-        <div class="query-title" onclick="addQuery('query6', 6); $(this).next().animate({height: 'toggle', opacity: 'toggle',}, 'slow')">
+        <div class="query-title glow click" onclick="addQuery('query6', 6); $(this).next().animate({height: 'toggle', opacity: 'toggle',}, 'slow')">
           Number of file systems recorded <span id="count6" />
         </div>
-        <div class="wd-iframe-container" hidden>
-          <iframe name="query6" id="query6" style="width: 80vw; height: 50vh; border: none;" src="" referrerpolicy="origin" sandbox="allow-scripts allow-same-origin allow-popups"></iframe>
+        <div class="center" hidden>
+          <iframe name="query6" id="query6" class="query-frame middle center" src="" referrerpolicy="origin" sandbox="allow-scripts allow-same-origin allow-popups"></iframe>
         </div>
       </li>
     </ul></div>
