@@ -1,0 +1,470 @@
+{
+  "type": "Schema",
+  "start": "https://raw.githubusercontent.com/shexSpec/schemas/master/Wikidata/DigitalPreservation/wikidataFileFormatRefs.shex#wikidata-file_format",
+  "shapes": [
+    {
+      "id": "https://raw.githubusercontent.com/shexSpec/schemas/master/Wikidata/DigitalPreservation/wikidataFileFormatRefs.shex#wikidata-file_format",
+      "type": "Shape",
+      "expression": {
+        "type": "EachOf",
+        "expressions": [
+          {
+            "type": "OneOf",
+            "expressions": [
+              {
+                "type": "TripleConstraint",
+                "predicate": "http://www.wikidata.org/prop/P31",
+                "valueExpr": "https://raw.githubusercontent.com/shexSpec/schemas/master/Wikidata/DigitalPreservation/wikidataFileFormatRefs.shex#P31_instance_of_file_format",
+                "min": 0,
+                "max": -1
+              },
+              {
+                "type": "TripleConstraint",
+                "predicate": "http://www.wikidata.org/prop/P279",
+                "valueExpr": "https://raw.githubusercontent.com/shexSpec/schemas/master/Wikidata/DigitalPreservation/wikidataFileFormatRefs.shex#P279_subclass_of_file_format",
+                "min": 0,
+                "max": -1
+              }
+            ],
+            "min": 1,
+            "max": -1
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/P1195",
+            "valueExpr": "https://raw.githubusercontent.com/shexSpec/schemas/master/Wikidata/DigitalPreservation/wikidataFileFormatRefs.shex#P1195_file_extension",
+            "min": 0,
+            "max": -1
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/P1163",
+            "valueExpr": "https://raw.githubusercontent.com/shexSpec/schemas/master/Wikidata/DigitalPreservation/wikidataFileFormatRefs.shex#P1633_media_type",
+            "min": 0,
+            "max": -1
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/P178",
+            "valueExpr": "https://raw.githubusercontent.com/shexSpec/schemas/master/Wikidata/DigitalPreservation/wikidataFileFormatRefs.shex#P178_developer",
+            "min": 0,
+            "max": -1
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/P144",
+            "valueExpr": "https://raw.githubusercontent.com/shexSpec/schemas/master/Wikidata/DigitalPreservation/wikidataFileFormatRefs.shex#P144_based_on",
+            "min": 0,
+            "max": -1
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/P4152",
+            "valueExpr": "https://raw.githubusercontent.com/shexSpec/schemas/master/Wikidata/DigitalPreservation/wikidataFileFormatRefs.shex#P4152_file_format_identification_pattern",
+            "min": 0,
+            "max": -1
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/P973",
+            "valueExpr": "https://raw.githubusercontent.com/shexSpec/schemas/master/Wikidata/DigitalPreservation/wikidataFileFormatRefs.shex#P973_described_at_URL",
+            "min": 0,
+            "max": -1
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/P1343",
+            "valueExpr": "https://raw.githubusercontent.com/shexSpec/schemas/master/Wikidata/DigitalPreservation/wikidataFileFormatRefs.shex#P1343_described_by_source",
+            "min": 0,
+            "max": -1
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/P348",
+            "valueExpr": "https://raw.githubusercontent.com/shexSpec/schemas/master/Wikidata/DigitalPreservation/wikidataFileFormatRefs.shex#P348_software_version",
+            "min": 0,
+            "max": -1
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/P577",
+            "valueExpr": "https://raw.githubusercontent.com/shexSpec/schemas/master/Wikidata/DigitalPreservation/wikidataFileFormatRefs.shex#P577_publication_date",
+            "min": 0,
+            "max": -1
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/P2748",
+            "valueExpr": "https://raw.githubusercontent.com/shexSpec/schemas/master/Wikidata/DigitalPreservation/wikidataFileFormatRefs.shex#P2748_pronom_id",
+            "min": 0,
+            "max": -1
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/P3266",
+            "valueExpr": "https://raw.githubusercontent.com/shexSpec/schemas/master/Wikidata/DigitalPreservation/wikidataFileFormatRefs.shex#P3266_locfdd_id",
+            "min": 0,
+            "max": -1
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/P3381",
+            "valueExpr": "https://raw.githubusercontent.com/shexSpec/schemas/master/Wikidata/DigitalPreservation/wikidataFileFormatRefs.shex#P3381_ffw_id",
+            "min": 0,
+            "max": -1
+          }
+        ]
+      }
+    },
+    {
+      "id": "https://raw.githubusercontent.com/shexSpec/schemas/master/Wikidata/DigitalPreservation/wikidataFileFormatRefs.shex#P31_instance_of_file_format",
+      "type": "Shape",
+      "expression": {
+        "type": "EachOf",
+        "expressions": [
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/statement/P31",
+            "valueExpr": {
+              "type": "NodeConstraint",
+              "values": [
+                "http://www.wikidata.org/entity/Q235557"
+              ]
+            }
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.w3.org/ns/prov#wasDerivedFrom",
+            "valueExpr": "https://raw.githubusercontent.com/shexSpec/schemas/master/Wikidata/DigitalPreservation/reference"
+          }
+        ]
+      }
+    },
+    {
+      "id": "https://raw.githubusercontent.com/shexSpec/schemas/master/Wikidata/DigitalPreservation/wikidataFileFormatRefs.shex#P279_subclass_of_file_format",
+      "type": "Shape",
+      "expression": {
+        "type": "EachOf",
+        "expressions": [
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/statement/P279",
+            "valueExpr": {
+              "type": "NodeConstraint",
+              "nodeKind": "iri"
+            }
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.w3.org/ns/prov#wasDerivedFrom",
+            "valueExpr": "https://raw.githubusercontent.com/shexSpec/schemas/master/Wikidata/DigitalPreservation/reference"
+          }
+        ]
+      }
+    },
+    {
+      "id": "https://raw.githubusercontent.com/shexSpec/schemas/master/Wikidata/DigitalPreservation/wikidataFileFormatRefs.shex#P2748_pronom_id",
+      "type": "Shape",
+      "expression": {
+        "type": "EachOf",
+        "expressions": [
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/statement/P2748",
+            "valueExpr": {
+              "type": "NodeConstraint",
+              "nodeKind": "literal"
+            }
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.w3.org/ns/prov#wasDerivedFrom",
+            "valueExpr": "https://raw.githubusercontent.com/shexSpec/schemas/master/Wikidata/DigitalPreservation/reference"
+          }
+        ]
+      }
+    },
+    {
+      "id": "https://raw.githubusercontent.com/shexSpec/schemas/master/Wikidata/DigitalPreservation/wikidataFileFormatRefs.shex#P3266_locfdd_id",
+      "type": "Shape",
+      "expression": {
+        "type": "EachOf",
+        "expressions": [
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/statement/P3266",
+            "valueExpr": {
+              "type": "NodeConstraint",
+              "nodeKind": "literal"
+            }
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.w3.org/ns/prov#wasDerivedFrom",
+            "valueExpr": "https://raw.githubusercontent.com/shexSpec/schemas/master/Wikidata/DigitalPreservation/reference"
+          }
+        ]
+      }
+    },
+    {
+      "id": "https://raw.githubusercontent.com/shexSpec/schemas/master/Wikidata/DigitalPreservation/wikidataFileFormatRefs.shex#P1163_media_type",
+      "type": "Shape",
+      "expression": {
+        "type": "EachOf",
+        "expressions": [
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/statement/P1163",
+            "valueExpr": {
+              "type": "NodeConstraint",
+              "nodeKind": "literal"
+            }
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.w3.org/ns/prov#wasDerivedFrom",
+            "valueExpr": "https://raw.githubusercontent.com/shexSpec/schemas/master/Wikidata/DigitalPreservation/reference"
+          }
+        ]
+      }
+    },
+    {
+      "id": "https://raw.githubusercontent.com/shexSpec/schemas/master/Wikidata/DigitalPreservation/wikidataFileFormatRefs.shex#P3381_ffw_id",
+      "type": "Shape",
+      "expression": {
+        "type": "EachOf",
+        "expressions": [
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/statement/P3381",
+            "valueExpr": {
+              "type": "NodeConstraint",
+              "nodeKind": "literal"
+            }
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.w3.org/ns/prov#wasDerivedFrom",
+            "valueExpr": "https://raw.githubusercontent.com/shexSpec/schemas/master/Wikidata/DigitalPreservation/reference"
+          }
+        ]
+      }
+    },
+    {
+      "id": "https://raw.githubusercontent.com/shexSpec/schemas/master/Wikidata/DigitalPreservation/wikidataFileFormatRefs.shex#P1195_file_extension",
+      "type": "Shape",
+      "expression": {
+        "type": "EachOf",
+        "expressions": [
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/statement/P1195",
+            "valueExpr": {
+              "type": "NodeConstraint",
+              "nodeKind": "literal"
+            }
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.w3.org/ns/prov#wasDerivedFrom",
+            "valueExpr": "https://raw.githubusercontent.com/shexSpec/schemas/master/Wikidata/DigitalPreservation/reference"
+          }
+        ]
+      }
+    },
+    {
+      "id": "https://raw.githubusercontent.com/shexSpec/schemas/master/Wikidata/DigitalPreservation/wikidataFileFormatRefs.shex#P178_developer",
+      "type": "Shape",
+      "expression": {
+        "type": "EachOf",
+        "expressions": [
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/statement/P178",
+            "valueExpr": {
+              "type": "NodeConstraint",
+              "nodeKind": "iri"
+            }
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.w3.org/ns/prov#wasDerivedFrom",
+            "valueExpr": "https://raw.githubusercontent.com/shexSpec/schemas/master/Wikidata/DigitalPreservation/reference"
+          }
+        ]
+      }
+    },
+    {
+      "id": "https://raw.githubusercontent.com/shexSpec/schemas/master/Wikidata/DigitalPreservation/wikidataFileFormatRefs.shex#P144_based_on",
+      "type": "Shape",
+      "expression": {
+        "type": "EachOf",
+        "expressions": [
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/statement/P144",
+            "valueExpr": {
+              "type": "NodeConstraint",
+              "nodeKind": "iri"
+            }
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.w3.org/ns/prov#wasDerivedFrom",
+            "valueExpr": "https://raw.githubusercontent.com/shexSpec/schemas/master/Wikidata/DigitalPreservation/reference"
+          }
+        ]
+      }
+    },
+    {
+      "id": "https://raw.githubusercontent.com/shexSpec/schemas/master/Wikidata/DigitalPreservation/wikidataFileFormatRefs.shex#P4152_file_format_identification_pattern",
+      "type": "Shape",
+      "expression": {
+        "type": "EachOf",
+        "expressions": [
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/statement/P4152",
+            "valueExpr": {
+              "type": "NodeConstraint",
+              "nodeKind": "literal"
+            }
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/qualifier/P3294",
+            "valueExpr": {
+              "type": "NodeConstraint",
+              "nodeKind": "iri"
+            }
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/qualifier/P4153",
+            "valueExpr": {
+              "type": "NodeConstraint",
+              "nodeKind": "literal"
+            }
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/qualifier/P2210",
+            "valueExpr": {
+              "type": "NodeConstraint",
+              "values": [
+                "http://www.wikidata.org/entity/Q35436009",
+                "http://www.wikidata.org/entity/Q1148480"
+              ]
+            }
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.w3.org/ns/prov#wasDerivedFrom",
+            "valueExpr": "https://raw.githubusercontent.com/shexSpec/schemas/master/Wikidata/DigitalPreservation/reference"
+          }
+        ]
+      }
+    },
+    {
+      "id": "https://raw.githubusercontent.com/shexSpec/schemas/master/Wikidata/DigitalPreservation/wikidataFileFormatRefs.shex#P973_described_at_URL",
+      "type": "Shape",
+      "expression": {
+        "type": "EachOf",
+        "expressions": [
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/statement/P973",
+            "valueExpr": {
+              "type": "NodeConstraint",
+              "nodeKind": "literal"
+            }
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.w3.org/ns/prov#wasDerivedFrom",
+            "valueExpr": "https://raw.githubusercontent.com/shexSpec/schemas/master/Wikidata/DigitalPreservation/reference"
+          }
+        ]
+      }
+    },
+    {
+      "id": "https://raw.githubusercontent.com/shexSpec/schemas/master/Wikidata/DigitalPreservation/wikidataFileFormatRefs.shex#P348_software_version",
+      "type": "Shape",
+      "expression": {
+        "type": "EachOf",
+        "expressions": [
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/statement/P348",
+            "valueExpr": {
+              "type": "NodeConstraint",
+              "nodeKind": "literal"
+            }
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.w3.org/ns/prov#wasDerivedFrom",
+            "valueExpr": "https://raw.githubusercontent.com/shexSpec/schemas/master/Wikidata/DigitalPreservation/reference"
+          }
+        ]
+      }
+    },
+    {
+      "id": "https://raw.githubusercontent.com/shexSpec/schemas/master/Wikidata/DigitalPreservation/wikidataFileFormatRefs.shex#P1343_described_by_source",
+      "type": "Shape",
+      "expression": {
+        "type": "EachOf",
+        "expressions": [
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/statement/P1343",
+            "valueExpr": {
+              "type": "NodeConstraint",
+              "nodeKind": "iri"
+            }
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.w3.org/ns/prov#wasDerivedFrom",
+            "valueExpr": "https://raw.githubusercontent.com/shexSpec/schemas/master/Wikidata/DigitalPreservation/reference"
+          }
+        ]
+      }
+    },
+    {
+      "id": "https://raw.githubusercontent.com/shexSpec/schemas/master/Wikidata/DigitalPreservation/wikidataFileFormatRefs.shex#P577_publication_date",
+      "type": "Shape",
+      "expression": {
+        "type": "EachOf",
+        "expressions": [
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/statement/P577",
+            "valueExpr": {
+              "type": "NodeConstraint",
+              "nodeKind": "literal"
+            }
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.w3.org/ns/prov#wasDerivedFrom",
+            "valueExpr": "https://raw.githubusercontent.com/shexSpec/schemas/master/Wikidata/DigitalPreservation/reference"
+          }
+        ]
+      }
+    },
+    {
+      "id": "https://raw.githubusercontent.com/shexSpec/schemas/master/Wikidata/DigitalPreservation/reference",
+      "type": "Shape",
+      "expression": {
+        "type": "TripleConstraint",
+        "predicate": "http://www.wikidata.org/prop/reference/P854",
+        "valueExpr": {
+          "type": "NodeConstraint",
+          "nodeKind": "literal"
+        }
+      }
+    }
+  ],
+  "@context": "http://www.w3.org/ns/shex.jsonld"
+}
