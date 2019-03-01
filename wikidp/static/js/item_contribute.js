@@ -10,7 +10,7 @@ $(document).ready(() => {
 
 function initialize_statement_property_selector(){
     let opts = selector_to_data_array('.sidebar-property-li');
-    render_property_picker('#statement-div', 'Statement', opts, false, statement_property_change);
+    render_property_picker('#statement-div', 'Statement', opts, false, false, statement_property_change);
 }
 
 
@@ -20,12 +20,12 @@ function statement_property_change(uuid, property_id){
     bindAddButton(uuid);
     fetch_qualifier_properties(property_id, (data) => {
         $('<button class="add-qualifier-btn glow" />').html('add qualifier').prependTo('#statement-actions')
-            .click(() => render_property_picker('#statement-div', 'Qualifier', data, true, null));
+            .click(() => render_property_picker('#statement-div', 'Qualifier', data, true, true, null));
     });
 }
 
 
-function render_property_picker(append_to_elem, property_type, options, removable, callback){
+function render_property_picker(append_to_elem, property_type, options, removable, append_multiple, callback){
     let uuid = 'create-claim-property' + ($('.property-selector').length+1);
     let uuid_selector = '#'+uuid;
     let $elem = get_template('#wikidp-contribute-input', {type:property_type, uuid: uuid});
@@ -49,7 +49,12 @@ function render_property_picker(append_to_elem, property_type, options, removabl
         let $close = $('<i class="fa fa-times contribute-input-close"/>').click(() => $elem.slideUp('slow').remove());
         $elem.append($close);
     }
-    $elem.hide(0).appendTo(append_to_elem).slideDown('slow');
+    if (append_multiple) {
+        $elem.hide(0).appendTo(append_to_elem).slideDown('slow');
+    }
+    else {
+        $(append_to_elem).hide(0).html($elem).slideDown('slow');
+    }
     return $elem;
 }
 
