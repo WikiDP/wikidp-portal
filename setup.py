@@ -17,7 +17,7 @@ setup(
     packages=['wikidp'],
     include_package_data=True,
     install_requires=[
-        'Flask==1.0.2',
+        'flask>=0.12.3',
         'wikidataintegrator',
         'lxml==4.3.0',
         'pandas',
