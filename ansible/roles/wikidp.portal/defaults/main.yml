@@ -7,7 +7,7 @@ wikidp_user: "{{ wikidp_app_name }}"
 wikidp_group: "{{ wikidp_user }}"
 wikidp_user_home: "/home/{{ wikidp_user }}"
 wikidp_app_home: "{{ wikidp_user_home }}/{{ wikidp_app_name }}"
-wikidp_host: "{{ hostname }}"
+wikidp_host: "{{ opf_server_hostname }}"
 
 wikidp_git_remote: "https://github.com/WikiDP/portal-proto.git"
 wikidp_git_local: "{{ wikidp_app_home }}/src"
