@@ -1,0 +1,7 @@
+# Define all servers children
+[servers:children]
+wikidp
+
+# The child list of WikiDP servers
+[wikidp]
+production
