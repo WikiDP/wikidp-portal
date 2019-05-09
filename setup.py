@@ -17,21 +17,16 @@ setup(
     packages=['wikidp'],
     include_package_data=True,
     install_requires=[
-        'flask==0.12.2',
+        'Flask==1.0.2',
         'wikidataintegrator',
-        'lxml==3.7.3',
+        'lxml==4.3.0',
         'pandas',
         'pywikibot',
         'pylint',
         'pytest',
         'pytest-cov',
-        'tqdm'
-        #
-        # carl@openpreservation.org removed these dependencies as almost certainly
-        # unused on 2nd Oct 2017, commenting for safety.
-        # 'wtforms',
-        # 'requests==2.13.0',
-        # 'simplejson==3.10.0',
+        'tqdm',
+        'validators==0.12.4'
     ],
 )
 

@@ -1,11 +1,15 @@
 {% extends "base.html" %}
-{% block title %}Page{% endblock %}
+
+{% from 'snippets/macros.html' import wikidata_entity, qlabel %}
+
 {% block page_header %}
-{% include "navbar.html" %}
+    {% include "navbar.html" %}
 {% endblock %}
+
 {% block page_layout %}
-  <div class="page-container" role="main">
-    {% block page_content %}
-    {% endblock page_content %}
-  </div>
+    <div class="page-container no-pad" role="main">
+        {% block page_content %}
+        {% endblock page_content %}
+    </div>
+    {% include "snippets/modal_login.html" %}
 {% endblock page_layout %}

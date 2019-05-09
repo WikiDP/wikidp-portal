@@ -4,24 +4,26 @@ import logging
 import re
 
 from wikidataintegrator.wdi_core import WDItemEngine
-from wikidp.model import PuidSearchResult
 
-import wikidp.DisplayFunctions as DF
+from wikidp.models import PuidSearchResult
+from wikidp.utils import (
+    LANG,
+    item_detail_parse,
+)
 
 
 def get_search_result_context(search_string):
     context = []
     # Check if searching with PUID
     if re.search("[x-]?fmt/\d+", search_string) is not None:
-        result = PuidSearchResult.search_puid(search_string, lang=DF.LANG)
+        result = PuidSearchResult.search_puid(search_string, lang=LANG)
         for res in result:
-            item = DF.qid_to_basic_details(res.format)
             context.append({
-                'id': res.format,
+                'qid': res.format,
                 'label': res.label,
-                'description': item['description']
+                'description': res.description
             })
-    context += search_result_list(search_string)
+    context.extend(search_result_list(search_string))
     return context
 
 
@@ -31,22 +33,17 @@ def search_result_list(string):
     text search and returns a list of (qid, Label, description, aliases)
     dictionaries
     """
-    options = WDItemEngine.get_wd_search_results(string, language=DF.LANG)
-    if len(options) > 10:
-        options = options[:10]
+    result_qid_list = WDItemEngine.get_wd_search_results(string, language=LANG)
     output = []
-    for opt in options:
-        try:
-            opt = DF.qid_to_basic_details(opt)
-            output.append(opt)
-        # skip those that wdi can not process
-        except Exception:
-            logging.exception("Untyped exception caught")
+    for qid in result_qid_list[:10]:
+        item = item_detail_parse(qid, with_claims=False)
+        if item:
+            output.append(item)
     return output
 
 
 def get_search_by_puid_context(puid):
     new_puid = puid.replace('_', '/')
     logging.debug("Searching for PUID: %s", new_puid)
-    results = PuidSearchResult.search_puid(new_puid, lang=DF.LANG)
+    results = PuidSearchResult.search_puid(new_puid, lang=LANG)
     return new_puid, results

@@ -1,0 +1,73 @@
+{% macro wikidata_entity(id, label=None, label_link=False, internal_link=False) %}
+    {% with url=id|entity_url, link=url_for('route_page_selected_item', qid=id) if internal_link else id|entity_url %}
+        {% if label_link %}
+            <a href="{{link}}" data-entity-id="{{id}}" target="_blank">{{qlabel(url, label)}}</a>
+        {% else %}
+            {{qlabel(url, label)}}
+            <a class="wd-id glow {{"p_or_q_id" if internal_link}}" href="{{link}}" data-entity-id="{{id}}" target="_blank">({{id}})</a>
+        {% endif %}
+    {% endwith %}
+{% endmacro %}
+
+{% macro qlabel(url, label=None) %}
+    <span {{url|qlabel_attributes}}>{{label if label}}</span>
+{% endmacro %}
+
+{% macro parse_claim_value(claim_value, internal_link=False, label_link=False) %}
+    {% if claim_value.parse_type == 'item' %}
+        {{ wikidata_entity(claim_value.value, internal_link=internal_link, label_link=label_link) }}
+    {% elif claim_value.parse_type == 'property' %}
+        {{ wikidata_entity(claim_value.value) }}
+    {% elif claim_value.parse_type == 'url'  %}
+        {{ claim_value.value|urlize(target='_blank') }}
+    {% elif claim_value.parse_type == 'external-id' %}
+        {% if claim_value.value.url %}
+            <a target="_blank" href="{{claim_value.value.url }}">{{claim_value.value.label}}</a>
+        {%else%}
+            {{claim_value.value.label}}
+        {%endif%}
+    {% elif claim_value.parse_type == 'image'  %}
+        <a target="_blank" href="{{claim_value.value}}">
+            <img class="property-image" src="{{claim_value.value}}" alt="Image Provided By {{claim_value.value}}">
+        </a>
+    {% else %}
+        {{ claim_value.value }}
+    {% endif %}
+{% endmacro %}
+
+{% macro metadata_table(table_name, items) %}
+    {{make_value_table(table_name, items,
+                        classes='metadata-table table-responsive table-striped table-hover text-small')}}
+{% endmacro %}
+
+{% macro make_value_table(table_name, items, classes=None, internal_link=False, label_link=True, meta=None)  %}
+    <table class="{{ classes if classes }} {{table_name}}-table">
+        {% for x in items %}
+            {% call(claim_value) value_table_row(wikidata_entity(x.pid), x['values'])  %}
+                {{ parse_claim_value(claim_value, internal_link=internal_link, label_link=label_link) }}
+                {% if meta %}
+                    {% for meta_type in meta %}
+                        {{ metadata_table(meta_type, claim_value[meta_type]) }}
+                    {% endfor %}
+                {% endif %}
+            {% endcall %}
+        {% endfor %}
+    </table>
+{% endmacro %}
+
+{% macro value_table_row(left, right) %}
+    {% with value_caller = caller if caller else False %}
+        {% call(right) table_row(left, right) %}
+            {% for val in right  %}
+                <span class="detail-row">{{value_caller(val) if value_caller else val}}<br/></span>
+            {% endfor %}
+        {% endcall %}
+    {% endwith %}
+{% endmacro %}
+
+{% macro table_row(left, right) %}
+    <tr>
+        <td>{{ left }}</td>
+        <td>{{caller(right) if caller else right}}</td>
+    </tr>
+{% endmacro %}

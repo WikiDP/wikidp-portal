@@ -1,0 +1,90 @@
+{% raw %}
+    <script id="wikidp-contribute-input" type="text/template">
+        <div id="creation-content-div" class="contribute-input-div">
+            <div id="creation-property-div">
+                <label for="{{uuid}}" class="property-input-label">{{type}}</label><br>
+                <select id="{{uuid}}" class="property-selector {{type}}-selectize" title="{{type}} Property"
+                        aria-label="Select Property">
+                </select> :
+            </div>
+            <div id="{{uuid}}-value-div" class="create-claim-value-div">
+            </div>
+        </div>
+    </script>
+
+    <script id="wikidp-added-claim-li" type="text/template">
+        <li class="added-claim-li white {{type}} text-medium" data-pid="{{pid}}" data-value="{{value}}" data-type="{{type}}">
+            <div class="row-div">
+                <div class="added-property-div">
+                    {{pidLabel}}
+                    <a class="wd-id glow" href="https://wikidata.org/wiki/Property:{{pid}}" target="_blank">
+                        ({{pid}})
+                    </a>
+                </div>
+                <div class="added-value-div">
+                    <span class="added-label">{{label}}</span>
+                    {{#description}}
+                        <br/>
+                        <i class="text-small"> &mdash; {{description}} &mdash; </i>
+                    {{/description}}
+                    {{#aliases}}
+                        <br/>
+                        <span class="sub-aka text-small"><b>Also Referred To As:</b> {{aliases}}</span>
+                    {{/aliases}}
+                    <br/>
+                    {{#qualifiers}}
+                        <div class="claim-li-qualifier" data-value="{{value}}" data-property_id="{{pid}}">
+                            {{pidLabel}}: {{ label }}
+                        </div>
+                    {{/qualifiers}}
+                </div>
+            </div>
+        </li>
+    </script>
+
+    <script id="wikidp-property-autocomplete" type="text/template">
+        <div>
+            <span class="title">
+                <span class="name">{{label}}</span>
+                <span class="by text-small">{{id}}</span>
+            </span>
+            <span class="description text-small">{{description}}</span>
+            <ul class="meta no-pad">
+                {{#language}}
+                    <li class="language no-pad">{{language}}</li>
+                {{/language}}
+                <li class="watchers no-pad">
+                    value type: <span>{{value_type}}</span>
+                </li>
+                {{#count}}
+                    <li class="forks no-pad">
+                       <br/>
+                       This item currently has <span>{{count}}</span> value(s) with this property.
+                    </li>
+                {{/count}}
+            </ul>
+        </div>
+    </script>
+
+    <script id="wikidp-lookup-item" type="text/template">
+        <li class="lookup-result-li glow">
+            <div class="result-main click text-medium" id="result-main-{{qid}}" data-qid="{{qid}}">
+                <button data-clipboard-text="{{qid}}" class="pull-left clipboardBtn glow no-pad"
+                        id="clipboardBtn-{{qid}}" data-qid="{{qid}}">
+                    <i class="fa fa-clipboard"></i>
+                </button>
+                <span class="result-label">{{label}}</span><br/>
+                {{qid}} <span class="glyphicon glyphicon-menu-down"></span>
+            </div>
+            <div class="result-sub" id="result-sub-{{qid}}">
+                {{#description}}
+                    <i> &mdash; {{description}} &mdash; </i><br/>
+                {{/description}}
+                {{#aliases}}
+                    <br/>
+                    <span class="sub-aka text-small"><b>Also Referred To As:</b> {{aliases}}</span>
+                {{/aliases}}
+            </div>
+        </li>
+    </script>
+{% endraw %}

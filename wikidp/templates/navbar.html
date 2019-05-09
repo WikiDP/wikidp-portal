@@ -1,30 +1,39 @@
-  <!-- Fixed navbar -->
-  <nav class="navbar navbar-inverse navbar-fixed-top">
-
-    <div class="container">
-      <div class="navbar-header"><img alt="Portal logo." class="pull-left " title="portal logo" src="{{ url_for('static', filename='img/WikiData_Logo.png') }}" />
-        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="/">WIKIDATA</br> <span id="nav-header-subtitle">FOR DIGITAL PRESERVATION</span></a>
-      </div>
-      <div id="navbar" class="navbar-collapse collapse">
-        <div class="outer-list-div">
-          <ul class="nav navbar-nav">
-            <li><a href="/about" class="effect-underline">about</a></li>
-            <li><a href="/reports" class="effect-underline">reports</a></li>
-            <li><a href="#" class="effect-underline">news</a></li>
-            <li><a href="#" class="effect-underline">support</a></li>
-          </ul>
+<!-- Fixed navbar -->
+<nav id="main-navbar" class="navbar navbar-inverse navbar-fixed-top white">
+    <div id="nav-container" class="container no-pad">
+        <div id="main-nav-header" class="navbar-header">
+            <img id="nav-logo" alt="Portal logo." class="pull-left" title="portal logo"
+                 src="{{ url_for('static', filename='img/logo.png') }}" />
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                    aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a id="main-brand" class="navbar-brand text-medium center" href="{{ url_for('route_page_welcome') }}">
+                WIKIDATA</br>
+                <span id="nav-header-subtitle">FOR DIGITAL PRESERVATION</span>
+            </a>
         </div>
-        <div id="side-icons" class="pull-right">
-          <div class="side-icon-div">
-          <i class="fa fa-user-circle" aria-hidden="true"></i></div>
-        </div>
-        </div>
-      </div><!--/.nav-collapse -->
+        <div id="navbar" class="navbar-collapse collapse">
+            <div id="main-nav-tabs-container">
+                <ul id="main-nav-tabs" class="nav navbar-nav center">
+                    <li><a href="{{ url_for('route_page_about') }}" class="nav-link white effect-underline">about</a></li>
+                    <li><a href="{{ url_for('route_page_reports') }}" class="nav-link white effect-underline">reports</a></li>
+                    <li><a href="#" class="nav-link white effect-underline">news</a></li>
+                    <li><a href="#" class="nav-link white effect-underline">support</a></li>
+                </ul>
+            </div>
+            <div id="side-icons" class="pull-right">
+                <div class="side-icon-div glow click text-medium white">
+                    <i id="searchToggle" class="fa fa-search" aria-hidden="true"></i>
+                </div>
+                <div class="side-icon-div glow click text-medium white">
+                    <i id="loginBtn" class="fa fa-user-circle" aria-hidden="true"></i>
+                </div>
+            </div>
+            {% include "snippets/search_form.html" %}
+        </div><!--/.nav-collapse -->
     </div>
-  </nav>
+</nav>

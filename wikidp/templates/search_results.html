@@ -1,33 +1,36 @@
 {% extends "page.html" %}
 {% block title %}Search Results{% endblock %}
 {% block page_content %}
-<div class="welcome-div">
+<div class="welcome-div middle center">
 
-	<div id="searchbar_container">
+	<div id="searchbar-container" class="glow text-medium center middle">
 		<form action="/search" method="POST" role="search" id="searchAgain">
-		<input class="welcome-searchbar" type="" name="userInput" aria-label="site search input" placeholder="try a new search...">
+		<input class="welcome-searchbar white center" name="userInput" aria-label="site search input"
+               placeholder="try a new search...">
 		<button type="submit" aria-label="site search submit">
 		<span class="glyphicon glyphicon-search"></span> </button>
 		</form>
 	</div>
 	<div class="search-results-div">
-		<ul id="search-option-list">
+		<ul id="search-option-list" class="no-pad">
 		{% for option in options %}
-		<li class="option-li" id="li-{{option['id']}}" data-qid="{{option['id']}}"  data-label="{{option['label']}}" data-description="{{option['description']}}" onclick="selectResult($(this).data('qid'))">
-			<span class="search-result-label">{{option['label']}}<span class="search-result-id"> ({{option['id']}})</span>
-			</span>
-			<br>
-			&mdash;<span class="search-result-description"> {{option['description']}} </span>&mdash;
-			<br>
-			{% if option['aliases'] != [] %}
-				<span class="search-result-aliases"><b>also referred to as:</b> {{option['aliases'][0]}}
-					{% for alias in option['aliases'][1:] %}
-						<b>/</b> {{alias}}
-					{% endfor %}
-				</span>
-			{% endif %}
-		</li>
-
+            <li class="option-li glow click" id="li-{{option['qid']}}" data-qid="{{option['qid']}}"
+                data-label="{{option['label'] | url_encode}}" data-description="{{option['description'] | url_encode}}"
+                onclick="selectResult($(this).data('qid'))">
+                <span class="search-result-label">
+                    {{option['label']}}<span class="search-result-id text-small"> ({{option['qid']}})</span>
+                </span>
+                <br>
+                &mdash;<span class="search-result-description"> {{option['description']}} </span>&mdash;
+                <br>
+                {% if option['aliases'] != [] %}
+                    <span class="search-result-aliases"><b>also referred to as:</b> {{option['aliases'][0]}}
+                        {% for alias in option['aliases'][1:] %}
+                            <b>/</b> {{alias}}
+                        {% endfor %}
+                    </span>
+                {% endif %}
+            </li>
 		{% endfor %}
 		</ul>
 	</div>
@@ -64,5 +67,4 @@ form.submit();
 	}
 
 </script>
-
-    {% endblock page_content %}
+{% endblock page_content %}

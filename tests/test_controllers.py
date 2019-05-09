@@ -15,9 +15,9 @@ from unittest import TestCase
 from tests import settings
 from wikidp.controllers import pages as pages_controller
 
+
 class ControllerTests(TestCase):
     # Pages Controllers
     def test_controller_pages_get_checklist_context__no_schema(self):
-        output = pages_controller.get_property_checklist_from_schema(
-                    settings.SAMPLE_QID, None)
-        assert output == []
+        output = pages_controller.get_property_checklist_from_schema(settings.SAMPLE_QID)
+        self.assertEqual(output, [])

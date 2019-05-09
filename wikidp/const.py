@@ -13,6 +13,12 @@
 These need to map to the names used in the default config file, but better
 than multiple hardcoded strings in code.
 """
+ENTITY_URL_PATTERN = 'http://www.wikidata.org/entity/$1'
+ITEM_REGEX = r'(Q|q)\d+'
+PROPERTY_REGEX = r'(P|p)\d+'
+LANG = 'en'
+FALLBACK_LANG = 'en'
+
 
 class ConfKey(object):
     """Config key string constants"""
@@ -21,3 +27,5 @@ class ConfKey(object):
     WIKIDATA_LANG = 'WIKIDATA_LANG'
     WIKIDATA_FB_LANG = 'WIKIDATA_FB_LANG'
     WIKIBASE_LANGUAGE = 'WIKIBASE_LANGUAGE'
+    ITEM_REGEX = 'ITEM_REGEX'
+    PROPERTY_REGEX = 'PROPERTY_REGEX'

@@ -1,0 +1,18 @@
+<form class="navbar-form navbar-right center" role="search" action="{{ url_for('route_process_site_search') }}"
+      method="POST" id="navbarSearch">
+    <div class="input-group middle">
+        <input type="text" name="userInput" class="nav-input white form-control no-pad center" placeholder="search here">
+        <span class="input-group-btn">
+            <button type="reset" class="btn btn-nav white no-pad glow center" id="search-reset" title="clear input">
+                <span class="glyphicon glyphicon-remove">
+                    <span class="sr-only">Clear</span>
+                </span>
+            </button>
+            <button type="submit" class="btn btn-nav white no-pad glow center" id="search-btn">
+                <span class="glyphicon glyphicon-search">
+                    <span class="sr-only">Search</span>
+                </span>
+            </button>
+        </span>
+    </div>
+</form>

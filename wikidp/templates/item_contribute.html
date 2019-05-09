@@ -1,0 +1,43 @@
+{% extends "item.html" %}
+
+{% block item_content %}
+    <div id="statement-creation-frame" class="no-pad">
+        <div id="creation-panel">
+            <div id="creation-div">
+                <span class="creation-section-header text-medium">CREATE A CLAIM</span><br>
+                <span class="creation-section-subtitle">
+                    Select a property below and we will provide you with a pre-formatted textbox.
+                </span><br>
+
+                <div id="statement-div"></div>
+                <div id="statement-actions"></div>
+            </div>
+            <div id="claims-list">
+                <span class="creation-section-header text-medium">MY CLAIMS</span><br>
+                <ul id="added-claims">
+                  <li id="saveClaimsLi" style="display:none">
+                      <button id="saveClaimsBtn" class="white" onclick="save_claims()">SAVE TO WIKIDATA</button>
+                  </li>
+                </ul>
+            </div>
+        </div>
+        <div class="" id="lookup-panel">
+          <div id="lookup-header-div" class="text-small">
+            looking for an item id?<br>
+             <input id="lookup-input" class="center glow white" aria-label="Item Lookup Input" placeholder="search here">
+          </div>
+          <div id="lookup-results-div">
+            <ul id="lookup-results-list">
+            </ul>
+          </div>
+        </div>
+    </div>
+    {% include "snippets/contribute_input_templates.html" %}
+{% endblock item_content %}
+
+{% block item_page_scripts %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/js/standalone/selectize.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.css" />
+    <script src="{{ url_for('static', filename='vendor/clipboard.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/item_contribute.js') }}" type="text/javascript"></script>
+{% endblock item_page_scripts %}

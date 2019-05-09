@@ -10,9 +10,21 @@
 # about the terms of this license.
 #
 """Flask application api routes for Wikidata portal."""
+from flask import jsonify
 
-from wikidp import APP
-from wikidp.controllers import api as api_controller
+from wikidp.config import APP
+from wikidp.controllers.api import (
+    get_all_file_formats,
+    get_property_checklist_from_schema,
+    write_claims_to_item,
+)
+from wikidp.controllers.search import search_result_list
+from wikidp.utils import (
+    get_all_qualifier_properties,
+    get_allowed_qualifiers_by_pid,
+    get_property,
+    item_detail_parse,
+)
 
 
 @APP.route("/api/")
@@ -21,29 +33,59 @@ def route_api_welcome():
     return 'Welcome to the WikiDP API'
 
 
-@APP.route("/api/search/<search_string>", methods=['GET', 'POST'])
-def route_api_search_item_by_string(search_string):
-    """Post string, returns list of json of (id, label, desc, aliases) ."""
-    return api_controller.search_item_by_string(search_string)
-
-
-@APP.route("/api/<item:qid>/label", methods=['GET', 'POST'])
-def route_api_get_item_label(qid):
+@APP.route("/api/<item:qid>", methods=['GET', 'POST'])
+def route_api_get_item(qid):
     """User posts a item-id and returns json of (id, label, desc, aliases) ."""
-    return api_controller.get_item_label(qid)
+    item = item_detail_parse(qid, with_claims=True)
+    return jsonify(item)
 
 
-@APP.route("/api/<prop:pid>", methods=['GET', 'POST'])
-def route_api_get_property(pid):
-    return api_controller.get_property(pid)
-
-
-@APP.route("/api/schema/<path:schema_name>/properties")
-def route_api_get_properties_by_schema(schema_name):
-    return api_controller.get_property_checklist_from_schema(schema_name)
+@APP.route("/api/<item:qid>/summary", methods=['GET', 'POST'])
+def route_api_get_item_summary(qid):
+    """User posts a item-id and returns json of (id, label, desc, aliases) ."""
+    item = item_detail_parse(qid, with_claims=False)
+    return jsonify(item)
 
 
 @APP.route("/api/<item:qid>/claims/write", methods=['POST'])
 def route_api_write_claims_to_item(qid):
     """ User posts a JSON object of claims to contribute to an item"""
-    return api_controller.write_claims_to_item(qid)
+    return write_claims_to_item(qid)
+
+
+@APP.route("/api/<prop:pid>", methods=['GET', 'POST'])
+def route_api_get_property(pid):
+    prop = get_property(pid)
+    return jsonify(prop)
+
+
+@APP.route("/api/<prop:pid>/qualifiers", methods=['GET', 'POST'])
+def route_api_get_allowed_qualifiers_by_pid(pid):
+    output = get_allowed_qualifiers_by_pid(pid)
+    return jsonify(output)
+
+
+@APP.route("/api/property/qualifiers", methods=['GET', 'POST'])
+def route_api_get_all_qualifier_properties():
+    output = get_all_qualifier_properties()
+    return jsonify(output)
+
+
+@APP.route("/api/search/<search_string>", methods=['GET', 'POST'])
+def route_api_search_item_by_string(search_string):
+    """Post string, returns list of json of (id, label, desc, aliases) ."""
+    _string = search_string.strip()
+    output = search_result_list(_string)
+    return jsonify(output)
+
+
+@APP.route("/api/schema/<path:schema_name>/properties")
+def route_api_get_properties_by_schema(schema_name):
+    prop_list = get_property_checklist_from_schema(schema_name)
+    return jsonify(prop_list)
+
+
+@APP.route("/api/browse/file_format", methods=['GET', 'POST'])
+def route_api_browse_file_format():
+    format_list = get_all_file_formats()
+    return jsonify([x.api_dict() for x in format_list])
