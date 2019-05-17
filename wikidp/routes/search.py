@@ -1,5 +1,5 @@
-from wikidp.config import APP
 from flask import redirect, render_template, request
+from wikidp.config import APP
 from wikidp.controllers import search as search_controller
 
 

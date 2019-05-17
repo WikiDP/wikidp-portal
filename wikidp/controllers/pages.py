@@ -19,7 +19,7 @@ def get_item_context(qid, with_claims=True):
     schemas = None
     if selected_item:
         options = request.args.get('options', default=0, type=str)
-        if type(options) is str:
+        if isinstance(options, str):
             options = json.loads(options)
         else:
             options = [[qid, selected_item.get('label'), selected_item.get('description')]]
@@ -32,12 +32,12 @@ def get_checklist_context(qid, schema):
     if checklist:
         counts = get_item_property_counts(qid)
         output = [{
-                    "id": prop['id'],
-                    "label": prop['propertyLabel'],
-                    "description": prop['propertyDescription'],
-                    "type": prop["value_type"],
-                    "count": counts.get(prop['id'], 0)
-                    } for prop in checklist]
+            "id": prop['id'],
+            "label": prop['propertyLabel'],
+            "description": prop['propertyDescription'],
+            "type": prop["value_type"],
+            "count": counts.get(prop['id'], 0)
+            } for prop in checklist]
         return output
     return []
 
