@@ -17,7 +17,7 @@ from wikidataintegrator import wdi_core
 from wikidp.const import LANG
 
 
-class FileFormat(object):
+class FileFormat():
     """Encapsulates a file format plus wikidata query magic for formats."""
     def __init__(self, qid, name, media_types=None):
         self._qid = qid
@@ -41,9 +41,12 @@ class FileFormat(object):
 
     def __str__(self):
         _media_types = '|'.join(self.media_types)
-        return "FileFormat : [qid={}, name={}, media_types=[{}]]".format(self.qid, self.name, _media_types)
+        return "FileFormat : [qid={}, name={}, media_types=[{}]]".format(self.qid,
+                                                                         self.name,
+                                                                         _media_types)
 
     def api_dict(self):
+        """Return a dictionary copy of a FileFormat instance."""
         return {'qid': self.qid, 'name': self.name, 'media_types': self.media_types}
 
     @classmethod
@@ -70,7 +73,7 @@ class FileFormat(object):
         return results
 
 
-class PuidSearchResult(object):
+class PuidSearchResult():
     """Encapsulates a file format plus wikidata query magic for formats."""
     def __init__(self, wd_format, label, description, mime, puid):
         self._format = wd_format

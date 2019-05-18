@@ -22,7 +22,8 @@ def route_page_welcome():
 
 @APP.route('/favicon.ico')
 def route_favicon():
-    return send_from_directory(APP.config['STATIC_DIR'], 'img/favicon.ico', mimetype='image/vnd.microsoft.icon')
+    return send_from_directory(APP.config['STATIC_DIR'], 'img/favicon.ico',
+                               mimetype='image/vnd.microsoft.icon')
 
 
 @APP.route("/about")
@@ -60,7 +61,8 @@ def route_item_preview(qid):
     """If the item ID is already known, the user can enter in the url"""
     selected_item, options, schemas = get_item_context(qid, with_claims=True)
     if selected_item:
-        return render_template('item_preview.html', item=selected_item, options=options, schemas=schemas,
+        return render_template('item_preview.html', item=selected_item,
+                               options=options, schemas=schemas,
                                page='preview')
     return abort(404)
 
@@ -70,7 +72,8 @@ def route_item_contribute(qid):
     """Handles a user's contributed statements."""
     selected_item, options, schemas = get_item_context(qid, with_claims=False)
     if selected_item:
-        return render_template('item_contribute.html', item=selected_item, options=options, schemas=schemas,
+        return render_template('item_contribute.html', item=selected_item,
+                               options=options, schemas=schemas,
                                page='contribute')
     return abort(404)
 

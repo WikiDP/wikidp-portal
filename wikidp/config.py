@@ -25,7 +25,7 @@ HOST = 'localhost'
 TEMP = tempfile.gettempdir()
 
 
-class BaseConfig(object):
+class BaseConfig():
     """Base / default config, no debug logging and short log format."""
     HOST = HOST
     DEBUG = False
@@ -69,7 +69,8 @@ def configure_app(app):
     app.config['WIKIDATA_FB_LANG'] = os.getenv('WIKIDP_FB_LANG', BaseConfig.WIKIDATA_FB_LANG)
     # Create the list of unique languages to easy SPARQL queries
     if app.config['WIKIDATA_LANG'] != app.config['WIKIDATA_FB_LANG']:
-        app.config['WIKIBASE_LANGUAGE'] = ",".join([app.config['WIKIDATA_LANG'], app.config['WIKIDATA_FB_LANG']])
+        app.config['WIKIBASE_LANGUAGE'] = ",".join([app.config['WIKIDATA_LANG'],
+                                                    app.config['WIKIDATA_FB_LANG']])
     else:
         app.config['WIKIBASE_LANGUAGE'] = app.config['WIKIDATA_LANG']
 
@@ -90,7 +91,9 @@ def configure_app(app):
             user_password = getpass(prompt='What is your Wikimedia Password? ')
         with open('user-config.py.template', 'r') as template:
             logging.info("user-config.py available")
-            data = template.read().replace('<username>', user_username).replace('<password>', user_password)
+            data = template.read().replace('<username>',
+                                           user_username).replace('<password>',
+                                                                  user_password)
             new_file = open("user-config.py", "w+")
             new_file.write(data)
             new_file.close()

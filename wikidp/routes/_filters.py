@@ -10,9 +10,9 @@
 # about the terms of this license.
 #
 """ Flask application custom template filters for Wikidata portal. """
-from markupsafe import Markup
 from urllib.parse import quote_plus
 
+from markupsafe import Markup
 
 from wikidp import APP
 from wikidp.const import ENTITY_URL_PATTERN
