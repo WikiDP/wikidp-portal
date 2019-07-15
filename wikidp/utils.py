@@ -123,8 +123,8 @@ def get_wikimedia_image_url_from_title(title):
     #    For example, the title of the image for Q267193 [Sublime Text]
     #    is "Скриншот sublime text 2.png"
     title = title.replace(" ", "_")
-    url = "https://commons.wikimedia.org/w/api.php?action=query&prop=imageinfo&iiprop=url&titles=File:{}&format=json"\
-        .format(title)
+    url = ("https://commons.wikimedia.org/w/api.php?action=query&prop"
+           "=imageinfo&iiprop=url&titles=File:{}&format=json").format(title)
     try:
         url = urllib_request.urlopen(url)
         base = json.loads(url.read().decode())["query"]["pages"]
@@ -149,9 +149,9 @@ def parse_wd_response_by_key(item, key, default=None):
     value_dict = item.get(key)
     if value_dict:
         values = get_lang(value_dict, default=default)
-        if type(values) is list:
+        if isinstance(values, list):
             return [x.get('value') for x in values]
-        if type(values) is dict:
+        if isinstance(values, dict):
             return values.get('value', values)
         return values
     return default

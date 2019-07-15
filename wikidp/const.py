@@ -20,7 +20,7 @@ LANG = 'en'
 FALLBACK_LANG = 'en'
 
 
-class ConfKey(object):
+class ConfKey():
     """Config key string constants"""
     LOG_FORMAT = 'LOG_FORMAT'
     LOG_FILE = 'LOG_FILE'

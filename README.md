@@ -105,7 +105,34 @@ this creates an _htmlcov/index.html_ file for browser viewing
 (venv) $ ./coverage_report.sh visual
 ````
 
+# Ansible roll out
 
+## Local vagrant VM
+`vagrant up`
+
+## Install Ansible roles locally
+```bash
+ansible-galaxy install -r ansible/requirements.yml
+```
+
+### Ansible CLI roll out to local Vagrant VM
+```bash
+ansible-playbook --key-file=.vagrant/machines/default/virtualbox/private_key -v --inventory ansible/vagrant vagrant.yml
+```
+
+### First time setup for any server via SSH, needs root password for server
+```bash
+ansible-playbook ansible/setup.yml -i ansible/staging.yml -u root -vv -k
+```
+
+https://unix.stackexchange.com/questions/332641/how-to-install-python-3-6
+wget https://www.python.org/ftp/python/3.6.3/Python-3.6.3.tgz
+tar xvf Python-3.6.3.tgz
+cd Python-3.6.3
+./configure --enable-optimizations
+make -j8
+sudo make altinstall
+python3.6
 
 
 Troubleshooting

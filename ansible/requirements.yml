@@ -1,6 +1,1 @@
-- src: tschifftner.hostname
-- src: tersmitten.timezone
-  version: v1.0.11
-- src: tersmitten.apt
-  version: v1.4.7
 - src: nginxinc.nginx

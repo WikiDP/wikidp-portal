@@ -10,12 +10,13 @@
 # about the terms of this license.
 #
 """ Flask application custom url converters for Wikidata portal. """
+from werkzeug.routing import BaseConverter
+
 from wikidp import APP
 from wikidp.const import (
     ITEM_REGEX,
     PROPERTY_REGEX,
 )
-from werkzeug.routing import BaseConverter
 
 
 class WikidataItemConverter(BaseConverter):
