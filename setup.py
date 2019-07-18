@@ -17,16 +17,15 @@ setup(
     packages=['wikidp'],
     include_package_data=True,
     install_requires=[
-        'flask>=0.12.3',
-        'wikidataintegrator',
-        'lxml==4.3.0',
-        'pandas',
-        'pywikibot',
+        'flask==1.1.1',
+        'wikidataintegrator==0.4.0',
+        'pandas==0.24.2',
+        'pywikibot>2',
         'pylint',
         'pytest',
         'pytest-cov',
-        'tqdm',
-        'validators==0.12.4'
+        'tqdm==4.32.2',
+        'validators==0.13.0'
     ],
 )
 
