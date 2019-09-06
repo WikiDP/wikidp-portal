@@ -352,7 +352,7 @@ select#languageSelect {
 }
 #sidebar-property-list span::before, #sidebar-property-list span::after {
   display: inline-block;
-  max-width: 80%;
+  max-width: 75%;
   overflow: hidden;
   white-space: pre;
   vertical-align: middle;
