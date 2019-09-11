@@ -67,6 +67,7 @@ def configure_app(app):
         app.config.from_envvar('WIKIDP_CONFIG_FILE')
     app.config['WIKIDATA_LANG'] = os.getenv('WIKIDP_LANG', BaseConfig.WIKIDATA_LANG)
     app.config['WIKIDATA_FB_LANG'] = os.getenv('WIKIDP_FB_LANG', BaseConfig.WIKIDATA_FB_LANG)
+    app.config['WIKIDATA_SIGN_UP_URL'] = "https://www.wikidata.org/w/index.php?title=Special:CreateAccount"
     # Create the list of unique languages to easy SPARQL queries
     if app.config['WIKIDATA_LANG'] != app.config['WIKIDATA_FB_LANG']:
         app.config['WIKIBASE_LANGUAGE'] = ",".join([app.config['WIKIDATA_LANG'],
