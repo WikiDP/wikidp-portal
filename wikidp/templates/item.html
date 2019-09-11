@@ -26,9 +26,9 @@
                     Language:
                     {# TODO: Make API Call to Sync with all Wikidata Languages #}
                     <select name="" id="languageSelect"  aria-label="Select a Language for Item Labels">
-                        <option value="en">English</option>
-                        <option value="fr">French</option>
-                        <option value="es">Spanish</option>
+                      {% for code, name in languages %}
+                        <option value="{{ code }}">{{ name }}</option>
+                      {% endfor %}
                     </select>
                 </div>
             </div>

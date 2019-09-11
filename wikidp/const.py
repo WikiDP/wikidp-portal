@@ -18,6 +18,24 @@ ITEM_REGEX = r'(Q|q)\d+'
 PROPERTY_REGEX = r'(P|p)\d+'
 LANG = 'en'
 FALLBACK_LANG = 'en'
+DEFAULT_UI_LANGUAGES = [
+    (LANG, "English"),
+    ("fr", "French"),
+    ("es", "Spanish"),
+    ("de", "German"),
+    ("da", "Danish"),
+    ("nl", "Dutch"),
+    ("zh", "Chinese"),
+    ("ar", "Arabic"),
+    ("it", "Italian"),
+    ("lv", "Latvian"),
+    ("et", "Estonian"),
+    ("fi", "Finnish"),
+    ("pt", "Portuguese"),
+    ("sv", "Swedish"),
+    ("no", "Norwegian"),
+    ("ja", "Japanese")
+]
 
 
 class ConfKey():

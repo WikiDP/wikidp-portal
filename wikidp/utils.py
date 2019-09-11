@@ -21,6 +21,7 @@ from wikidp.const import (
     FALLBACK_LANG,
 )
 from wikidp.sparql import (
+    ALL_LANGUAGES_QUERY,
     ALL_QUALIFIER_PROPERTIES,
     PROPERTY_ALLOWED_QUALIFIERS,
     PROPERTY_QUERY,
@@ -71,6 +72,30 @@ def process_query_string(query):
     result = WDItemEngine.execute_sparql_query(query)
     bindings = result['results'].get('bindings')
     return format_wikidata_bindings(bindings)
+
+
+def get_all_languages():
+    """
+    Get list of all Wikimedia languages from Wikidata.
+    Returns (List[Dict[str, str]]):
+
+    Examples:
+        [
+            . . . ,
+
+            {
+                'item': 'http://www.wikidata.org/entity/Q845441',
+                'code': 'sdc',
+                'itemLabel': 'Sassarese',
+                'label': 'Sassarese',
+                'display': '{{#language:sdc}}'
+            }
+            . . . ,
+        ]
+
+    """
+    query = flatten_string(ALL_LANGUAGES_QUERY)
+    return process_query_string(query)
 
 
 def get_all_qualifier_properties():
