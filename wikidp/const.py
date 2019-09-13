@@ -20,7 +20,7 @@ LANG = 'en'
 FALLBACK_LANG = 'en'
 DEFAULT_UI_LANGUAGES = [
     (LANG, "English"),
-    ("fr", "French"),
+    ("fr", "français (French)"),
     ("es", "Spanish"),
     ("de", "German"),
     ("da", "Danish"),
