@@ -20,21 +20,23 @@ LANG = 'en'
 FALLBACK_LANG = 'en'
 DEFAULT_UI_LANGUAGES = [
     (LANG, "English"),
-    ("fr", "French"),
-    ("es", "Spanish"),
-    ("de", "German"),
-    ("da", "Danish"),
-    ("nl", "Dutch"),
-    ("zh", "Chinese"),
-    ("ar", "Arabic"),
-    ("it", "Italian"),
-    ("lv", "Latvian"),
-    ("et", "Estonian"),
-    ("fi", "Finnish"),
-    ("pt", "Portuguese"),
-    ("sv", "Swedish"),
-    ("no", "Norwegian"),
-    ("ja", "Japanese")
+    ("fr", "français (French)"),
+    ("es", "español (Spanish)"),
+    ("de", "Deutsch (German)"),
+    ("da", "dansk (Danish)"),
+    ("nl", "Nederlands (Dutch)"),
+    ("zh", "汉语 (Chinese)"),
+    ("ar", "العربية (Arabic)"),
+    ("it", "italiano (Italian)"),
+    ("lv", "latviešu valoda (Latvian)"),
+    ("et", "eesti keel (Estonian)"),
+    ("fi", "suomi (Finnish)"),
+    ("pt", "português (Portuguese)"),
+    ("sv", "svenska (Swedish)"),
+    ("no", "Norsk (Norwegian)"),
+    ("ja", "日本語 (Japanese)")
+    ("hi", "हिन्दी (Hindi)")
+    ("lb", "Lëtzebuergesch (Luxembourgish)")
 ]
 
 
