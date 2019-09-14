@@ -34,8 +34,8 @@ DEFAULT_UI_LANGUAGES = [
     ("pt", "português (Portuguese)"),
     ("sv", "svenska (Swedish)"),
     ("no", "Norsk (Norwegian)"),
-    ("ja", "日本語 (Japanese)")
-    ("hi", "हिन्दी (Hindi)")
+    ("ja", "日本語 (Japanese)"),
+    ("hi", "हिन्दी (Hindi)"),
     ("lb", "Lëtzebuergesch (Luxembourgish)")
 ]
 
