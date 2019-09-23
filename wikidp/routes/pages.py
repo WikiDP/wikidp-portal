@@ -8,6 +8,7 @@ from flask import (
 )
 
 from wikidp.config import APP
+from wikidp.const import DEFAULT_UI_LANGUAGES
 from wikidp.controllers.pages import (
     get_checklist_context,
     get_item_context,
@@ -62,7 +63,7 @@ def route_item_preview(qid):
     selected_item, options, schemas = get_item_context(qid, with_claims=True)
     if selected_item:
         return render_template('item_preview.html', item=selected_item,
-                               options=options, schemas=schemas,
+                               options=options, schemas=schemas, languages=DEFAULT_UI_LANGUAGES,
                                page='preview')
     return abort(404)
 
@@ -73,7 +74,7 @@ def route_item_contribute(qid):
     selected_item, options, schemas = get_item_context(qid, with_claims=False)
     if selected_item:
         return render_template('item_contribute.html', item=selected_item,
-                               options=options, schemas=schemas,
+                               options=options, schemas=schemas, languages=DEFAULT_UI_LANGUAGES,
                                page='contribute')
     return abort(404)
 

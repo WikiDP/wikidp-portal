@@ -352,7 +352,7 @@ select#languageSelect {
 }
 #sidebar-property-list span::before, #sidebar-property-list span::after {
   display: inline-block;
-  max-width: 80%;
+  max-width: 75%;
   overflow: hidden;
   white-space: pre;
   vertical-align: middle;
@@ -847,22 +847,39 @@ div.about-page, div.reports-page {
 }
 .modal-header {
   padding:35px 50px;
-  background-color: #319992;
+  background-color: #24303a;
 }
 .modal-body {
   padding:40px 50px;
+  background: #a3bcd2;
 }
+.modal-body input {
+    background: #92abc0;
+    border: none;
+    color: white;
+}
+
+.modal-body input::placeholder {
+    color: white;
+}
+
 .modal-footer {
-  background-color: #f9f9f9;
+  background-color: #a3bcd2;
+  border: none;
+}
+
+.modal-footer a {
+    color: white;
 }
 #loginModal button.btn.btn-success.btn-block {
-  background: #009c93;
-  border-color: #009f93;
+  background: #243039;
+  border: none;
 }
 #loginModal button.btn.btn-danger.btn-default.pull-left {
   background: #a5a5a5;
   border-color: #a5a5a5;
 }
+
 .jumbotron img {
   float: left;
 }

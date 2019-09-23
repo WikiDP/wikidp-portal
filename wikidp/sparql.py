@@ -1,4 +1,7 @@
-""" Collection of sparql queries and related functions turned into python functions """
+"""
+Collection of sparql queries and related functions turned into python functions
+Note: Remove any comments from queries
+"""
 
 PROPERTY_QUERY = """
     SELECT  (STRAFTER(STR(?property), 'entity/') as ?id) ?property ?propertyType ?propertyLabel 
@@ -36,5 +39,16 @@ PROPERTY_ALLOWED_QUALIFIERS = """
         ?constraint pq:P2306 ?property.
         ?property wikibase:propertyType ?propertyType .
         SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+    }
+"""
+
+ALL_LANGUAGES_QUERY = """
+    SELECT ?item ?itemLabel (?itemLabel as ?label) ?code
+    (CONCAT("{","{#language:",?code,"}","}") as ?display)
+    {
+      ?item wdt:P424 ?code .
+      MINUS{?item wdt:P31/wdt:P279* wd:Q14827288}
+      MINUS{?item wdt:P31/wdt:P279* wd:Q17442446}
+      SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
     }
 """

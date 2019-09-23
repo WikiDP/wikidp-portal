@@ -2,7 +2,7 @@
 # coding=UTF-8
 #
 # WikiDP Wikidata Portal
-# Copyright (C) 2017
+# Copyright (C) 2019
 # All rights reserved.
 #
 # This code is distributed under the terms of the GNU General Public
@@ -20,6 +20,7 @@ from wikidp.controllers.api import (
 )
 from wikidp.controllers.search import search_result_list
 from wikidp.utils import (
+    get_all_languages,
     get_all_qualifier_properties,
     get_allowed_qualifiers_by_pid,
     get_property,
@@ -68,6 +69,12 @@ def route_api_get_allowed_qualifiers_by_pid(pid):
 @APP.route("/api/property/qualifiers", methods=['GET', 'POST'])
 def route_api_get_all_qualifier_properties():
     output = get_all_qualifier_properties()
+    return jsonify(output)
+
+
+@APP.route("/api/language/", methods=['GET', 'POST'])
+def route_api_get_all_languages():
+    output = get_all_languages()
     return jsonify(output)
 
 
