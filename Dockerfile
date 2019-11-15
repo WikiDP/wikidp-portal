@@ -19,12 +19,14 @@ FROM python:3.6-alpine
 RUN apk update && apk add --no-cache --update-cache libc6-compat libstdc++ bash
 RUN install -d -o root -g root -m 755 /opt && adduser -h /opt/wikidp -S wikidp && pip install -U pip python-dateutil
 
-USER wikidp
-
 WORKDIR /opt/wikidp
 
 COPY --from=builder /install /usr/local
 COPY . /opt/wikidp/
+RUN chown -R wikidp:users /opt/wikidp
+
+USER wikidp
 
 EXPOSE 5000
-ENTRYPOINT /opt/wikidp/run.sh
+ENV FLASK_APP='wikidp'
+ENTRYPOINT flask run --host "0.0.0.0" --port "5000"
