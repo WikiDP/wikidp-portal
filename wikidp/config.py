@@ -13,7 +13,6 @@
 import os
 import tempfile
 import logging
-from getpass import getpass
 
 from flask import Flask
 
@@ -67,38 +66,14 @@ def configure_app(app):
         app.config.from_envvar('WIKIDP_CONFIG_FILE')
     app.config['WIKIDATA_LANG'] = os.getenv('WIKIDP_LANG', BaseConfig.WIKIDATA_LANG)
     app.config['WIKIDATA_FB_LANG'] = os.getenv('WIKIDP_FB_LANG', BaseConfig.WIKIDATA_FB_LANG)
-    app.config['WIKIDATA_SIGN_UP_URL'] = "https://www.wikidata.org/w/index.php?title=Special:CreateAccount"
+    app.config['WIKIDATA_SIGN_UP_URL'] = \
+        "https://www.wikidata.org/w/index.php?title=Special:CreateAccount"
     # Create the list of unique languages to easy SPARQL queries
     if app.config['WIKIDATA_LANG'] != app.config['WIKIDATA_FB_LANG']:
         app.config['WIKIBASE_LANGUAGE'] = ",".join([app.config['WIKIDATA_LANG'],
                                                     app.config['WIKIDATA_FB_LANG']])
     else:
         app.config['WIKIBASE_LANGUAGE'] = app.config['WIKIDATA_LANG']
-
-    # Checking for user-config.py
-    try:
-        with open('user-config.py'):
-            logging.info("user-config.py available")
-    except IOError:
-        template_username = '<username>'
-        template_password = '<password>'
-        # generate the user-config.py based on keyboard prompts if not exist
-        logging.info("user-config.py unavailable")
-        user_username = app.config.get('WIKIDATA_USER_NAME')
-        if not user_username or user_username == template_username:
-            user_username = input('What is your Wikimedia Username? ')
-        user_password = app.config.get('WIKIDATA_PASSWORD')
-        if not user_password or user_password == template_password:
-            user_password = getpass(prompt='What is your Wikimedia Password? ')
-        with open('user-config.py.template', 'r') as template:
-            logging.info("user-config.py available")
-            data = template.read().replace('<username>',
-                                           user_username).replace('<password>',
-                                                                  user_password)
-            new_file = open("user-config.py", "w+")
-            new_file.write(data)
-            new_file.close()
-
 
 APP = Flask(__name__)
 # Get the appropriate config
