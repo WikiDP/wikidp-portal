@@ -19,6 +19,6 @@ from wikidp import routes
 
 
 if __name__ == "__main__":
-    logging.debug("Importing {}".format(routes.__name__))
-    logging.debug("Running Flask App on Port {}".format(APP.config.get('PORT')))
-    APP.run(host='0.0.0.0',  port=APP.config.get('PORT'))
+    logging.debug("Importing %s", routes.__name__)
+    logging.debug("Running Flask App on Port %s", APP.config.get('PORT'))
+    APP.run(host='0.0.0.0', port=APP.config.get('PORT'))

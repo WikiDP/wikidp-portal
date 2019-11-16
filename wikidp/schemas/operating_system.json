@@ -1,0 +1,193 @@
+{
+  "type": "Schema",
+  "start": "https://rawgit.com/shexSpec/shex.js/master/packages/shex-webapp/doc/shex-simple.html#operating_system",
+  "shapes": [
+    {
+      "type": "Shape",
+      "id": "https://rawgit.com/shexSpec/shex.js/master/packages/shex-webapp/doc/shex-simple.html#operating_system",
+      "expression": {
+        "type": "EachOf",
+        "expressions": [
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/P31",
+            "valueExpr": {
+              "type": "Shape",
+              "expression": {
+                "type": "TripleConstraint",
+                "predicate": "http://www.wikidata.org/prop/statement/P31",
+                "valueExpr": {
+                  "type": "Shape",
+                  "expression": {
+                    "type": "TripleConstraint",
+                    "predicate": "http://www.wikidata.org/prop/P279",
+                    "valueExpr": {
+                      "type": "Shape",
+                      "expression": {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.wikidata.org/prop/statement/P279",
+                        "valueExpr": {
+                          "type": "NodeConstraint",
+                          "values": [
+                            "http://www.wikidata.org/entity/Q9135"
+                          ]
+                        }
+                      }
+                    },
+                    "min": 1,
+                    "max": -1
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/P275",
+            "valueExpr": {
+              "type": "Shape",
+              "expression": {
+                "type": "TripleConstraint",
+                "predicate": "http://www.wikidata.org/prop/statement/P275",
+                "valueExpr": {
+                  "type": "NodeConstraint",
+                  "nodeKind": "iri"
+                },
+                "min": 1,
+                "max": -1
+              }
+            }
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/P178",
+            "valueExpr": {
+              "type": "Shape",
+              "expression": {
+                "type": "TripleConstraint",
+                "predicate": "http://www.wikidata.org/prop/statement/P178",
+                "valueExpr": {
+                  "type": "NodeConstraint",
+                  "nodeKind": "iri"
+                }
+              }
+            },
+            "min": 0,
+            "max": 1
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/P176",
+            "valueExpr": {
+              "type": "Shape",
+              "expression": {
+                "type": "TripleConstraint",
+                "predicate": "http://www.wikidata.org/prop/statement/P176",
+                "valueExpr": {
+                  "type": "NodeConstraint",
+                  "nodeKind": "iri"
+                }
+              }
+            },
+            "min": 0,
+            "max": 1
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/P910",
+            "valueExpr": {
+              "type": "Shape",
+              "expression": {
+                "type": "TripleConstraint",
+                "predicate": "http://www.wikidata.org/prop/statement/P910",
+                "valueExpr": {
+                  "type": "NodeConstraint",
+                  "nodeKind": "iri"
+                }
+              }
+            },
+            "min": 0,
+            "max": 1
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/P373",
+            "valueExpr": {
+              "type": "Shape",
+              "expression": {
+                "type": "TripleConstraint",
+                "predicate": "http://www.wikidata.org/prop/statement/P373",
+                "valueExpr": {
+                  "type": "NodeConstraint",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                },
+                "min": 0,
+                "max": -1
+              }
+            },
+            "min": 0,
+            "max": 1
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/P5795",
+            "valueExpr": {
+              "type": "Shape",
+              "expression": {
+                "type": "TripleConstraint",
+                "predicate": "http://www.wikidata.org/prop/statement/P5795",
+                "valueExpr": {
+                  "type": "NodeConstraint",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                },
+                "min": 0,
+                "max": -1
+              }
+            },
+            "min": 0,
+            "max": 1
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/P5868",
+            "valueExpr": {
+              "type": "Shape",
+              "expression": {
+                "type": "TripleConstraint",
+                "predicate": "http://www.wikidata.org/prop/statement/P5868",
+                "valueExpr": {
+                  "type": "NodeConstraint",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                },
+                "min": 0,
+                "max": -1
+              }
+            },
+            "min": 0,
+            "max": 1
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/P268",
+            "valueExpr": {
+              "type": "Shape",
+              "expression": {
+                "type": "TripleConstraint",
+                "predicate": "http://www.wikidata.org/prop/statement/P268",
+                "valueExpr": {
+                  "type": "NodeConstraint",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                },
+                "min": 0,
+                "max": -1
+              }
+            },
+            "min": 0,
+            "max": 1
+          }
+        ]
+      }
+    }
+  ],
+  "@context": "http://www.w3.org/ns/shex.jsonld"
+}
