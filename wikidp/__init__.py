@@ -17,7 +17,6 @@ import logging
 from wikidp.config import APP
 from wikidp import routes
 
-
 if __name__ == "__main__":
     logging.debug("Importing %s", routes.__name__)
     logging.debug("Running Flask App on Port %s", APP.config.get('PORT'))

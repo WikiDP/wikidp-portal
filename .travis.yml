@@ -1,0 +1,46 @@
+language: python
+
+python:
+  - "3.6"
+
+services:
+  - docker
+
+before_install:
+  - python --version
+  - pip install -U pip pytest pyinstaller pep257 twine codacy-coverage
+
+install:
+  - pip install .[testing]
+
+before_script:
+  # Pylint everything with the following tests disabled for now:
+  # Disabled in the .pylintrc config file
+  #  - C0103: Invalid name ( e.g. camel case)
+  # Disabled in the command below
+  #  - R0201: Method could be a function
+  #  - R0902: Too many instance attributes
+  #  - R0904: Too many public methods
+  #  - R0912: Too many branches
+  #  - R0913: Too many arguments
+  #  - R0914: Too many local variables
+  #  - R0915: Too many statements
+  #  - R1702: Too many nested blocks
+  #  - R1703: Simplifiable if statement
+  #  - W0511: Warning note in comments
+  #  - W0702: No Exception type specified
+  #  - W0703: Catching too general an Exception type
+  #  - C0200: Consider using enumerate instead of iterating with range
+  #  - C0302: Too many lines in module
+  - pylint setup.py ./tests/ ./wikidp/
+
+script:
+  - pre-commit run --all-files --verbose
+  - pytest --cov=wikidp
+  - pep257 wikidp setup.py
+  - ./setup.py sdist
+  - twine check dist/*
+
+after_success:
+  - coverage xml
+  - python-codacy-coverage -r coverage.xml

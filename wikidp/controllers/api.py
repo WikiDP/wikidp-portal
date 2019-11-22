@@ -67,9 +67,7 @@ def get_property_checklist_from_schema(schema_name):
     pid_list = get_schema_properties(schema_name)
     if pid_list:
         return get_property_details_by_pid_list(pid_list)
-    else:
-        output = []
-    return output
+    return []
 
 
 def write_claims_to_item(qid):
@@ -77,17 +75,22 @@ def write_claims_to_item(qid):
     user_claims = request.get_json()
     successful_claims = []
     failure_claims = []
-    logging.debug("Writing Claim to Q175461 as a mock for writing Claims to: "+qid)
+    logging.debug("Writing Claim to Q175461 as a mock for writing Claims to: %s", qid)
     item = pywikibot.ItemPage(REPO, u"Q175461")  # WIKIDATA TESTING ITEM
     # item = pywikibot.ItemPage(REPO, qid)
     for user_claim in user_claims:
-        write_status = write_claim(item, user_claim.get('pid'), user_claim.get('value'), user_claim.get('type'),
+        write_status = write_claim(item, user_claim.get('pid'),
+                                   user_claim.get('value'), user_claim.get('type'),
                                    user_claim.get('qualifiers'))
         if write_status:
             successful_claims.append(user_claim)
         else:
             failure_claims.append(user_claim)
-    output = {'status': 'success', 'successful_claims': successful_claims, 'failure_claims': failure_claims}
+    output = {
+        'status': 'success',
+        'successful_claims': successful_claims,
+        'failure_claims': failure_claims
+        }
     return jsonify(output)
 
 
