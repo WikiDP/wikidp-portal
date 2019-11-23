@@ -1,3 +1,4 @@
+"""Module that routes application forms."""
 from flask import (
     redirect,
     request,
@@ -15,4 +16,5 @@ def route_form_preview_item():
 def route_form_contribute_item():
     """Processes contribute page into a state-saving url."""
     qid = request.form['qid']
-    return redirect('/{}/contribute?qid={}&options={}'.format(qid, qid, request.form['optionList']))
+    return redirect('/{qid}/contribute?qid={qid}&options={opts}'
+                    .format(qid=qid, opts=request.form['optionList']))

@@ -1,3 +1,4 @@
+"""Module to hold Web App page routing and parameter handling."""
 import logging
 
 from flask import (
@@ -23,6 +24,7 @@ def route_page_welcome():
 
 @APP.route('/favicon.ico')
 def route_favicon():
+    """Serve the favicon file."""
     return send_from_directory(APP.config['STATIC_DIR'], 'img/favicon.ico',
                                mimetype='image/vnd.microsoft.icon')
 
@@ -81,27 +83,30 @@ def route_item_contribute(qid):
 
 @APP.route("/<item:qid>/checklist/<path:schema>")
 def route_item_checklist_by_schema(qid, schema):
-    """ """
+    """Render the correct item checklist depending on schema."""
     properties = get_checklist_context(qid, schema)
     return render_template('snippets/property_checklist.html', properties=properties)
 
 
 @APP.errorhandler(400)
 @APP.errorhandler(404)
-def route_page_error__not_found(e):
-    logging.debug('Not Found: {}'.format(str(e)))
+def route_page_error__not_found(excep):
+    """Handle 404 resource not found problems."""
+    logging.debug('Not Found: %s', str(excep))
     return render_template('error.html', message="Page Not Found"), 404
 
 
 @APP.errorhandler(403)
-def route_page_error__unauthorized(e):
-    logging.debug('Unauthorized: {}'.format(str(e)))
+def route_page_error_unauthorized(excep):
+    """Handle 403 authorisation issues."""
+    logging.debug('Unauthorized: %s', str(excep))
     return render_template('error.html', message="You are not authorized to view this page."), 403
 
 
 @APP.errorhandler(500)
 @APP.errorhandler(Exception)
-def route_page_error__internal_error(e):
-    logging.debug('Internal Error: {}'.format(str(e)))
+def route_page_error__internal_error(excep):
+    """Handle general server errors."""
+    logging.debug('Internal Error: %s', str(excep))
     message = "Internal Error. Please Help us by reporting this to our admin team! Thank you."
     return render_template('error.html', message=message), 500
