@@ -28,6 +28,27 @@ from wikidp.sparql import (
 )
 
 
+def dedupe_by_key(dict_list, key):
+    """
+    Remove duplicates from a list based on matching key's value.
+    Args:
+        dict_list (List[Dict]):
+        key (str):
+
+    Returns (List[Dict]):
+
+    """
+
+    output = []
+    found_values = set()
+    for item in dict_list:
+        value = item.get(key)
+        if value not in found_values:
+            output.append(item)
+            found_values.add(value)
+    return output
+
+
 def flatten_string(_string):
     return " ".join(_string.split())
 

@@ -151,30 +151,50 @@ class PuidSearchResult():
                    for x in results_json['results']['bindings']]
         return results
 
-class FileFormatExtSearch(PuidSearchResult):
-    @staticmethod
-    def _concat_query(search_string="", lang="en"):
-        query=   """SELECT DISTINCT ?format ?formatLabel ?formatDescription ?extension
- WHERE {  ?format wdt:P1195 ?extension.
-  FILTER(CONTAINS(?extension, '<value>' ))  
-SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
-}"""
-        return query.replace('<value>', search_string)
+
+class FileFormatExtSearchResult(PuidSearchResult):
+    """ File Format Extension Search Result Model. """
+    def __init__(self, wd_id, label, description):
+        super(FileFormatExtSearchResult, self).__init__(wd_id, label,
+                                                        description, None, None)
 
     @staticmethod
-    def _assemble_results(results_json):
-        results = [FileFormatExtSearch(
-        x['format']['value'].replace('http://www.wikidata.org/entity/', ''),
-        x['formatLabel']['value'],
-        x['formatDescription']['value'], "test", "test")
-                   for x in results_json['results']['bindings']]
+    def _build_query(search_string="", lang="en"):
+        query = """
+        SELECT DISTINCT ?format ?formatLabel ?formatDescription ?extension
+        WHERE {  
+            ?format wdt:P1195 ?extension.
+            FILTER(CONTAINS(?extension, '<value>' ))  
+            SERVICE wikibase:label { 
+                bd:serviceParam wikibase:language "[AUTO_LANGUAGE],<lang>". 
+            }
+        }
+        """
+        return query.replace('<value>', search_string).replace('<lang>', lang)
+
+    @classmethod
+    def _assemble_results(cls, results_json):
+        results = [
+            cls(x['format'].get('value').replace(
+                'http://www.wikidata.org/entity/', ''),
+                x['formatLabel'].get('value'),
+                x['formatDescription'].get('value'))
+            for x in results_json['results'].get('bindings')
+        ]
         return results
 
     @classmethod
     def search(cls, search_string, lang="en"):
-        """Queries Wikidata for a user-supplied extension and returns a list of file formats."""
-                
-        query = cls._concat_query(search_string.replace('.', ""), lang)
+        """
+        Query Wikidata to get search results.
+        Args:
+            search_string (str):
+            lang (str):
+
+        Returns (List[FileFormatExtSearchResult]):
+
+        """
+        query = cls._build_query(search_string.replace('.', ""), lang)
         results_json = wdi_core.WDItemEngine.execute_sparql_query(query)
-        logging.debug(str(results_json))
-        return cls._assemble_results(results_json)
+        objects = cls._assemble_results(results_json)
+        return objects
