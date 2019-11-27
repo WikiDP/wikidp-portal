@@ -150,3 +150,31 @@ class PuidSearchResult():
             x['puid']['value'])
                    for x in results_json['results']['bindings']]
         return results
+
+class FileFormatExtSearch(PuidSearchResult):
+    @staticmethod
+    def _concat_query(search_string="", lang="en"):
+        query=   """SELECT DISTINCT ?format ?formatLabel ?formatDescription ?extension
+ WHERE {  ?format wdt:P1195 ?extension.
+  FILTER(CONTAINS(?extension, '<value>' ))  
+SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+}"""
+        return query.replace('<value>', search_string)
+
+    @staticmethod
+    def _assemble_results(results_json):
+        results = [FileFormatExtSearch(
+        x['format']['value'].replace('http://www.wikidata.org/entity/', ''),
+        x['formatLabel']['value'],
+        x['formatDescription']['value'], "test", "test")
+                   for x in results_json['results']['bindings']]
+        return results
+
+    @classmethod
+    def search(cls, search_string, lang="en"):
+        """Queries Wikidata for a user-supplied extension and returns a list of file formats."""
+                
+        query = cls._concat_query(search_string.replace('.', ""), lang)
+        results_json = wdi_core.WDItemEngine.execute_sparql_query(query)
+        logging.debug(str(results_json))
+        return cls._assemble_results(results_json)

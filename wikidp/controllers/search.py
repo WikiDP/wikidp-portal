@@ -5,7 +5,10 @@ import re
 
 from wikidataintegrator.wdi_core import WDItemEngine
 
-from wikidp.models import PuidSearchResult
+from wikidp.models import (
+    FileFormatExtSearch,
+    PuidSearchResult,
+)
 from wikidp.utils import (
     LANG,
     item_detail_parse,
@@ -14,6 +17,14 @@ from wikidp.utils import (
 
 def get_search_result_context(search_string):
     context = []
+    # Check if searching by file extension
+    extension = FileFormatExtSearch.search(search_string)
+    for res in extension:
+        context.append({
+           'qid': res.format,
+           'label': res.label,
+           'description': res.description
+            })
     # Check if searching with PUID
     if re.search("[x-]?fmt/\d+", search_string) is not None:
         result = PuidSearchResult.search_puid(search_string, lang=LANG)
