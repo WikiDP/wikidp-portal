@@ -194,7 +194,7 @@ class FileFormatExtSearchResult(PuidSearchResult):
         Returns (List[FileFormatExtSearchResult]):
 
         """
-        query = cls._build_query(search_string.replace('.', ""), lang)
+        query = cls._build_query(search_string.replace('.', "").lower(), lang)
         results_json = wdi_core.WDItemEngine.execute_sparql_query(query)
         objects = cls._assemble_results(results_json)
         return objects
