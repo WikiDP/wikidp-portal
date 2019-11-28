@@ -133,7 +133,7 @@ python3.6
 
 ### Set FLASK_APP env variable
 If you see something like:
-```
+```shell
 Usage: flask run [OPTIONS]
 
 Error: Could not locate Flask application. You did not provide the FLASK_APP environment variable.
