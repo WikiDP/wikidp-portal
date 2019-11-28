@@ -4,15 +4,11 @@ LABEL maintainer="carl.wilson@openpreservation.org" \
       org.openpreservation.vendor="Open Preservation Foundation" \
       version="0.1"
 
-RUN  apk update && apk --no-cache --update-cache add gcc build-base libxml2-dev  libxslt-dev
+RUN  apk update && apk --no-cache --update-cache add gcc build-base libxml2-dev git libxslt-dev
 
 WORKDIR /src
-
-COPY setup.py setup.py
-COPY README.md README.md
-COPY wikidp/* wikidp/
-
-RUN mkdir /install && pip install -U pip && pip install --install-option="--prefix=/install" .
+RUN git clone https://github.com/WikiDP/wikidp-portal.git
+RUN mkdir /install && cd /src/wikidp-portal && pip install -U pip && pip install --install-option="--prefix=/install" .
 
 FROM python:3.6-alpine
 
