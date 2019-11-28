@@ -23,7 +23,7 @@
                 <br>
                 &mdash;<span class="search-result-description"> {{option['description']}} </span>&mdash;
                 <br>
-                {% if option['aliases'] != [] %}
+                {% if option.get('aliases')  %}
                     <span class="search-result-aliases"><b>also referred to as:</b> {{option['aliases'][0]}}
                         {% for alias in option['aliases'][1:] %}
                             <b>/</b> {{alias}}
