@@ -21,7 +21,7 @@ INSTALL_REQUIRES = [
     'pywikibot',
     'python-dateutil==2.8.1',
     'tqdm',
-    'validators==0.12.4'
+    'validators==0.12.6'
 ]
 PYTHON_REQUIRES = '>=3.6, <4'
 
