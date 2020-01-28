@@ -1,0 +1,8 @@
+flask>=0.12.3
+wikidataintegrator==0.4.0
+lxml==4.3.0
+pandas
+pywikibot
+python-dateutil==2.8.1
+tqdm
+validators==0.12.6

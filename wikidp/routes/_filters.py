@@ -23,12 +23,13 @@ from wikidp.utils import (
 
 
 @APP.template_filter('url_encode')
-def template_filter_url_encode(s):
-    if type(s) == 'Markup':
-        s = s.unescape()
-    s = s.encode('utf8')
-    s = quote_plus(s)
-    return Markup(s)
+def template_filter_url_encode(to_encode):
+    """Carry out URL encoding on template filter URL."""
+    if isinstance(to_encode, 'Markup'):
+        to_encode = to_encode.unescape()
+    to_encode = to_encode.encode('utf8')
+    to_encode = quote_plus(to_encode)
+    return Markup(to_encode)
 
 
 @APP.template_filter('qlabel_attributes')

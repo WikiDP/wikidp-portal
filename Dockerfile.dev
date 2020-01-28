@@ -1,0 +1,15 @@
+FROM python:3.6-stretch
+
+LABEL maintainer="carl.wilson@openpreservation.org" \
+      org.openpreservation.vendor="Open Preservation Foundation" \
+      version="0.1"
+
+WORKDIR /tmp
+
+COPY requirements.txt requirements.txt
+RUN pip install -r /tmp/requirements.txt
+
+EXPOSE 5000
+ENV FLASK_APP='wikidp'
+WORKDIR /wikidp
+ENTRYPOINT ["/wikidp/docker-dev.sh"]

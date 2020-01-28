@@ -11,8 +11,10 @@ import re
 from string import Template
 
 from urllib import request as urllib_request
-from wikidataintegrator.wdi_core import WDItemEngine
+
 import validators
+
+from wikidataintegrator.wdi_core import WDItemEngine
 
 from wikidp.const import (
     ITEM_REGEX,
@@ -26,6 +28,27 @@ from wikidp.sparql import (
     PROPERTY_ALLOWED_QUALIFIERS,
     PROPERTY_QUERY,
 )
+
+
+def dedupe_by_key(dict_list, key):
+    """
+    Remove duplicates from a list based on matching key's value.
+    Args:
+        dict_list (List[Dict]):
+        key (str):
+
+    Returns (List[Dict]):
+
+    """
+
+    output = []
+    found_values = set()
+    for item in dict_list:
+        value = item.get(key)
+        if value not in found_values:
+            output.append(item)
+            found_values.add(value)
+    return output
 
 
 def flatten_string(_string):
@@ -192,7 +215,7 @@ def get_lang(_dict, default=None):
     Returns: value of dictionary's language key or default
 
     """
-    if _dict is {}:
+    if not _dict:
         pass
     value = _dict.get(LANG)
     if value:
@@ -204,37 +227,38 @@ def item_detail_parse(qid, with_claims=True):
     """Uses the JSON representation of wikidataintegrator to parse the item ID specified (qid)
     and returns a new dictionary of previewing information and a dictionary of property counts"""
     item = get_item_json(qid)
-    if item:
-        label = parse_wd_response_by_key(item, 'labels', default="Item {}".format(qid))
-        aliases = parse_wd_response_by_key(item, 'aliases', default=[])
-        description = parse_wd_response_by_key(item, 'descriptions', default='')
-        output_dict = {'qid': qid, 'label': label, 'aliases': aliases, 'description': description}
-        if with_claims:
-            claim_list = []
-            ex_list = []
-            categories = []
-            claims = get_claims_from_json(item)
-            for pid, claim_dict in sorted(claims.items(), key=lambda x: entity_id_to_int(x[0])):
-                value_list = []
-                add_to_ex_list = False
-                for json_details in claim_dict:
-                    val = parse_snak(pid, json_details.get('mainsnak'))
-                    if val:
-                        val['references'] = parse_references(json_details)
-                        val['qualifiers'] = parse_qualifiers(json_details)
-                        value_list.append(val)
-                        if val.get('parse_type') == 'external-id':
-                            add_to_ex_list = True
-                        #  Determining the 'category' of the item from the 'instance of' and 'subclass of' properties
-                        elif pid in ['P31', 'P279']:
-                            categories.append(val)
-                parsed_claim = {'pid': pid, 'values': value_list}
-                ex_list.append(parsed_claim) if add_to_ex_list else claim_list.append(parsed_claim)
-            output_dict['external_links'] = ex_list
-            output_dict['claims'] = claim_list
-            output_dict['categories'] = categories
-        return output_dict
-    return False
+    if not item:
+        return False
+    label = parse_wd_response_by_key(item, 'labels', default="Item {}".format(qid))
+    aliases = parse_wd_response_by_key(item, 'aliases', default=[])
+    description = parse_wd_response_by_key(item, 'descriptions', default='')
+    output_dict = {'qid': qid, 'label': label, 'aliases': aliases, 'description': description}
+    if with_claims:
+        claim_list = []
+        ex_list = []
+        categories = []
+        claims = get_claims_from_json(item)
+        for pid, claim_dict in sorted(claims.items(), key=lambda x: entity_id_to_int(x[0])):
+            value_list = []
+            add_to_ex_list = False
+            for json_details in claim_dict:
+                val = parse_snak(pid, json_details.get('mainsnak'))
+                if val:
+                    val['references'] = parse_references(json_details)
+                    val['qualifiers'] = parse_qualifiers(json_details)
+                    value_list.append(val)
+                    if val.get('parse_type') == 'external-id':
+                        add_to_ex_list = True
+                    # Determining the 'category' of the item
+                    # from the 'instance of' and 'subclass of' properties
+                    elif pid in ['P31', 'P279']:
+                        categories.append(val)
+            parsed_claim = {'pid': pid, 'values': value_list}
+            ex_list.append(parsed_claim) if add_to_ex_list else claim_list.append(parsed_claim)
+        output_dict['external_links'] = ex_list
+        output_dict['claims'] = claim_list
+        output_dict['categories'] = categories
+    return output_dict
 
 
 def parse_qualifiers(json_details):
@@ -347,7 +371,8 @@ def parse_snak(pid, snak):
             except ValueError:
                 val = float(num)
         elif data_type == 'monolingualtext':
-            val = '"{}" (language: {})'.format(data_value.get('text', ''), data_value.get('language', 'unknown'))
+            val = '"{}" (language: {})'.format(data_value.get('text', ''),
+                                               data_value.get('language', 'unknown'))
         else:
             val = "Unable To Parse Value {}".format(data_type)
         return {'value': val, 'parse_type': parse_type, 'type': data_type}
