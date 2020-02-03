@@ -15,12 +15,14 @@ from setuptools import setup, find_packages
 INSTALL_REQUIRES = [
     'setuptools',
     'flask>=0.12.3',
-    'wikidataintegrator',
+    'wikidataintegrator==0.4.6',
     'lxml==4.3.0',
-    'pandas',
-    'pywikibot',
+    'numpy==1.17.5',
+    'pandas==0.24.2',
+    'pywikibot==3.0.20190722',
     'python-dateutil==2.8.1',
-    'tqdm',
+    'sparql_slurper==0.2.1',
+    'tqdm==4.32.2',
     'validators==0.12.6'
 ]
 PYTHON_REQUIRES = '>=3.6, <4'
