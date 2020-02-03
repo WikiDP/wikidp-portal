@@ -19,9 +19,8 @@ INSTALL_REQUIRES = [
     'lxml==4.3.0',
     'numpy==1.17.5',
     'pandas==0.24.2',
-    'pywikibot==3.0.20190722',
+    'pywikibot',
     'python-dateutil==2.8.1',
-    'sparql_slurper==0.2.1',
     'tqdm==4.32.2',
     'validators==0.12.6'
 ]
@@ -43,6 +42,7 @@ README.close()
 
 setup(
     name='wikidp',
+    version='0.1.0',
     packages=find_packages(),
     include_package_data=True,
     install_requires=INSTALL_REQUIRES,
