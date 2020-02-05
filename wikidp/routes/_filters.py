@@ -25,7 +25,7 @@ from wikidp.utils import (
 @APP.template_filter('url_encode')
 def template_filter_url_encode(to_encode):
     """Carry out URL encoding on template filter URL."""
-    if isinstance(to_encode, 'Markup'):
+    if isinstance(to_encode, Markup):
         to_encode = to_encode.unescape()
     to_encode = to_encode.encode('utf8')
     to_encode = quote_plus(to_encode)
