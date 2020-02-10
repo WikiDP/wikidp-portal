@@ -14,11 +14,12 @@ from setuptools import setup, find_packages
 
 INSTALL_REQUIRES = [
     'setuptools',
-    'flask>=1.1.1',
-    'wikidataintegrator==0.4.0',
+    'flask>=0.12.3',
+    'wikidataintegrator==0.4.6',
     'lxml==4.3.0',
+    'numpy==1.17.5',
     'pandas==0.24.2',
-    'pywikibot>2',
+    'pywikibot',
     'python-dateutil==2.8.1',
     'tqdm==4.32.2',
     'validators==0.12.6'
@@ -41,6 +42,7 @@ README.close()
 
 setup(
     name='wikidp',
+    version='0.1.0',
     packages=find_packages(),
     include_package_data=True,
     install_requires=INSTALL_REQUIRES,
