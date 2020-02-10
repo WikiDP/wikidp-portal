@@ -21,6 +21,7 @@ INSTALL_REQUIRES = [
     'pandas==0.24.2',
     'pywikibot',
     'python-dateutil==2.8.1',
+    'requests_oauthlib==1.3.0',
     'tqdm==4.32.2',
     'validators==0.12.6'
 ]

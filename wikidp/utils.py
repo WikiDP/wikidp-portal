@@ -1,3 +1,6 @@
+""" General purpose utitlites for wikidp. """
+
+from collections import namedtuple
 from datetime import datetime
 import json
 import logging
@@ -9,9 +12,10 @@ from os.path import (
 )
 import re
 from string import Template
-
 from urllib import request as urllib_request
 
+from six import text_type
+from six.moves.urllib.parse import parse_qs
 import validators
 
 from wikidataintegrator.wdi_core import WDItemEngine
@@ -29,6 +33,10 @@ from wikidp.sparql import (
     PROPERTY_QUERY,
 )
 
+RequestToken = namedtuple("RequestToken", ['key', 'secret'])
+
+class OAuthException(Exception):
+    pass
 
 def dedupe_by_key(dict_list, key):
     """
@@ -390,11 +398,43 @@ def format_url_from_property(pid, value):
         return prop.get("formatter_url").replace("$1", value)
     return None
 
-
 def create_query_template(_string):
     flat_str = flatten_string(_string)
     return Template(flat_str)
 
+def force_unicode(val, encoding="unicode-escape"):
+    """ Force unicode decoding on on non text types. """
+    if isinstance(val, text_type):
+        return val
+    return val.decode(encoding, errors="replace")
+
+def process_request_token(content):
+    """ Process the passed request content to process the OAuth tokens."""
+    text_content = force_unicode(content, "utf8")
+
+    # Look for an error indicator and raise and OAuthException if found
+    if text_content.startswith(force_unicode("Error: ")):
+        raise OAuthException(text_content[len("Error: "):])
+
+    # Parse the query string for credentials
+    credentials = parse_qs(text_content)
+    if credentials is None or credentials == {}:
+        # If credentials null or empty dictionary raise appropriate OAuthException
+        raise OAuthException(
+            "Expected x-www-form-urlencoded response from " +
+            "MediaWiki, but got something else: " +
+            "{0}".format(repr(text_content)))
+    if 'oauth_token' not in credentials or \
+         'oauth_token_secret' not in credentials:
+         # If no OAuth token found then raise OAuth Exception
+        raise OAuthException(
+            "MediaWiki response lacks token information: "
+            "{0}".format(repr(credentials)))
+    # Return named tuple of tokens.
+    return RequestToken(
+        credentials.get('oauth_token')[0],
+        credentials.get('oauth_token_secret')[0]
+    )
 
 # Register Template Queries Here
 PROPERTY_QUERY_TEMPLATE = create_query_template(PROPERTY_QUERY)

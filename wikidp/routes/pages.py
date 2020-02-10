@@ -1,4 +1,10 @@
+""" Python functions for all WikiDP page routes. """
 import logging
+import os
+
+import requests
+from requests_oauthlib import OAuth1
+from six.moves.urllib.parse import urlencode
 
 from flask import (
     abort,
@@ -13,6 +19,15 @@ from wikidp.controllers.pages import (
     get_checklist_context,
     get_item_context,
 )
+from wikidp.utils import process_request_token
+
+# OAuth stuff
+MW_OAUTH_INIT_URL = 'https://www.wikidata.org/wiki/Special:OAuth/initiate'
+MW_OAUTH_AUTH_URL = 'https://www.wikidata.org/wiki/Special:OAuth/authorize'
+MW_OAUTH_URL = 'https://wikidata.org/wiki/index.php'
+ORG_TOKEN = os.environ.get('CONSUMER_TOKEN', '')
+SECRET_TOKEN = os.environ.get('SECRET_TOKEN', '')
+USER_AGENT = 'wikidp-portal/0.0 (https://wikidp.org/portal/; admin@wikidp.org)'
 
 
 @APP.route("/")
@@ -23,6 +38,7 @@ def route_page_welcome():
 
 @APP.route('/favicon.ico')
 def route_favicon():
+    """Send the favicon from static route."""
     return send_from_directory(APP.config['STATIC_DIR'], 'img/favicon.ico',
                                mimetype='image/vnd.microsoft.icon')
 
@@ -38,6 +54,42 @@ def route_page_reports():
     """Rendering the reports page"""
     return render_template('reports.html')
 
+@APP.route("/login", methods=['POST'])
+def oauth_login():
+    auth = OAuth1(ORG_TOKEN,
+                  client_secret=SECRET_TOKEN,
+                  callback_uri='oob')
+    try:
+        response = requests.post(url=MW_OAUTH_INIT_URL,
+                                 auth=auth,
+                                 headers={'User-Agent': USER_AGENT})
+        print("URL %s" % MW_OAUTH_INIT_URL)
+        print("Status: %s" % response.status_code)
+
+        # If the response was successful, no Exception will be raised
+        response.raise_for_status()
+    except requests.HTTPError as http_err:
+        print('HTTP error occurred: %s' % http_err)  # Python 3.6
+    else:
+        print('Success!')
+
+    request_token = process_request_token(response.content)
+    params = {'oauth_token': request_token.key,
+              'oauth_consumer_key': ORG_TOKEN}
+    auth_url = MW_OAUTH_AUTH_URL + '?' + urlencode(params)
+    try:
+        auth_response = requests.post(auth_url)
+        history = auth_response.history
+        for resp in history:
+            print("Status: {}, URL {}".format(resp.status_code, resp.url))
+        print("Status: {}, URL {}".format(auth_response.status_code, auth_response.url))
+        # If the response was successful, no Exception will be raised
+        print('Raising status')
+        auth_response.raise_for_status()
+        print('Redirecting to {}'.format(auth_response.url))
+        return auth_response.url, 302
+    except requests.HTTPError as http_err:
+        print('HTTP error occurred: %s' % http_err)  # Python 3.6
 
 @APP.route("/unauthorized")
 def route_page_unauthorized():
