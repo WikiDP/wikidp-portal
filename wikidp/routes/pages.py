@@ -1,8 +1,6 @@
 """ Python functions for all WikiDP page routes. """
-import datetime
 import logging
 import os
-
 
 from flask import (
     abort,
@@ -54,16 +52,10 @@ def profile():
     """ Flask OAuth login. """
     logging.debug("getting user")
     username = MWOAUTH.get_current_user(True)
-    if username is None:
-        return "Not logged in: " + "<a href=login>login</a>"
-    user_string = username
-    identity = MWOAUTH.get_user_identity(False)
-    if identity is None:
-        return "Not logged in: " + "<a href=login>login</a>"
-    timestamp = datetime.datetime.fromtimestamp(identity['exp'])
-    user_string = user_string + ", registered: "  + identity['registered'] + \
-        ", OAuth token expires: " + timestamp.strftime('%Y-%m-%d %H:%M:%S')
-    return "Logged in as: " + user_string + " <a href=logout>logout</a>"
+    identity = None
+    if username is not None:
+        identity = MWOAUTH.get_user_identity(False)
+    return render_template('profile.html', username=username, identity=identity)
 
 @APP.route("/unauthorized")
 def route_page_unauthorized():

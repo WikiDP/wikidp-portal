@@ -1,0 +1,18 @@
+{% extends "page.html" %}
+{% block title %}Profile{% endblock %}
+{% block page_content %}
+
+<div class="middle center white" id="content-frame">
+	{% if username  %}
+		<p>You are currently logged in as {{ username }}</p>
+		<a href="logout">Logout</a>
+	{% else %}
+		<p>You are not currently logged in.</p>
+		<a href="login">Login using Wikidata OAuth</a>
+	{% endif %}
+</div>
+
+{% block page_scripts %}
+{% endblock page_scripts %}
+
+{% endblock page_content %}
