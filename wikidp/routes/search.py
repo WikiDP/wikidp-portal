@@ -26,7 +26,7 @@ def route_process_site_search():
 @APP.route("/search")
 def route_site_search():
     """
-    Displays the most likely results of a users search.
+    Display the most likely results of a users search.
 
     if only one result returned, the user is automatic redirected to preview that item.
     """
@@ -39,6 +39,6 @@ def route_site_search():
 
 @APP.route("/search/puid/<string:puid>")
 def route_search_by_puid(puid):
-    """Displays a list of extensions and media types."""
+    """Display a list of extensions and media types."""
     new_puid, results = search_controller.get_search_by_puid_context(puid)
     return render_template('puid_results.html', results=results, puid=new_puid)

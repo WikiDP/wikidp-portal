@@ -195,6 +195,7 @@ class FileFormatExtSearchResult(PuidSearchResult):
     def search(cls, search_string, lang="en"):
         """
         Query Wikidata to get search results.
+
         Args:
             search_string (str):
             lang (str):

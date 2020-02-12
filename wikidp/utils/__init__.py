@@ -55,7 +55,6 @@ def dedupe_by_key(dict_list, key):
 
     Returns (List[Dict]):
     """
-
     output = []
     found_values = set()
     for item in dict_list:
@@ -96,10 +95,10 @@ def get_property(pid):
 
 def convert_list_to_value_string(lst):
     """
-        Convert a list of values to a string.
+    Convert a list of values to a string.
 
-        Arg: lst, ex: ['P31', 'P5', 'P123']
-        Returns: "(wd:P31)(wd:P5)(wd:P123)"
+    Arg: lst, ex: ['P31', 'P5', 'P123']
+    Returns: "(wd:P31)(wd:P5)(wd:P123)"
     """
     return '(wd:{0})'.format(')(wd:'.join(map(str, lst)))
 
@@ -147,7 +146,7 @@ def get_property_details_by_pid_list(pid_list):
     return wd_int_utils.process_query_string(query)
 
 def get_directory_filenames_with_subdirectories(directory_path):
-    """Returns a a dictionary of filenames from a directory hierarchy."""
+    """Return a a dictionary of filenames from a directory hierarchy."""
     output = []
     for item in listdir(directory_path):
         i = {'name': item, 'label': _file_to_label(item)}
