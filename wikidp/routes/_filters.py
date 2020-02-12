@@ -9,7 +9,7 @@
 # License, Version 3. See the text file "COPYING" for further details
 # about the terms of this license.
 #
-""" Flask application custom template filters for Wikidata portal. """
+"""Flask application custom template filters for Wikidata portal."""
 from urllib.parse import quote_plus
 
 from markupsafe import Markup
@@ -35,7 +35,8 @@ def template_filter_url_encode(to_encode):
 @APP.template_filter('qlabel_attributes')
 def template_qlabel_attributes(url):
     """
-    Add tag attributes for qlabel.js
+    Add tag attributes for qlabel.js.
+
     Args:
         url (str): Text for the label and titles
 
@@ -48,7 +49,8 @@ def template_qlabel_attributes(url):
 @APP.template_filter('entity_url')
 def template_filter_entity_url(entity_id):
     """
-    Convert Item of Property string to Wikidata URL
+    Convert Item of Property string to Wikidata URL.
+
     Args:
         entity_id (str): Item ('Q1234') or Property ('P1234') identifier
 

@@ -48,12 +48,12 @@ from . import (
 def dedupe_by_key(dict_list, key):
     """
     Remove duplicates from a list based on matching key's value.
+
     Args:
         dict_list (List[Dict]):
         key (str):
 
     Returns (List[Dict]):
-
     """
 
     output = []
@@ -76,13 +76,13 @@ def _file_to_label(filename):
 
 
 def get_pid_from_string(input_string):
-    """ Parse and return a property id from a string value. """
+    """Parse and return a property id from a string value."""
     regex_search = re.search(PROPERTY_REGEX, input_string)
     return regex_search.group() if regex_search else False
 
 
 def get_qid_from_string(input_string):
-    """ Parse and return an item id from a string value. """
+    """Parse and return an item id from a string value."""
     regex_search = re.search(ITEM_REGEX, input_string)
     return regex_search.group() if regex_search else False
 
@@ -90,12 +90,14 @@ def _entity_id_to_int(entity):
     return int(entity[1:])
 
 def get_property(pid):
-    """ Return the first value from a list of properties. """
+    """Return the first value from a list of properties."""
     prop_response = get_property_details_by_pid_list([pid])
     return prop_response[0] if prop_response else None
 
 def convert_list_to_value_string(lst):
     """
+        Convert a list of values to a string.
+
         Arg: lst, ex: ['P31', 'P5', 'P123']
         Returns: "(wd:P31)(wd:P5)(wd:P123)"
     """
@@ -104,6 +106,7 @@ def convert_list_to_value_string(lst):
 def get_all_languages():
     """
     Get list of all Wikimedia languages from Wikidata.
+
     Returns (List[Dict[str, str]]):
 
     Examples:
@@ -126,25 +129,25 @@ def get_all_languages():
 
 
 def get_all_qualifier_properties():
-    """ Return all of the qualifiers for a particular property. """
+    """Return all of the qualifiers for a particular property."""
     query = _flatten_string(ALL_QUALIFIER_PROPERTIES)
     return wd_int_utils.process_query_string(query)
 
 
 def get_allowed_qualifiers_by_pid(pid):
-    """ Return all legal quailifiers for a partiular property. """
+    """Return all legal quailifiers for a partiular property."""
     value = convert_list_to_value_string([pid])
     query = PROPERTY_ALLOWED_QUALIFIERS_TEMPLATE.substitute(values=value)
     return wd_int_utils.process_query_string(query)
 
 def get_property_details_by_pid_list(pid_list):
-    """ Return property details from a property id list. """
+    """Return property details from a property id list."""
     values = convert_list_to_value_string(pid_list)
     query = PROPERTY_QUERY_TEMPLATE.substitute(values=values)
     return wd_int_utils.process_query_string(query)
 
 def get_directory_filenames_with_subdirectories(directory_path):
-    """ Returns a a dictionary of filenames from a directory hierarchy. """
+    """Returns a a dictionary of filenames from a directory hierarchy."""
     output = []
     for item in listdir(directory_path):
         i = {'name': item, 'label': _file_to_label(item)}
@@ -163,7 +166,7 @@ def _remove_extension_from_filename(filename_string):
 
 
 def time_formatter(time):
-    """Converts wikidata's time json to a human readable string"""
+    """Convert wikidata's time json to a human readable string."""
     try:
         formatted_time = datetime.strptime(time, '+%Y-%m-%dT%H:%M:%SZ')
         return formatted_time.strftime("%A, %B %-d, %Y")
@@ -192,7 +195,8 @@ def get_wikimedia_image_url_from_title(title):
 
 def parse_wd_response_by_key(item, key, default=None):
     """
-    Parse WikiData Response dictionary into a python list of values
+    Parse WikiData Response dictionary into a python list of values.
+
     Args:
         item (dict): Returned output of using wikidataintegrator's wd_json_representation
         key (str): Desired key to extract values of from item
@@ -213,13 +217,13 @@ def parse_wd_response_by_key(item, key, default=None):
 
 def get_lang(_dict, default=None):
     """
-    Get language value of a dictionary, fallback language if not available
+    Get language value of a dictionary, fallback language if not available.
+
     Args:
         _dict (dict): Dictionary for getting value
         default (optional): Expected return if value does not exist for fallback language
 
     Returns: value of dictionary's language key or default
-
     """
     if not _dict:
         pass
@@ -231,8 +235,11 @@ def get_lang(_dict, default=None):
 
 # pylint: disable=R0914
 def item_detail_parse(qid, with_claims=True):
-    """Uses the JSON representation of wikidataintegrator to parse the item ID specified (qid)
-    and returns a new dictionary of previewing information and a dictionary of property counts"""
+    """
+    Use the JSON representation of wikidataintegrator to parse the item ID specified.
+
+    Returns a new dictionary of previewing information and a dictionary of property counts.
+    """
     item = wd_int_utils.get_item_json(qid)
     if not item:
         return False
@@ -297,7 +304,8 @@ def _parse_snak_set(snak_set):
 
 def get_item_property_counts(qid):
     """
-    Count the number of values in a claim by property
+    Count the number of values in a claim by property.
+
     Args:
         qid (str): Wikidata Identifier, ex: "Q1234"
 
@@ -314,7 +322,8 @@ def get_item_property_counts(qid):
 
 def get_claims_from_json(item_json):
     """
-    Get claim dictionary from WD Item Json Representation
+    Get claim dictionary from WD Item Json Representation.
+
     Args:
         item_json (dict): Returned value of WDItemEngine().wd_json_representation
 
@@ -326,8 +335,7 @@ def get_claims_from_json(item_json):
 
 # pylint: disable=R0912
 def parse_snak(pid, snak):
-    """ Uses the json_details dictionary of a single claim and outputs
-    the parsed data into the output_dict. """
+    """Use a claim's json_details and output the parsed data into the output_dict."""
     try:
         if snak['snaktype'] == 'novalue' or 'datavalue' not in snak:
             return None
@@ -373,8 +381,12 @@ def parse_snak(pid, snak):
 
 
 def format_url_from_property(pid, value):
-    """Inputs property identifier (P###) for a given url type, looks up that
-    wikidata property id's url format (P1630) and creates a url with the value using the format"""
+    """
+    Input property identifier (P###) for a given url type.
+
+    Looks up that wikidata property id's url format (P1630) and creates a url
+    with the value using the format.
+    """
     value = value.strip()
     prop = get_property(pid)
     if 'formatter_url' in prop:

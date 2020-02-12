@@ -11,7 +11,7 @@
 #
 # This is a python __init__ script to create the app and import the
 # main package contents
-""" Module for WikiDP application search routes. """
+"""Module for WikiDP application search routes."""
 from flask import redirect, render_template, request
 from wikidp.config import APP
 from wikidp.controllers import search as search_controller
@@ -19,15 +19,16 @@ from wikidp.controllers import search as search_controller
 
 @APP.route("/search", methods=['POST'])
 def route_process_site_search():
-    """Processes search request into a state-saving url."""
+    """Process a search request into a state-saving url."""
     return redirect('/search?string='+request.form['userInput'].strip())
 
 
 @APP.route("/search")
 def route_site_search():
     """
-    Displays the most likely results of a users search
-    if only one result returned, the user is automatic redirected to preview that item
+    Displays the most likely results of a users search.
+
+    if only one result returned, the user is automatic redirected to preview that item.
     """
     search_string = request.args.get('string', default=0, type=str)
     context = search_controller.get_search_result_context(search_string)

@@ -26,6 +26,7 @@ TEMP = tempfile.gettempdir()
 # pylint: disable=R0903
 class BaseConfig():
     """Base / default config, no debug logging and short log format."""
+
     HOST = HOST
     DEBUG = False
     LOG_FORMAT = '[%(filename)-15s:%(lineno)-5d] %(message)s'
@@ -42,6 +43,7 @@ class BaseConfig():
 # pylint: disable=R0903
 class DevConfig(BaseConfig):
     """Developer level config, with debug logging and long log format."""
+
     DEBUG = True
     LOG_FORMAT = '[%(asctime)s %(levelname)-8s %(filename)-15s:%(lineno)-5d ' +\
                  '%(funcName)-30s] %(message)s'
@@ -52,7 +54,7 @@ CONFIGS = {
 }
 
 def configure_app(app):
-    """Grabs the environment variable for app config or defaults to dev."""
+    """Grab the environment variable for app config or defaults to dev."""
     config_name = os.getenv('WIKIDP_CONFIG', 'dev')
     app.config.from_object(CONFIGS[config_name])
     app.config['STATIC_DIR'] = os.path.join(app.root_path, 'static')
