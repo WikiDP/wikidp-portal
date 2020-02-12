@@ -1,3 +1,16 @@
+#!/usr/bin/python
+# coding=UTF-8
+#
+# WikiDP Wikidata Portal
+# Copyright (C) 2017
+# All rights reserved.
+#
+# This code is distributed under the terms of the GNU General Public
+# License, Version 3. See the text file "COPYING" for further details
+# about the terms of this license.
+#
+# This is a python __init__ script to create the app and import the
+# main package contents
 """Search Controller Functions and Helpers for WikiDP."""
 
 import logging
@@ -31,6 +44,7 @@ def get_search_result_context(search_string):
         for res in FileFormatExtSearchResult.search(search_string)
     ]
     # Check if searching with PUID
+    # pylint: disable=W1401
     if re.search("[x-]?fmt/\d+", search_string) is not None:
         context.extend([
             {'qid': res.format, 'label': res.label,
@@ -58,6 +72,7 @@ def search_result_list(string):
 
 
 def get_search_by_puid_context(puid):
+    """ Perform an item search by PUID. """
     new_puid = puid.replace('_', '/')
     logging.debug("Searching for PUID: %s", new_puid)
     results = PuidSearchResult.search_puid(new_puid, lang=LANG)

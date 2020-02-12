@@ -23,7 +23,7 @@ from .const import ConfKey
 HOST = 'localhost'
 TEMP = tempfile.gettempdir()
 
-
+# pylint: disable=R0903
 class BaseConfig():
     """Base / default config, no debug logging and short log format."""
     HOST = HOST
@@ -39,19 +39,17 @@ class BaseConfig():
     ITEM_REGEX = r'(Q|q)\d+'
     PROPERTY_REGEX = r'(P|p)\d+'
 
-
+# pylint: disable=R0903
 class DevConfig(BaseConfig):
     """Developer level config, with debug logging and long log format."""
     DEBUG = True
     LOG_FORMAT = '[%(asctime)s %(levelname)-8s %(filename)-15s:%(lineno)-5d ' +\
                  '%(funcName)-30s] %(message)s'
 
-
 CONFIGS = {
     "dev": 'wikidp.config.DevConfig',
     "default": 'wikidp.config.BaseConfig'
 }
-
 
 def configure_app(app):
     """Grabs the environment variable for app config or defaults to dev."""

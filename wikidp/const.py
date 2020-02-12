@@ -39,7 +39,7 @@ DEFAULT_UI_LANGUAGES = [
     ("lb", "Lëtzebuergesch (Luxembourgish)")
 ]
 
-
+# pylint: disable=R0903
 class ConfKey():
     """Config key string constants"""
     LOG_FORMAT = 'LOG_FORMAT'
