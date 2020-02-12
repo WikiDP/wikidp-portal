@@ -229,6 +229,7 @@ def get_lang(_dict, default=None):
     return _dict.get(FALLBACK_LANG, default)
 
 
+# pylint: disable=R0914
 def item_detail_parse(qid, with_claims=True):
     """Uses the JSON representation of wikidataintegrator to parse the item ID specified (qid)
     and returns a new dictionary of previewing information and a dictionary of property counts"""
@@ -323,6 +324,7 @@ def get_claims_from_json(item_json):
     return item_json.get('claims', {})
 
 
+# pylint: disable=R0912
 def parse_snak(pid, snak):
     """ Uses the json_details dictionary of a single claim and outputs
     the parsed data into the output_dict. """

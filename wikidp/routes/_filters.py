@@ -14,7 +14,7 @@ from urllib.parse import quote_plus
 
 from markupsafe import Markup
 
-from wikidp import APP
+from wikidp.config import APP
 from wikidp.const import ENTITY_URL_PATTERN
 from wikidp.utils import (
     get_pid_from_string,

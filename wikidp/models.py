@@ -75,6 +75,7 @@ class FileFormat():
 
 class PuidSearchResult():
     """Encapsulates a file format plus wikidata query magic for formats."""
+    # pylint: disable=R0913
     def __init__(self, wd_format, label, description, mime, puid):
         self._format = wd_format
         self._label = label
@@ -162,11 +163,11 @@ class FileFormatExtSearchResult(PuidSearchResult):
     def _build_query(search_string="", lang="en"):
         query = """
         SELECT DISTINCT ?format ?formatLabel ?formatDescription ?extension
-        WHERE {  
+        WHERE {
             ?format wdt:P1195 ?extension.
-            FILTER(CONTAINS(?extension, '<value>' ))  
-            SERVICE wikibase:label { 
-                bd:serviceParam wikibase:language "[AUTO_LANGUAGE],<lang>". 
+            FILTER(CONTAINS(?extension, '<value>' ))
+            SERVICE wikibase:label {
+                bd:serviceParam wikibase:language "[AUTO_LANGUAGE],<lang>".
             }
         }
         """

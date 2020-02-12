@@ -105,6 +105,7 @@ def get_target_by_type(value_type, value):
     return value
 
 
+# pylint: disable=R0913
 def write_claim(item, prop_string, value, data_type, qualifiers, meta=False):
     """Write a claim to WikiData.
     TODO: Use wikidataintegrator2 here and account for qualifiers and references
