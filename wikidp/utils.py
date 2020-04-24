@@ -1,5 +1,6 @@
-""" General purpose utitlites for wikidp. """
-
+#!/usr/bin/python
+# coding=UTF-8
+"""General purpose utilities for wikidp."""
 from collections import namedtuple
 from datetime import datetime
 import json
@@ -14,29 +15,30 @@ import re
 from string import Template
 from urllib import request as urllib_request
 
-from six import text_type
-from six.moves.urllib.parse import parse_qs
 import validators
-
 from wikidataintegrator.wdi_core import WDItemEngine
 
-from wikidp.const import (
-    ITEM_REGEX,
-    PROPERTY_REGEX,
-    LANG,
-    FALLBACK_LANG,
-)
-from wikidp.sparql import (
+from config import APP
+from const import ConfKey
+from sparql import (
     ALL_LANGUAGES_QUERY,
     ALL_QUALIFIER_PROPERTIES,
     PROPERTY_ALLOWED_QUALIFIERS,
     PROPERTY_QUERY,
 )
 
+ITEM_REGEX = APP.config[ConfKey.ITEM_REGEX]
+MEDIAWIKI_API_URL = APP.config[ConfKey.MEDIAWIKI_API_URL]
+PROPERTY_REGEX = APP.config[ConfKey.PROPERTY_REGEX]
+WIKIDATA_FB_LANG = APP.config[ConfKey.WIKIDATA_FB_LANG]
+WIKIDATA_LANG = APP.config[ConfKey.WIKIDATA_LANG]
+
 RequestToken = namedtuple("RequestToken", ['key', 'secret'])
+
 
 class OAuthException(Exception):
     pass
+
 
 def dedupe_by_key(dict_list, key):
     """
@@ -215,20 +217,19 @@ def parse_wd_response_by_key(item, key, default=None):
 
 def get_lang(_dict, default=None):
     """
-    Get language value of a dictionary, fallback language if not available
+    Get language value of a dictionary, fallback language if not available.
+
     Args:
         _dict (dict): Dictionary for getting value
-        default (optional): Expected return if value does not exist for fallback language
+        default (optional): Expected return if value does not exist for
+            fallback language
 
     Returns: value of dictionary's language key or default
 
     """
     if not _dict:
-        pass
-    value = _dict.get(LANG)
-    if value:
-        return value
-    return _dict.get(FALLBACK_LANG, default)
+        return default
+    return _dict.get(WIKIDATA_LANG) or _dict.get(WIKIDATA_FB_LANG, default)
 
 
 def item_detail_parse(qid, with_claims=True):
@@ -306,7 +307,8 @@ def get_item_json(qid):
         Dict: Returned value of WDItemEngine().wd_json_representation
     """
     try:
-        item = WDItemEngine(wd_item_id=qid)
+        item = WDItemEngine(wd_item_id=qid,
+                            mediawiki_api_url=MEDIAWIKI_API_URL)
         return item.wd_json_representation
     except (ValueError, ConnectionAbortedError, Exception):
         logging.exception("Exception reading QID: %s", qid)

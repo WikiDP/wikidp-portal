@@ -10,13 +10,13 @@
 # about the terms of this license.
 #
 """Configuration for WikiDP portal Flask app."""
+import logging
 import os
 import tempfile
-import logging
 
 from flask import Flask
 
-from .const import ConfKey
+from const import ConfKey
 
 
 # Template these values for flexible install
@@ -24,20 +24,24 @@ HOST = 'localhost'
 TEMP = tempfile.gettempdir()
 
 
-class BaseConfig():
+class BaseConfig:
     """Base / default config, no debug logging and short log format."""
-    HOST = HOST
-    DEBUG = False
-    LOG_FORMAT = '[%(filename)-15s:%(lineno)-5d] %(message)s'
-    LOG_FILE = os.path.join(TEMP, 'wikidp.log')
     CACHE_DIR = os.path.join(TEMP, 'caches')
-    SECRET_KEY = '7d441f27d441f27567d441f2b6176a'
-    WIKIDATA_USER_NAME = '<username>'
-    WIKIDATA_PASSWORD = '<password>'
-    WIKIDATA_LANG = 'en'
-    WIKIDATA_FB_LANG = 'en'
+    DEBUG = False
+    HOST = HOST
     ITEM_REGEX = r'(Q|q)\d+'
+    MEDIAWIKI_API_URL = "https://www.wikidata.org/w/api.php"
+    # Bind to PORT if defined, otherwise default to 5000.
+    PORT = int(os.environ.get('PORT', 5000))
     PROPERTY_REGEX = r'(P|p)\d+'
+    LOG_FILE = os.path.join(TEMP, 'wikidp.log')
+    LOG_FORMAT = '[%(filename)-15s:%(lineno)-5d] %(message)s'
+    SECRET_KEY = '7d441f27d441f27567d441f2b6176a'
+    WIKIBASE_LANGUAGE = os.getenv('WIKIBASE_LANGUAGE', 'en')
+    WIKIDATA_FB_LANG = os.getenv('WIKIDP_FB_LANG', 'en')
+    WIKIDATA_LANG = os.getenv('WIKIDP_LANG', 'en')
+    WIKIDATA_PASSWORD = os.getenv('WIKIDP_BOT_PASSWORD', '<password>')
+    WIKIDATA_USER_NAME = os.getenv('WIKIDP_BOT_USER', '<username>')
 
 
 class DevConfig(BaseConfig):
@@ -45,6 +49,7 @@ class DevConfig(BaseConfig):
     DEBUG = True
     LOG_FORMAT = '[%(asctime)s %(levelname)-8s %(filename)-15s:%(lineno)-5d ' +\
                  '%(funcName)-30s] %(message)s'
+    MEDIAWIKI_API_URL = "https://wikidp.wiki.opencura.com/w/api.php"
 
 
 CONFIGS = {
@@ -57,23 +62,17 @@ def configure_app(app):
     """Grabs the environment variable for app config or defaults to dev."""
     config_name = os.getenv('WIKIDP_CONFIG', 'dev')
     app.config.from_object(CONFIGS[config_name])
-    app.config['STATIC_DIR'] = os.path.join(app.root_path, 'static')
-    # Bind to PORT if defined, otherwise default to 5000.
-    app.config['PORT'] = int(os.environ.get('PORT', 5000))
-    app.config['WIKIDATA_USER_NAME'] = os.getenv('WIKIDP_BOT_USER', BaseConfig.WIKIDATA_USER_NAME)
-    app.config['WIKIDATA_PASSWORD'] = os.getenv('WIKIDP_BOT_PASSWORD', BaseConfig.WIKIDATA_PASSWORD)
+    app.config[ConfKey.STATIC_DIR] = os.path.join(app.root_path, 'static')
     if os.getenv('WIKIDP_CONFIG_FILE'):
         app.config.from_envvar('WIKIDP_CONFIG_FILE')
-    app.config['WIKIDATA_LANG'] = os.getenv('WIKIDP_LANG', BaseConfig.WIKIDATA_LANG)
-    app.config['WIKIDATA_FB_LANG'] = os.getenv('WIKIDP_FB_LANG', BaseConfig.WIKIDATA_FB_LANG)
     app.config['WIKIDATA_SIGN_UP_URL'] = \
         "https://www.wikidata.org/w/index.php?title=Special:CreateAccount"
+    _lang = app.config[ConfKey .WIKIDATA_LANG]
+    _fb_lang = app.config[ConfKey.WIKIDATA_FB_LANG]
     # Create the list of unique languages to easy SPARQL queries
-    if app.config['WIKIDATA_LANG'] != app.config['WIKIDATA_FB_LANG']:
-        app.config['WIKIBASE_LANGUAGE'] = ",".join([app.config['WIKIDATA_LANG'],
-                                                    app.config['WIKIDATA_FB_LANG']])
-    else:
-        app.config['WIKIBASE_LANGUAGE'] = app.config['WIKIDATA_LANG']
+    if _lang != _fb_lang:
+        app.config[ConfKey.WIKIBASE_LANGUAGE] = f"{_lang},{_fb_lang}"
+
 
 APP = Flask(__name__)
 # Get the appropriate config
@@ -84,4 +83,5 @@ logging.basicConfig(filename=APP.config[ConfKey.LOG_FILE], level=logging.DEBUG,
 logging.info("Started Wiki-DP Portal app.")
 logging.debug("Configured logging.")
 logging.debug("Logging in directory %s", APP.config[ConfKey.LOG_FILE])
-logging.debug("Application configured with languages=%s", APP.config[ConfKey.WIKIBASE_LANGUAGE])
+logging.debug("Application configured with languages=%s",
+              APP.config[ConfKey.WIKIBASE_LANGUAGE])

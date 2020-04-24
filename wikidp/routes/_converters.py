@@ -13,10 +13,11 @@
 from werkzeug.routing import BaseConverter
 
 from wikidp import APP
-from wikidp.const import (
-    ITEM_REGEX,
-    PROPERTY_REGEX,
-)
+from wikidp.const import ConfKey
+
+
+ITEM_REGEX = APP.config[ConfKey.ITEM_REGEX]
+PROPERTY_REGEX = APP.config[ConfKey.PROPERTY_REGEX]
 
 
 class WikidataItemConverter(BaseConverter):

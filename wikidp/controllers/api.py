@@ -17,20 +17,31 @@ from flask import (
      jsonify,
      request,
 )
-import pywikibot
+from wikidataintegrator.wdi_core import (
+    WDItemEngine,
+    WDItemID,
+    WDString,
+)
+from wikidataintegrator.wdi_login import WDLogin
 
-from wikidp.models import FileFormat
-from wikidp.utils import (
+from config import APP
+from const import ConfKey
+from models import FileFormat
+from utils import (
     get_pid_from_string,
     get_property_details_by_pid_list,
 )
 
-
-SANDBOX_API_URL = 'https://test.wikidata.org/w/'
-SANDBOX_SPARQL_URL = 'https://test.wikidata.org/proxy/wdqs/bigdata/namespace/wdq/'
-SITE = pywikibot.Site("test", "wikidata")
-REPO = SITE.data_repository()
+# TODO: Account for all dataTypes
+STRING_TO_WD_DATATYPE = {
+    "WikibaseItem": WDItemID,
+    "String": WDString,
+}
+MEDIAWIKI_API_URL = APP.config[ConfKey.MEDIAWIKI_API_URL]
 SCHEMA_DIRECTORY_PATH = 'wikidp/schemas/'
+# TODO: Set this up as environment variable
+# TEMP_LOGIN = WDLogin(mediawiki_api_url=MEDIAWIKI_API_URL)
+TEMP_LOGIN = WDLogin
 
 
 def load_schema(schema_name):
@@ -51,7 +62,8 @@ def get_schema_properties(schema_name):
         if shape_expression:
             expression_list = shape_expression.get('expressions')
             if expression_list:
-                props.extend(exp.get('predicate') for exp in expression_list if 'predicate' in exp)
+                props.extend(exp['predicate'] for exp in expression_list
+                             if 'predicate' in exp)
             predicate = shape_expression.get('predicate')
             if predicate:
                 props.append(predicate)
@@ -72,67 +84,68 @@ def get_property_checklist_from_schema(schema_name):
 
 def write_claims_to_item(qid):
     logging.debug("Processing user POST request.")
-    user_claims = request.get_json()
-    successful_claims = []
-    failure_claims = []
-    logging.debug("Writing Claim to Q175461 as a mock for writing Claims to: %s", qid)
-    item = pywikibot.ItemPage(REPO, u"Q175461")  # WIKIDATA TESTING ITEM
-    # item = pywikibot.ItemPage(REPO, qid)
-    for user_claim in user_claims:
-        write_status = write_claim(item, user_claim.get('pid'),
-                                   user_claim.get('value'), user_claim.get('type'),
-                                   user_claim.get('qualifiers'))
-        if write_status:
-            successful_claims.append(user_claim)
-        else:
-            failure_claims.append(user_claim)
-    output = {
-        'status': 'success',
-        'successful_claims': successful_claims,
-        'failure_claims': failure_claims
-        }
-    return jsonify(output)
+    # TODO: Pass this in this dictionary
+    json_data_claims = request.get_json()
+    # Build statements
+    data = [
+        build_statement(json_data.get('pid'), json_data.get('value'),
+                        json_data.get('type'), json_data.get('qualifiers'))
+        for json_data in json_data_claims
+    ]
+    # Get wikidata item
+    item = WDItemEngine(wd_item_id=qid, mediawiki_api_url=MEDIAWIKI_API_URL,
+                        data=data)
+    # Build login and Write to wikidata
+    qid = item.write(TEMP_LOGIN)
+
+    return jsonify({
+        "message": f"Successfully Contributed {len(data)} "
+                   f"Statements to Wikidata Item '{item.get_label()}' ({qid}).",
+        "status": "success"
+    })
 
 
-def get_target_by_type(value_type, value):
-    if value_type == 'WikibaseItem':
-        return pywikibot.ItemPage(REPO, value)
-    # elif data_type == 'Coordinate'
-    return value
-
-
-def write_claim(item, prop_string, value, data_type, qualifiers, meta=False):
-    """Write a claim to WikiData.
-    TODO: Use wikidataintegrator2 here and account for qualifiers and references
+def build_statement(prop, value, data_type, qualifier_data, reference_data):
+    """Build Statement to Write to Wikidata.
     Args:
-        item (pywikibot.ItemPage): Wikidata Item Model
-        prop_string (str): Wikidata Property Identifier [ex. 'P1234']
+        prop (str): Wikidata Property Identifier [ex. 'P1234']
         value (str): Value matching accepted property
-        data_type: (could be other data types)
-        qualifiers (list): list of data about qualifier claims
-        meta (dict, optional): Contains information about qualifiers/references/summaries
-    Returns:
-        bool: True if successful, False otherwise
+        data_type (str):
+        qualifier_data (List[Dict]): list of data about qualifiers
+        reference_data (List[Dict]): list of data about references
+    Returns (WDBaseDataType):
     """
-    try:
-        # TODO: Account for all dataTypes
-        claim = pywikibot.Claim(REPO, prop_string)
-        target = get_target_by_type(data_type, value)
-        claim.setTarget(target)
 
-        for q_data in qualifiers:
-            qualifier = pywikibot.Claim(REPO, q_data.get('pid'))
-            target = get_target_by_type(q_data.get('type'), q_data.get('value'))
-            qualifier.setTarget(target)
-            claim.addQualifier(qualifier, summary=u'Adding a qualifier.')
+    qualifiers = [
+        wd_datatype(qualifier.get('type'), value=qualifier.get('value'),
+                    prop_nr=qualifier.get("pid"), is_qualifier=True)
+        for qualifier in qualifier_data
+    ]
+    # The double list here is intentional based on the way Wikidataintegrator
+    # expects the data type
+    references = [[
+        wd_datatype(reference.get('type'), value=reference.get('value'),
+                    prop_nr=reference.get("pid"), is_reference=True)
+        for reference in reference_data
+    ]]
 
-        if meta:
-            # TODO: Add Ability to include references, summaries, and qualifiers
-            pass
-        item.addClaim(claim, summary=u'Adding claim')
-        return True
-    except (TypeError, Exception):
-        return False
+    return wd_datatype(data_type, prop_nr=prop, value=value,
+                       qualifiers=qualifiers, references=references)
+
+
+def wd_datatype(data_type_string, *args, **kwargs):
+    """
+    Create a WikidataIntegrator WDBaseDataType instance by a string name.
+
+    Args:
+        data_type_string (str):
+
+    Returns (WDBaseDataType):
+
+    """
+    wd_datatype_class = STRING_TO_WD_DATATYPE[data_type_string]
+    assert wd_datatype_class, f"Invalid Datatype '{wd_datatype_class}'"
+    return wd_datatype_class(*args, **kwargs)
 
 
 def get_all_file_formats():

@@ -14,7 +14,6 @@ These need to map to the names used in the default config file, but better
 than multiple hardcoded strings in code.
 """
 ENTITY_URL_PATTERN = 'http://www.wikidata.org/entity/$1'
-ITEM_REGEX = r'(Q|q)\d+'
 PROPERTY_REGEX = r'(P|p)\d+'
 LANG = 'en'
 FALLBACK_LANG = 'en'
@@ -40,12 +39,16 @@ DEFAULT_UI_LANGUAGES = [
 ]
 
 
-class ConfKey():
+class ConfKey:
     """Config key string constants"""
-    LOG_FORMAT = 'LOG_FORMAT'
-    LOG_FILE = 'LOG_FILE'
-    WIKIDATA_LANG = 'WIKIDATA_LANG'
-    WIKIDATA_FB_LANG = 'WIKIDATA_FB_LANG'
-    WIKIBASE_LANGUAGE = 'WIKIBASE_LANGUAGE'
     ITEM_REGEX = 'ITEM_REGEX'
+    LOG_FILE = 'LOG_FILE'
+    LOG_FORMAT = 'LOG_FORMAT'
+    PORT = "PORT"
     PROPERTY_REGEX = 'PROPERTY_REGEX'
+    STATIC_DIR = "STATIC_DIR"
+    MEDIAWIKI_API_URL = 'MEDIAWIKI_API_URL'
+    WIKIBASE_LANGUAGE = 'WIKIBASE_LANGUAGE'
+    WIKIDATA_FB_LANG = 'WIKIDATA_FB_LANG'
+    WIKIDATA_LANG = 'WIKIDATA_LANG'
+    WIKIDATA_USER_NAME = 'WIKIDATA_USER_NAME'
