@@ -56,21 +56,21 @@ def route_api_write_claims_to_item(qid):
 
 @APP.route("/api/<prop:pid>", methods=['GET', 'POST'])
 def route_api_get_property(pid):
-    """Return a JSON representation of a property by ID."""
+    """Return JSON representation of a property by PID."""
     prop = get_property(pid)
     return jsonify(prop)
 
 
 @APP.route("/api/<prop:pid>/qualifiers", methods=['GET', 'POST'])
 def route_api_get_allowed_qualifiers_by_pid(pid):
-    """Return the legal qualifiers for the property identified by pid."""
+    """Return JSON represenation of allowed property qualifiers by PID."""
     output = get_allowed_qualifiers_by_pid(pid)
     return jsonify(output)
 
 
 @APP.route("/api/property/qualifiers", methods=['GET', 'POST'])
 def route_api_get_all_qualifier_properties():
-    """Return a JSON representation of all qualifier properties."""
+    """Return JSON represenation of all property qualifiers."""
     output = get_all_qualifier_properties()
     return jsonify(output)
 
@@ -99,6 +99,6 @@ def route_api_get_properties_by_schema(schema_name):
 
 @APP.route("/api/browse/file_format", methods=['GET', 'POST'])
 def route_api_browse_file_format():
-    """ Return a list of all file formats. """
-    format_list = FileFormat.list_formats()
+    """Return a JSON represenation of a list of all file formats."""
+    format_list = get_all_file_formats()
     return jsonify([x.api_dict() for x in format_list])

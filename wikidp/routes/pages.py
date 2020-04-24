@@ -1,4 +1,4 @@
-"""Python functions for all WikiDP page routes."""
+"""Module to hold Web App page routing and parameter handling."""
 import logging
 import os
 
@@ -33,7 +33,7 @@ def route_page_welcome():
 
 @APP.route('/favicon.ico')
 def route_favicon():
-    """Send the favicon from static route."""
+    """Serve the favicon file."""
     return send_from_directory(APP.config['STATIC_DIR'], 'img/favicon.ico',
                                mimetype='image/vnd.microsoft.icon')
 
@@ -99,32 +99,31 @@ def route_item_contribute(qid):
 
 @APP.route("/<item:qid>/checklist/<path:schema>")
 def route_item_checklist_by_schema(qid, schema):
-    """Render property checklist for given item and schema."""
+    """Render the correct item checklist depending on schema."""
     properties = get_checklist_context(qid, schema)
     return render_template('snippets/property_checklist.html', properties=properties)
 
 @APP.errorhandler(400)
 @APP.errorhandler(404)
 def route_page_error__not_found(excep):
-    """Handler for HTTP 400, Bad request and 404 not found."""
+    """Handle 404 resource not found problems."""
     _log_error_message('Not Found: %s', excep)
     return render_template('error.html', message="Page Not Found"), 404
 
 @APP.errorhandler(403)
 def route_page_error__forbidden(excep):
-    """Handler for HTTP 403, Forbidden."""
+    """Handle HTTP 403, Forbidden."""
     _log_error_message('Forbidden: %s', excep)
     return render_template('error.html', message="You are not authorized to view this page."), 403
 
 @APP.errorhandler(500)
 @APP.errorhandler(Exception)
 def route_page_error__internal_error(excep):
-    """Handler for HTTP 500, Internal Server Error."""
+    """Handle general server errors."""
     _log_error_message('Internal Server Error: %s', excep)
-    return render_template('error.html',
-                           message="Internal Error. Please Help us by reporting"
-                                   "this to our admin team! Thank you."), \
-                           500
+    message = "Internal Error. Please Help us by reporting this to our admin team! Thank you."
+    return render_template('error.html', message=message), 500
+
 
 def _log_error_message(code_type, excep):
     logging.debug(code_type, str(excep))

@@ -1,3 +1,4 @@
+
 #!/usr/bin/python
 # coding=UTF-8
 #
@@ -11,7 +12,7 @@
 #
 # This is a python __init__ script to create the app and import the
 # main package contents
-"""Module for WikiDP application search routes."""
+"""Module to handle web page search functions."""
 from flask import redirect, render_template, request
 from wikidp.config import APP
 from wikidp.controllers import search as search_controller
