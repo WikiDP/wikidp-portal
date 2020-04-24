@@ -2,20 +2,20 @@
 # coding=UTF-8
 #
 # WikiDP Wikidata Portal
-# Copyright (C) 2017
+# Copyright (C) 2020
 # All rights reserved.
 #
 # This code is distributed under the terms of the GNU General Public
 # License, Version 3. See the text file "COPYING" for further details
 # about the terms of this license.
 #
-""" Flask application routes for Wikidata portal. """
+"""Flask application routes for Wikidata portal."""
 import logging
 
 from flask import (
-     json,
-     jsonify,
-     request,
+    json,
+    jsonify,
+    request,
 )
 from wikidataintegrator.wdi_core import (
     WDItemEngine,
@@ -45,14 +45,16 @@ TEMP_LOGIN = WDLogin
 
 
 def load_schema(schema_name):
+    """Load a schema file by name."""
     try:
         with open(SCHEMA_DIRECTORY_PATH+schema_name) as data_file:
             return json.load(data_file)
-    except (Exception, FileNotFoundError):
+    except FileNotFoundError:
         return False
 
 
 def get_schema_properties(schema_name):
+    """Get all of the properties of a particular schema."""
     data = load_schema(schema_name)
     if data is False:
         return False
@@ -76,6 +78,7 @@ def get_schema_properties(schema_name):
 
 
 def get_property_checklist_from_schema(schema_name):
+    """Create a property checklist from a schema."""
     pid_list = get_schema_properties(schema_name)
     if pid_list:
         return get_property_details_by_pid_list(pid_list)
@@ -83,13 +86,15 @@ def get_property_checklist_from_schema(schema_name):
 
 
 def write_claims_to_item(qid):
+    """Write new claims to an item."""
     logging.debug("Processing user POST request.")
     # TODO: Pass this in this dictionary
     json_data_claims = request.get_json()
     # Build statements
     data = [
         build_statement(json_data.get('pid'), json_data.get('value'),
-                        json_data.get('type'), json_data.get('qualifiers'))
+                        json_data.get('type'), json_data.get('qualifiers'),
+                        json_data.get('references'))
         for json_data in json_data_claims
     ]
     # Get wikidata item

@@ -2,7 +2,7 @@
 # coding=UTF-8
 #
 # WikiDP Wikidata Portal
-# Copyright (C) 2017
+# Copyright (C) 2020
 # All rights reserved.
 #
 # This code is distributed under the terms of the GNU General Public
@@ -10,6 +10,7 @@
 # about the terms of this license.
 #
 """Constants used across BitCurator modules.
+
 These need to map to the names used in the default config file, but better
 than multiple hardcoded strings in code.
 """
@@ -39,8 +40,9 @@ DEFAULT_UI_LANGUAGES = [
 ]
 
 
+# pylint: disable=R0903
 class ConfKey:
-    """Config key string constants"""
+    """Config key string constants."""
     ITEM_REGEX = 'ITEM_REGEX'
     LOG_FILE = 'LOG_FILE'
     LOG_FORMAT = 'LOG_FORMAT'

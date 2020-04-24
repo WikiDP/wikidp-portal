@@ -2,7 +2,7 @@
 # coding=UTF-8
 #
 # WikiDP Wikidata Portal
-# Copyright (C) 2019
+# Copyright (C) 2020
 # All rights reserved.
 #
 # This code is distributed under the terms of the GNU General Public
@@ -30,57 +30,61 @@ from wikidp.utils import (
 
 @APP.route("/api/")
 def route_api_welcome():
-    """Landing Page API index"""
+    """Landing Page API index."""
     return 'Welcome to the WikiDP API'
 
 
 @APP.route("/api/<item:qid>", methods=['GET', 'POST'])
 def route_api_get_item(qid):
-    """User posts a item-id and returns json of (id, label, desc, aliases) ."""
+    """User posts a item-id and returns json of (id, label, desc, aliases)."""
     item = item_detail_parse(qid, with_claims=True)
     return jsonify(item)
 
 
 @APP.route("/api/<item:qid>/summary", methods=['GET', 'POST'])
 def route_api_get_item_summary(qid):
-    """User posts a item-id and returns json of (id, label, desc, aliases) ."""
+    """User posts a item-id and returns json of (id, label, desc, aliases)."""
     item = item_detail_parse(qid, with_claims=False)
     return jsonify(item)
 
 
 @APP.route("/api/<item:qid>/claims/write", methods=['POST'])
 def route_api_write_claims_to_item(qid):
-    """ User posts a JSON object of claims to contribute to an item"""
+    """User posts a JSON object of claims to contribute to an item."""
     return write_claims_to_item(qid)
 
 
 @APP.route("/api/<prop:pid>", methods=['GET', 'POST'])
 def route_api_get_property(pid):
+    """Return JSON representation of a property by PID."""
     prop = get_property(pid)
     return jsonify(prop)
 
 
 @APP.route("/api/<prop:pid>/qualifiers", methods=['GET', 'POST'])
 def route_api_get_allowed_qualifiers_by_pid(pid):
+    """Return JSON representation of allowed property qualifiers by PID."""
     output = get_allowed_qualifiers_by_pid(pid)
     return jsonify(output)
 
 
 @APP.route("/api/property/qualifiers", methods=['GET', 'POST'])
 def route_api_get_all_qualifier_properties():
+    """Return JSON representation of all property qualifiers."""
     output = get_all_qualifier_properties()
     return jsonify(output)
 
 
 @APP.route("/api/language/", methods=['GET', 'POST'])
 def route_api_get_all_languages():
+    """Return JSON representation of all supported languages."""
     output = get_all_languages()
     return jsonify(output)
 
 
 @APP.route("/api/search/<search_string>", methods=['GET', 'POST'])
 def route_api_search_item_by_string(search_string):
-    """Post string, returns list of json of (id, label, desc, aliases) ."""
+    """Post string, returns list of json of (id, label, desc, aliases)."""
     _string = search_string.strip()
     output = search_result_list(_string)
     return jsonify(output)
@@ -88,11 +92,13 @@ def route_api_search_item_by_string(search_string):
 
 @APP.route("/api/schema/<path:schema_name>/properties")
 def route_api_get_properties_by_schema(schema_name):
+    """ Return a JSON representation of properties from a particular schema. """
     prop_list = get_property_checklist_from_schema(schema_name)
     return jsonify(prop_list)
 
 
 @APP.route("/api/browse/file_format", methods=['GET', 'POST'])
 def route_api_browse_file_format():
+    """Return a JSON representation of a list of all file formats."""
     format_list = get_all_file_formats()
     return jsonify([x.api_dict() for x in format_list])

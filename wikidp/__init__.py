@@ -2,7 +2,7 @@
 # coding=UTF-8
 #
 # WikiDP Wikidata Portal
-# Copyright (C) 2017
+# Copyright (C) 2020
 # All rights reserved.
 #
 # This code is distributed under the terms of the GNU General Public
@@ -15,8 +15,9 @@
 import logging
 
 from wikidp.config import APP
-from wikidp import routes
-
+from . import (
+    routes,
+)
 if __name__ == "__main__":
     logging.debug("Importing %s", routes.__name__)
     logging.debug("Running Flask App on Port %s", APP.config.get('PORT'))

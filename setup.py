@@ -1,8 +1,8 @@
 #!/usr/bin/python
 # coding=UTF-8
 #
-# BitCurator Access Webtools (Disk Image Access for the Web)
-# Copyright (C) 2014 - 2016
+# WikiDP Wikidata Portal
+# Copyright (C) 2020
 # All rights reserved.
 #
 # This code is distributed under the terms of the GNU General Public
