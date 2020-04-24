@@ -10,6 +10,7 @@
 # about the terms of this license.
 #
 """Constants used across BitCurator modules.
+
 These need to map to the names used in the default config file, but better
 than multiple hardcoded strings in code.
 """
@@ -39,9 +40,10 @@ DEFAULT_UI_LANGUAGES = [
     ("lb", "Lëtzebuergesch (Luxembourgish)")
 ]
 
-
+# pylint: disable=R0903
 class ConfKey():
-    """Config key string constants"""
+    """Config key string constants."""
+
     LOG_FORMAT = 'LOG_FORMAT'
     LOG_FILE = 'LOG_FILE'
     WIKIDATA_LANG = 'WIKIDATA_LANG'

@@ -1,10 +1,24 @@
+#!/usr/bin/python
+# coding=UTF-8
+#
+# WikiDP Wikidata Portal
+# Copyright (C) 2017
+# All rights reserved.
+#
+# This code is distributed under the terms of the GNU General Public
+# License, Version 3. See the text file "COPYING" for further details
+# about the terms of this license.
+#
+# This is a python __init__ script to create the app and import the
+# main package contents
 """
-Collection of sparql queries and related functions turned into python functions
-Note: Remove any comments from queries
+Collection of sparql queries and related functions turned into python functions.
+
+Note: Remove any comments from queries.
 """
 
 PROPERTY_QUERY = """
-    SELECT  (STRAFTER(STR(?property), 'entity/') as ?id) ?property ?propertyType ?propertyLabel 
+    SELECT  (STRAFTER(STR(?property), 'entity/') as ?id) ?property ?propertyType ?propertyLabel
     ?propertyDescription ?propertyAltLabel (STRAFTER(STR(?propertyType), '#') as ?value_type) ?formatter_url
     WHERE {
     VALUES (?property) { $values }
@@ -18,7 +32,7 @@ PROPERTY_QUERY = """
 """
 
 ALL_QUALIFIER_PROPERTIES = """
-    SELECT (STRAFTER(STR(?property), 'entity/') as ?id) ?property ?propertyType ?propertyLabel 
+    SELECT (STRAFTER(STR(?property), 'entity/') as ?id) ?property ?propertyType ?propertyLabel
     ?propertyDescription ?propertyAltLabel (STRAFTER(STR(?propertyType), '#') as ?value_type)
     WHERE {
       ?property wikibase:propertyType ?propertyType .
@@ -30,7 +44,7 @@ ALL_QUALIFIER_PROPERTIES = """
 
 PROPERTY_ALLOWED_QUALIFIERS = """
     SELECT (STRAFTER(STR(?property), 'entity/') as ?id) ?property ?propertyType ?propertyLabel  ?propertyAltLabel
-    (?propertyLabel as ?label) ?propertyDescription (?propertyDescription as ?description) 
+    (?propertyLabel as ?label) ?propertyDescription (?propertyDescription as ?description)
     (STRAFTER(STR(?propertyType), '#') as ?value_type)
     WHERE {
         VALUES (?main_property) { $values }
