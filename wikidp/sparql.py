@@ -12,8 +12,9 @@
 # This is a python __init__ script to create the app and import the
 # main package contents
 """
-Collection of sparql queries and related functions turned into python functions
-Note: Remove any comments from queries
+Collection of sparql queries and related functions turned into python functions.
+
+Note: Remove any comments from queries.
 """
 
 PROPERTY_QUERY = """

@@ -11,12 +11,12 @@
 #
 # This is a python __init__ script to create the app and import the
 # main package contents
-""" Module to hold all WikiDataIntegrator routines for dependency management. """
+"""Module to hold all WikiDataIntegrator routines for dependency management."""
 import logging
 from wikidataintegrator.wdi_core import WDItemEngine
 
 def process_query_string(query):
-    """ Use WikiDataIntegrator Engine to process a SPARQL Query. """
+    """Use WikiDataIntegrator Engine to process a SPARQL Query."""
     result = WDItemEngine.execute_sparql_query(query)
     bindings = result['results'].get('bindings')
     return _format_wikidata_bindings(bindings)
@@ -26,7 +26,8 @@ def _format_wikidata_bindings(bindings):
 
 def get_item_json(qid):
     """
-    Get item json dictionary from qid
+    Get item json dictionary from qid.
+
     Args:
         qid (str): Wikidata Identifier, ex: "Q1234"
 

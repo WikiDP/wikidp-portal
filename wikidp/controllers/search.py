@@ -32,6 +32,7 @@ from wikidp.utils import (
 def get_search_result_context(search_string):
     """
     Get search results from a substring.
+
     Args:
         search_string (str):
 
@@ -58,9 +59,10 @@ def get_search_result_context(search_string):
 
 def search_result_list(string):
     """
-    Use wikidataintegrator to generate a list of similar items based on a
-    text search and returns a list of (qid, Label, description, aliases)
-    dictionaries
+    Use wikidataintegrator to generate a list of similar items.
+
+    This is based on a text search and returns a list of
+    (qid, Label, description, aliases) dictionaries.
     """
     result_qid_list = WDItemEngine.get_wd_search_results(string, language=LANG)
     output = []
@@ -72,7 +74,7 @@ def search_result_list(string):
 
 
 def get_search_by_puid_context(puid):
-    """ Perform an item search by PUID. """
+    """Perform an item search by PUID."""
     new_puid = puid.replace('_', '/')
     logging.debug("Searching for PUID: %s", new_puid)
     results = PuidSearchResult.search_puid(new_puid, lang=LANG)

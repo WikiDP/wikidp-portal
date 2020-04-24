@@ -1,4 +1,4 @@
-""" Python functions for all WikiDP page routes. """
+"""Python functions for all WikiDP page routes."""
 import logging
 import os
 
@@ -28,7 +28,7 @@ APP.register_blueprint(MWOAUTH.bp)
 
 @APP.route("/")
 def route_page_welcome():
-    """Landing Page for first time"""
+    """Landing Page for first time."""
     return render_template('welcome.html')
 
 @APP.route('/favicon.ico')
@@ -39,17 +39,17 @@ def route_favicon():
 
 @APP.route("/about")
 def route_page_about():
-    """Rendering the about page"""
+    """Render the about page."""
     return render_template('about.html')
 
 @APP.route("/reports")
 def route_page_reports():
-    """Rendering the reports page"""
+    """Render the reports page."""
     return render_template('reports.html')
 
 @APP.route("/profile")
 def profile():
-    """ Flask OAuth login. """
+    """Flask OAuth login."""
     logging.debug("getting user")
     username = MWOAUTH.get_current_user(True)
     identity = None
@@ -59,25 +59,25 @@ def profile():
 
 @APP.route("/unauthorized")
 def route_page_unauthorized():
-    """Displays a 403 error page."""
+    """Display a 403 error page."""
     return abort(403)
 
 
 @APP.route("/error")
 def route_page_error():
-    """Displays a 500 error page."""
+    """Display a 500 error page."""
     return abort(500)
 
 
 @APP.route("/<item:qid>")
 def route_page_selected_item(qid):
-    """If the item ID is already known, the user can enter in the url"""
+    """If the item ID is already known, the user can enter in the url."""
     return redirect('/'+qid+'/preview')
 
 
 @APP.route("/<item:qid>/preview")
 def route_item_preview(qid):
-    """If the item ID is already known, the user can enter in the url"""
+    """If the item ID is already known, the user can enter in the url."""
     selected_item, options, schemas = get_item_context(qid, with_claims=True)
     if selected_item:
         return render_template('item_preview.html', item=selected_item,
@@ -88,7 +88,7 @@ def route_item_preview(qid):
 
 @APP.route("/<item:qid>/contribute")
 def route_item_contribute(qid):
-    """Handles a user's contributed statements."""
+    """Handle a user's contributed statements."""
     selected_item, options, schemas = get_item_context(qid, with_claims=False)
     if selected_item:
         return render_template('item_contribute.html', item=selected_item,
@@ -99,27 +99,27 @@ def route_item_contribute(qid):
 
 @APP.route("/<item:qid>/checklist/<path:schema>")
 def route_item_checklist_by_schema(qid, schema):
-    """ Render property checklist for given item and schema. """
+    """Render property checklist for given item and schema."""
     properties = get_checklist_context(qid, schema)
     return render_template('snippets/property_checklist.html', properties=properties)
 
 @APP.errorhandler(400)
 @APP.errorhandler(404)
 def route_page_error__not_found(excep):
-    """ Handler for HTTP 400, Bad request and 404 not found. """
+    """Handler for HTTP 400, Bad request and 404 not found."""
     _log_error_message('Not Found: %s', excep)
     return render_template('error.html', message="Page Not Found"), 404
 
 @APP.errorhandler(403)
 def route_page_error__forbidden(excep):
-    """ Handler for HTTP 403, Forbidden. """
+    """Handler for HTTP 403, Forbidden."""
     _log_error_message('Forbidden: %s', excep)
     return render_template('error.html', message="You are not authorized to view this page."), 403
 
 @APP.errorhandler(500)
 @APP.errorhandler(Exception)
 def route_page_error__internal_error(excep):
-    """ Handler for HTTP 500, Internal Server Error. """
+    """Handler for HTTP 500, Internal Server Error."""
     _log_error_message('Internal Server Error: %s', excep)
     return render_template('error.html',
                            message="Internal Error. Please Help us by reporting"
