@@ -14,11 +14,11 @@ from flask import jsonify
 
 from wikidp.config import APP
 from wikidp.controllers.api import (
-    get_all_file_formats,
     get_property_checklist_from_schema,
     write_claims_to_item,
 )
 from wikidp.controllers.search import search_result_list
+from wikidp.models import FileFormat
 from wikidp.utils import (
     get_all_languages,
     get_all_qualifier_properties,
@@ -30,27 +30,27 @@ from wikidp.utils import (
 
 @APP.route("/api/")
 def route_api_welcome():
-    """Landing Page API index"""
+    """Landing Page API index."""
     return 'Welcome to the WikiDP API'
 
 
 @APP.route("/api/<item:qid>", methods=['GET', 'POST'])
 def route_api_get_item(qid):
-    """User posts a item-id and returns json of (id, label, desc, aliases) ."""
+    """User posts a item-id and returns json of (id, label, desc, aliases)."""
     item = item_detail_parse(qid, with_claims=True)
     return jsonify(item)
 
 
 @APP.route("/api/<item:qid>/summary", methods=['GET', 'POST'])
 def route_api_get_item_summary(qid):
-    """User posts a item-id and returns json of (id, label, desc, aliases) ."""
+    """User posts a item-id and returns json of (id, label, desc, aliases)."""
     item = item_detail_parse(qid, with_claims=False)
     return jsonify(item)
 
 
 @APP.route("/api/<item:qid>/claims/write", methods=['POST'])
 def route_api_write_claims_to_item(qid):
-    """ User posts a JSON object of claims to contribute to an item"""
+    """User posts a JSON object of claims to contribute to an item."""
     return write_claims_to_item(qid)
 
 
@@ -77,14 +77,14 @@ def route_api_get_all_qualifier_properties():
 
 @APP.route("/api/language/", methods=['GET', 'POST'])
 def route_api_get_all_languages():
-    """Return JSON representation of all languages."""
+    """Return JSON representation of all supported languages."""
     output = get_all_languages()
     return jsonify(output)
 
 
 @APP.route("/api/search/<search_string>", methods=['GET', 'POST'])
 def route_api_search_item_by_string(search_string):
-    """Post string, returns list of json of (id, label, desc, aliases) ."""
+    """Post string, returns list of json of (id, label, desc, aliases)."""
     _string = search_string.strip()
     output = search_result_list(_string)
     return jsonify(output)
@@ -92,7 +92,7 @@ def route_api_search_item_by_string(search_string):
 
 @APP.route("/api/schema/<path:schema_name>/properties")
 def route_api_get_properties_by_schema(schema_name):
-    """Return JSON representation of all properties from a named schema."""
+    """ Return a JSON representation of all the properties from a particular schema. """
     prop_list = get_property_checklist_from_schema(schema_name)
     return jsonify(prop_list)
 

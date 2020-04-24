@@ -9,17 +9,16 @@
 # License, Version 3. See the text file "COPYING" for further details
 # about the terms of this license.
 #
-""" Flask application routes for Wikidata portal. """
+"""Flask application routes for Wikidata portal."""
 import logging
 
 from flask import (
-     json,
-     jsonify,
-     request,
+    json,
+    jsonify,
+    request,
 )
 import pywikibot
 
-from wikidp.models import FileFormat
 from wikidp.utils import (
     get_pid_from_string,
     get_property_details_by_pid_list,
@@ -34,14 +33,16 @@ SCHEMA_DIRECTORY_PATH = 'wikidp/schemas/'
 
 
 def load_schema(schema_name):
+    """Load a schema file by name."""
     try:
         with open(SCHEMA_DIRECTORY_PATH+schema_name) as data_file:
             return json.load(data_file)
-    except (Exception, FileNotFoundError):
+    except FileNotFoundError:
         return False
 
 
 def get_schema_properties(schema_name):
+    """Get all of the properties of a particular schema."""
     data = load_schema(schema_name)
     if data is False:
         return False
@@ -64,6 +65,7 @@ def get_schema_properties(schema_name):
 
 
 def get_property_checklist_from_schema(schema_name):
+    """Create a property checklist from a schema."""
     pid_list = get_schema_properties(schema_name)
     if pid_list:
         return get_property_details_by_pid_list(pid_list)
@@ -71,6 +73,7 @@ def get_property_checklist_from_schema(schema_name):
 
 
 def write_claims_to_item(qid):
+    """Writing new claims to an item."""
     logging.debug("Processing user POST request.")
     user_claims = request.get_json()
     successful_claims = []
@@ -95,27 +98,30 @@ def write_claims_to_item(qid):
 
 
 def get_target_by_type(value_type, value):
+    """Return the correct target by value_type."""
     if value_type == 'WikibaseItem':
         return pywikibot.ItemPage(REPO, value)
     # elif data_type == 'Coordinate'
     return value
 
 
+# pylint: disable=R0913
 def write_claim(item, prop_string, value, data_type, qualifiers, meta=False):
-    """Write a claim to WikiData.
-    TODO: Use wikidataintegrator2 here and account for qualifiers and references
+    """
+    Write a claim to WikiData.
+
+    TODO: Use wikidataintegrator2 here and account for qualifiers and references.
     Args:
-        item (pywikibot.ItemPage): Wikidata Item Model
-        prop_string (str): Wikidata Property Identifier [ex. 'P1234']
-        value (str): Value matching accepted property
-        data_type: (could be other data types)
-        qualifiers (list): list of data about qualifier claims
-        meta (dict, optional): Contains information about qualifiers/references/summaries
+        item (pywikibot.ItemPage): Wikidata Item Model.
+        prop_string (str): Wikidata Property Identifier [ex. 'P1234'].
+        value (str): Value matching accepted property.
+        data_type: (could be other data types).
+        qualifiers (list): list of data about qualifier claims.
+        meta (dict, optional): Contains information about qualifiers/references/summaries.
     Returns:
-        bool: True if successful, False otherwise
+        bool: True if successful, False otherwise.
     """
     try:
-        # TODO: Account for all dataTypes
         claim = pywikibot.Claim(REPO, prop_string)
         target = get_target_by_type(data_type, value)
         claim.setTarget(target)
@@ -127,14 +133,8 @@ def write_claim(item, prop_string, value, data_type, qualifiers, meta=False):
             claim.addQualifier(qualifier, summary=u'Adding a qualifier.')
 
         if meta:
-            # TODO: Add Ability to include references, summaries, and qualifiers
             pass
         item.addClaim(claim, summary=u'Adding claim')
         return True
-    except (TypeError, Exception):
+    except TypeError:
         return False
-
-
-def get_all_file_formats():
-    formats = FileFormat.list_formats()
-    return formats

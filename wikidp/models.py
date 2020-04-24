@@ -19,7 +19,9 @@ from wikidp.const import LANG
 
 class FileFormat():
     """Encapsulates a file format plus wikidata query magic for formats."""
+
     def __init__(self, qid, name, media_types=None):
+        """Constructor for a FileFormat instance."""
         self._qid = qid
         self._name = name
         self._media_types = media_types if media_types else []
@@ -40,6 +42,7 @@ class FileFormat():
         return self._media_types
 
     def __str__(self):
+        """Return a string reprsentation of the format instance."""
         _media_types = '|'.join(self.media_types)
         return "FileFormat : [qid={}, name={}, media_types=[{}]]".format(self.qid,
                                                                          self.name,
@@ -51,7 +54,7 @@ class FileFormat():
 
     @classmethod
     def list_formats(cls, lang=None):
-        """Queries Wikidata for formats and returns a list of FileFormat instances."""
+        """Query Wikidata for formats and returns a list of FileFormat instances."""
         if not lang:
             lang = LANG
         query = [
@@ -72,10 +75,12 @@ class FileFormat():
                    for x in results_json['results']['bindings']]
         return results
 
-
 class PuidSearchResult():
     """Encapsulates a file format plus wikidata query magic for formats."""
+
+    # pylint: disable=R0913
     def __init__(self, wd_format, label, description, mime, puid):
+        """Constructor for a PUID search result instance."""
         self._format = wd_format
         self._label = label
         self._description = description
@@ -108,12 +113,13 @@ class PuidSearchResult():
         return self._puid
 
     def __str__(self):
+        """Return a string reprsentation of a PUID result."""
         return "PuidSearchResult : [format={}, label={}, MIME={}, puid={}]"\
             .format(self.format, self.label, self.mime, self.puid)
 
     @classmethod
     def search_puid(cls, puid, lang="en"):
-        """Queries Wikidata for formats and returns a list of FileFormat instances."""
+        """Query Wikidata for formats and returns a list of FileFormat instances."""
         query = cls._concat_query("VALUES ?puid {{ '{}' }}".format(puid), lang)
         results_json = wdi_core.WDItemEngine.execute_sparql_query(query)
         logging.debug(str(results_json))
@@ -121,7 +127,7 @@ class PuidSearchResult():
 
     @classmethod
     def search_mime(cls, mime, lang="en"):
-        """Queries Wikidata for formats and returns a list of FileFormat instances."""
+        """Query Wikidata for formats and returns a list of FileFormat instances."""
         query = cls._concat_query("VALUES ?mime {{ '{}' }}".format(mime), lang)
         results_json = wdi_core.WDItemEngine.execute_sparql_query(query)
         logging.debug(str(results_json))
@@ -150,3 +156,54 @@ class PuidSearchResult():
             x['puid']['value'])
                    for x in results_json['results']['bindings']]
         return results
+
+
+class FileFormatExtSearchResult(PuidSearchResult):
+    """File Format Extension Search Result Model."""
+
+    def __init__(self, wd_id, label, description):
+        """Constructor for a File Format Extension search result instance."""
+        super(FileFormatExtSearchResult, self).__init__(wd_id, label,
+                                                        description, None, None)
+
+    @staticmethod
+    def _build_query(search_string="", lang="en"):
+        query = """
+        SELECT DISTINCT ?format ?formatLabel ?formatDescription ?extension
+        WHERE {
+            ?format wdt:P1195 ?extension.
+            FILTER(CONTAINS(?extension, '<value>' ))
+            SERVICE wikibase:label {
+                bd:serviceParam wikibase:language "[AUTO_LANGUAGE],<lang>".
+            }
+        }
+        """
+        return query.replace('<value>', search_string).replace('<lang>', lang)
+
+    @classmethod
+    def _assemble_results(cls, results_json):
+        results = [
+            cls(x['format'].get('value').replace(
+                'http://www.wikidata.org/entity/', ''),
+                x['formatLabel'].get('value'),
+                x['formatDescription'].get('value'))
+            for x in results_json['results'].get('bindings')
+        ]
+        return results
+
+    @classmethod
+    def search(cls, search_string, lang="en"):
+        """
+        Query Wikidata to get search results.
+
+        Args:
+            search_string (str):
+            lang (str):
+
+        Returns (List[FileFormatExtSearchResult]):
+
+        """
+        query = cls._build_query(search_string.replace('.', "").lower(), lang)
+        results_json = wdi_core.WDItemEngine.execute_sparql_query(query)
+        objects = cls._assemble_results(results_json)
+        return objects

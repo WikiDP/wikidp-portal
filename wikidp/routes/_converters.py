@@ -9,10 +9,10 @@
 # License, Version 3. See the text file "COPYING" for further details
 # about the terms of this license.
 #
-""" Flask application custom url converters for Wikidata portal. """
+"""Flask application custom url converters for Wikidata portal."""
 from werkzeug.routing import BaseConverter
 
-from wikidp import APP
+from wikidp.config import APP
 from wikidp.const import (
     ITEM_REGEX,
     PROPERTY_REGEX,
