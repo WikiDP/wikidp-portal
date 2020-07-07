@@ -18,13 +18,13 @@ import re
 
 from wikidataintegrator.wdi_core import WDItemEngine
 
-from config import APP
-from const import ConfKey
-from models import (
+from wikidp.config import APP
+from wikidp.const import ConfKey
+from wikidp.models import (
     FileFormatExtSearchResult,
     PuidSearchResult,
 )
-from utils import (
+from ..utils import (
     dedupe_by_key,
     item_detail_parse,
 )

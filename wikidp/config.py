@@ -16,7 +16,7 @@ import tempfile
 
 from flask import Flask
 
-from const import ConfKey
+from wikidp.const import ConfKey
 
 
 # Template these values for flexible install

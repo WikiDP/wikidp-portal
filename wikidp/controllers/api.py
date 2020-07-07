@@ -21,14 +21,15 @@ from wikidataintegrator.wdi_core import (
 )
 from wikidataintegrator.wdi_login import WDLogin
 
-from config import APP
-from const import ConfKey
-from models import FileFormat
-from utils import (
+from wikidp.config import APP
+from wikidp.const import ConfKey
+from wikidp.models import FileFormat
+from wikidp.utils import (
     get_pid_from_string,
     get_property_details_by_pid_list,
 )
 
+# pylint: disable=W0511
 # TODO: Account for all dataTypes
 STRING_TO_WD_DATATYPE = {
     "WikibaseItem": WDItemID,
@@ -175,5 +176,11 @@ def wd_datatype(data_type_string, *args, **kwargs):
 
 
 def get_all_file_formats():
+    """
+    Get all File Formats.
+
+    Returns (List[FileFormat]):
+
+    """
     formats = FileFormat.list_formats()
     return formats

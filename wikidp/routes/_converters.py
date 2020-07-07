@@ -12,7 +12,7 @@
 """Flask application custom url converters for Wikidata portal."""
 from werkzeug.routing import BaseConverter
 
-from wikidp import APP
+from wikidp.config import APP
 from wikidp.const import ConfKey
 
 

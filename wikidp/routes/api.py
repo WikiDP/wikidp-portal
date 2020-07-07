@@ -10,11 +10,12 @@
 # about the terms of this license.
 #
 """Flask application api routes for Wikidata portal."""
+import logging
+
 from flask import (
     jsonify,
     request,
 )
-import logging
 
 from wikidp.config import APP
 from wikidp.controllers.api import (

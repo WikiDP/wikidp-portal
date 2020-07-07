@@ -28,9 +28,9 @@ from urllib import request as urllib_request
 
 import validators
 
-from config import APP
-from const import ConfKey
-from sparql import (
+from wikidp.config import APP
+from wikidp.const import ConfKey
+from wikidp.sparql import (
     ALL_LANGUAGES_QUERY,
     ALL_QUALIFIER_PROPERTIES,
     PROPERTY_ALLOWED_QUALIFIERS,
@@ -50,7 +50,7 @@ RequestToken = namedtuple("RequestToken", ['key', 'secret'])
 
 
 class OAuthException(Exception):
-    pass
+    """ OAuth Exception Class """
 
 
 def dedupe_by_key(dict_list, key):

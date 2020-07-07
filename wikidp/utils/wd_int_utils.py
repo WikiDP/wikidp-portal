@@ -15,8 +15,8 @@
 import logging
 from wikidataintegrator.wdi_core import WDItemEngine
 
-from config import APP
-from const import ConfKey
+from wikidp.config import APP
+from wikidp.const import ConfKey
 
 MEDIAWIKI_API_URL = APP.config[ConfKey.MEDIAWIKI_API_URL]
 SPARQL_ENDPOINT_URL = APP.config[ConfKey.SPARQL_ENDPOINT_URL]
