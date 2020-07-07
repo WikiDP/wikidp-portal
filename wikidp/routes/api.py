@@ -10,7 +10,11 @@
 # about the terms of this license.
 #
 """Flask application api routes for Wikidata portal."""
-from flask import jsonify
+from flask import (
+    jsonify,
+    request,
+)
+import logging
 
 from wikidp.config import APP
 from wikidp.controllers.api import (
@@ -51,7 +55,9 @@ def route_api_get_item_summary(qid):
 @APP.route("/api/<item:qid>/claims/write", methods=['POST'])
 def route_api_write_claims_to_item(qid):
     """User posts a JSON object of claims to contribute to an item."""
-    return write_claims_to_item(qid)
+    logging.debug("Processing user POST request.")
+    json_data = request.get_json()
+    return write_claims_to_item(qid, json_data)
 
 
 @APP.route("/api/<prop:pid>", methods=['GET', 'POST'])

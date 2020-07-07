@@ -10,12 +10,9 @@
 # about the terms of this license.
 #
 """Flask application routes for Wikidata portal."""
-import logging
-
 from flask import (
     json,
     jsonify,
-    request,
 )
 from wikidataintegrator.wdi_core import (
     WDItemEngine,
@@ -38,10 +35,28 @@ STRING_TO_WD_DATATYPE = {
     "String": WDString,
 }
 MEDIAWIKI_API_URL = APP.config[ConfKey.MEDIAWIKI_API_URL]
+WIKIDATA_PASSWORD = APP.config[ConfKey.WIKIDATA_PASSWORD]
+WIKIDATA_USER_NAME = APP.config[ConfKey.WIKIDATA_USER_NAME]
 SCHEMA_DIRECTORY_PATH = 'wikidp/schemas/'
-# TODO: Set this up as environment variable
-# TEMP_LOGIN = WDLogin(mediawiki_api_url=MEDIAWIKI_API_URL)
-TEMP_LOGIN = WDLogin
+
+
+def build_login():
+    """
+    Build a WDI Login.
+
+    Notes:
+        TODO: Add params to use OAuth token once configured
+        This is a temporary function to stub where we can thread
+        OAuth through this entry-point when it is configured.
+        Currently, it uses system-wide user/pwd credentials to login just
+        to demonstrate writing behavior.
+
+    Returns (WDLogin):
+
+    """
+    return WDLogin(mediawiki_api_url=MEDIAWIKI_API_URL,
+                   user=WIKIDATA_USER_NAME,
+                   pwd=WIKIDATA_PASSWORD)
 
 
 def load_schema(schema_name):
@@ -85,23 +100,29 @@ def get_property_checklist_from_schema(schema_name):
     return []
 
 
-def write_claims_to_item(qid):
-    """Write new claims to an item."""
-    logging.debug("Processing user POST request.")
-    # TODO: Pass this in this dictionary
-    json_data_claims = request.get_json()
+def write_claims_to_item(qid, json_data):
+    """
+    Write new claims to an item.
+
+    Args:
+        qid (str): Wikidata Identifier
+        json_data (List[Dict]): Data from request
+    """
+
     # Build statements
     data = [
-        build_statement(json_data.get('pid'), json_data.get('value'),
-                        json_data.get('type'), json_data.get('qualifiers'),
-                        json_data.get('references'))
-        for json_data in json_data_claims
+        build_statement(claim_data.get('pid'), claim_data.get('value'),
+                        claim_data.get('type'), claim_data.get('qualifiers'),
+                        claim_data.get('references'))
+        for claim_data in json_data
     ]
     # Get wikidata item
     item = WDItemEngine(wd_item_id=qid, mediawiki_api_url=MEDIAWIKI_API_URL,
                         data=data)
     # Build login and Write to wikidata
-    qid = item.write(TEMP_LOGIN)
+    # TODO: Add params to use request OAuth token from request once configured
+    wd_login = build_login()
+    qid = item.write(wd_login)
 
     return jsonify({
         "message": f"Successfully Contributed {len(data)} "
