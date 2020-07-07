@@ -1,10 +1,10 @@
 setuptools
 flask>=1.1.2
-wikidataintegrator==0.6.0
-lxml==4.5.0
-numpy==1.18.3
-pandas==1.0.3
+wikidataintegrator==0.6.5
+lxml==4.5.1
+numpy==1.19.0
+pandas==1.0.5
 python-dateutil==2.8.1
-flask-mwoauth>=0.4.81
-tqdm==4.45.0
-validators==0.14.3
+flask-mwoauth>=0.4.82
+tqdm==4.47.0
+validators==0.15.0

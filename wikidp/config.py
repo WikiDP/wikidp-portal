@@ -32,6 +32,7 @@ class BaseConfig:
     HOST = HOST
     ITEM_REGEX = r'(Q|q)\d+'
     MEDIAWIKI_API_URL = "https://www.wikidata.org/w/api.php"
+    SPARQL_ENDPOINT_URL = "https://query.wikidata.org/sparql"
     # Bind to PORT if defined, otherwise default to 5000.
     PORT = int(os.environ.get('PORT', 5000))
     PROPERTY_REGEX = r'(P|p)\d+'
@@ -53,6 +54,7 @@ class DevConfig(BaseConfig):
     LOG_FORMAT = '[%(asctime)s %(levelname)-8s %(filename)-15s:%(lineno)-5d ' +\
                  '%(funcName)-30s] %(message)s'
     MEDIAWIKI_API_URL = "https://wikidp.wiki.opencura.com/w/api.php"
+    SPARQL_ENDPOINT_URL = 'https://wikidp.wiki.opencura.com/query/sparql'
 
 
 CONFIGS = {
@@ -63,7 +65,7 @@ CONFIGS = {
 
 def configure_app(app):
     """Grab the environment variable for app config or defaults to dev."""
-    config_name = os.getenv('WIKIDP_CONFIG', 'dev')
+    config_name = os.getenv('WIKIDP_CONFIG', 'default')
     app.config.from_object(CONFIGS[config_name])
     app.config[ConfKey.STATIC_DIR] = os.path.join(app.root_path, 'static')
     if os.getenv('WIKIDP_CONFIG_FILE'):

@@ -19,11 +19,13 @@ from config import APP
 from const import ConfKey
 
 MEDIAWIKI_API_URL = APP.config[ConfKey.MEDIAWIKI_API_URL]
+SPARQL_ENDPOINT_URL = APP.config[ConfKey.SPARQL_ENDPOINT_URL]
 
 
 def process_query_string(query):
     """Use WikiDataIntegrator Engine to process a SPARQL Query."""
-    result = WDItemEngine.execute_sparql_query(query)
+    result = WDItemEngine.execute_sparql_query(query,
+                                               endpoint=SPARQL_ENDPOINT_URL)
     bindings = result['results'].get('bindings')
     return _format_wikidata_bindings(bindings)
 
@@ -43,7 +45,9 @@ def get_item_json(qid):
         Dict: Returned value of WDItemEngine().wd_json_representation
     """
     try:
-        item = WDItemEngine(wd_item_id=qid, mediawiki_api_url=MEDIAWIKI_API_URL)
+        item = WDItemEngine(wd_item_id=qid,
+                            mediawiki_api_url=MEDIAWIKI_API_URL,
+                            sparql_endpoint_url=SPARQL_ENDPOINT_URL)
         return item.wd_json_representation
     except (ValueError, ConnectionAbortedError):
         logging.exception("Exception reading QID: %s", qid)

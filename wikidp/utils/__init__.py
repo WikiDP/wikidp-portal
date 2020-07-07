@@ -206,6 +206,21 @@ def get_wikimedia_image_url_from_title(title):
         return "https://commons.wikimedia.org/wiki/File:"+title
 
 
+def get_value(data, key, default=None):
+    """
+    Get the value from a Data dictionary.
+
+    Args:
+        data (Dict):
+        key (str):
+        default (Optional[Any]):
+
+    Returns:
+
+    """
+    return data.get(key, {}).get('value', default)
+
+
 def parse_wd_response_by_key(item, key, default=None):
     """
     Parse WikiData Response dictionary into a python list of values.
@@ -414,7 +429,7 @@ def format_url_from_property(pid, value):
     """
     value = value.strip()
     prop = get_property(pid)
-    if 'formatter_url' in prop:
+    if prop and 'formatter_url' in prop:
         return prop.get("formatter_url").replace("$1", value)
     return None
 
