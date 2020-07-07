@@ -50,7 +50,7 @@ RequestToken = namedtuple("RequestToken", ['key', 'secret'])
 
 
 class OAuthException(Exception):
-    """ OAuth Exception Class """
+    """ OAuth Exception Class. """
 
 
 def dedupe_by_key(dict_list, key):

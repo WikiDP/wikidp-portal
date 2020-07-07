@@ -43,6 +43,7 @@ DEFAULT_UI_LANGUAGES = [
 # pylint: disable=R0903
 class ConfKey:
     """Config key string constants."""
+
     ITEM_REGEX = 'ITEM_REGEX'
     LOG_FILE = 'LOG_FILE'
     LOG_FORMAT = 'LOG_FORMAT'

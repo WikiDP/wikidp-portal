@@ -49,6 +49,6 @@ def get_item_json(qid):
                             mediawiki_api_url=MEDIAWIKI_API_URL,
                             sparql_endpoint_url=SPARQL_ENDPOINT_URL)
         return item.wd_json_representation
-    except (ValueError, ConnectionAbortedError):
+    except (ValueError, ConnectionAbortedError, KeyError):
         logging.exception("Exception reading QID: %s", qid)
         return None

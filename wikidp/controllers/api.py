@@ -109,7 +109,6 @@ def write_claims_to_item(qid, json_data):
         qid (str): Wikidata Identifier
         json_data (List[Dict]): Data from request
     """
-
     # Build statements
     data = [
         build_statement(claim_data.get('pid'), claim_data.get('value'),
@@ -133,16 +132,18 @@ def write_claims_to_item(qid, json_data):
 
 
 def build_statement(prop, value, data_type, qualifier_data, reference_data):
-    """Build Statement to Write to Wikidata.
+    """
+    Build Statement to Write to Wikidata.
+
     Args:
         prop (str): Wikidata Property Identifier [ex. 'P1234']
         value (str): Value matching accepted property
         data_type (str):
         qualifier_data (List[Dict]): list of data about qualifiers
         reference_data (List[Dict]): list of data about references
+
     Returns (WDBaseDataType):
     """
-
     qualifiers = [
         wd_datatype(qualifier.get('type'), value=qualifier.get('value'),
                     prop_nr=qualifier.get("pid"), is_qualifier=True)

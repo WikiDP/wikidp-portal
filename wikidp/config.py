@@ -27,6 +27,7 @@ TEMP = tempfile.gettempdir()
 # pylint: disable=R0903
 class BaseConfig:
     """Base / default config, no debug logging and short log format."""
+
     CACHE_DIR = os.path.join(TEMP, 'caches')
     DEBUG = False
     HOST = HOST

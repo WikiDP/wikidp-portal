@@ -99,7 +99,7 @@ def route_api_search_item_by_string(search_string):
 
 @APP.route("/api/schema/<path:schema_name>/properties")
 def route_api_get_properties_by_schema(schema_name):
-    """ Return a JSON representation of properties from a particular schema. """
+    """Return a JSON representation of properties from a particular schema."""
     prop_list = get_property_checklist_from_schema(schema_name)
     return jsonify(prop_list)
 

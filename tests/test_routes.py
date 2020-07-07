@@ -79,7 +79,8 @@ def test_route_page_selected_item(client):
     response = client.get('/'+settings.SAMPLE_QID, follow_redirects=True)
     assert response.status_code == 200
     assert bytes(settings.SAMPLE_QID, encoding='utf-8') in response.data
-    response = client.get('/'+settings.SAMPLE_QID_NOT_EXIST, follow_redirects=True)
+    response = client.get('/'+settings.SAMPLE_QID_NOT_EXIST,
+                          follow_redirects=True)
     assert response.status_code == 404
 
 
