@@ -29,7 +29,11 @@ from urllib import request as urllib_request
 import validators
 
 from wikidp.config import APP
-from wikidp.const import ConfKey
+from wikidp.const import (
+    ConfKey,
+    WIKIMEDIA_COMMONS_BASE_URL,
+    WIKIMEDIA_COMMONS_API_URL,
+)
 from wikidp.sparql import (
     ALL_LANGUAGES_QUERY,
     ALL_QUALIFIER_PROPERTIES,
@@ -193,17 +197,18 @@ def get_wikimedia_image_url_from_title(title):
     #    For example, the title of the image for Q267193 [Sublime Text]
     #    is "Скриншот sublime text 2.png"
     title = title.replace(" ", "_")
-    url = ("https://commons.wikimedia.org/w/api.php?action=query&prop"
-           "=imageinfo&iiprop=url&titles=File:{}&format=json").format(title)
+    url_params = "action=query&prop=imageinfo&iiprop=url&" \
+                 f"titles=File:{title}&format=json"
+    url = f"{WIKIMEDIA_COMMONS_API_URL}?{url_params}"
     try:
         url = urllib_request.urlopen(url)
         base = json.loads(url.read().decode())["query"]["pages"]
         # Return just the first item
         for item in base:
             return base[item]["imageinfo"][0]["url"]
-        return "https://commons.wikimedia.org/wiki/File:"+title
     except (UnicodeEncodeError, KeyError):
-        return "https://commons.wikimedia.org/wiki/File:"+title
+        logging.warning("Unable to process Wikimedia image '%s'", title)
+    return f"{WIKIMEDIA_COMMONS_BASE_URL}/wiki/File:{title}"
 
 
 def get_value(data, key, default=None):

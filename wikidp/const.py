@@ -16,6 +16,7 @@ than multiple hardcoded strings in code.
 """
 ENTITY_URL_PATTERN = 'http://www.wikidata.org/entity/$1'
 PROPERTY_REGEX = r'(P|p)\d+'
+PUID_REGEX = r"[x-]?fmt/\d+"
 LANG = 'en'
 FALLBACK_LANG = 'en'
 DEFAULT_UI_LANGUAGES = [
@@ -38,6 +39,8 @@ DEFAULT_UI_LANGUAGES = [
     ("hi", "हिन्दी (Hindi)"),
     ("lb", "Lëtzebuergesch (Luxembourgish)")
 ]
+WIKIMEDIA_COMMONS_BASE_URL = "https://commons.wikimedia.org"
+WIKIMEDIA_COMMONS_API_URL = f"{WIKIMEDIA_COMMONS_BASE_URL}/w/api.php"
 
 
 # pylint: disable=R0903
@@ -57,3 +60,10 @@ class ConfKey:
     WIKIDATA_LANG = 'WIKIDATA_LANG'
     WIKIDATA_PASSWORD = 'WIKIDATA_PASSWORD'
     WIKIDATA_USER_NAME = 'WIKIDATA_USER_NAME'
+
+
+class WDEntityField:
+    """Enum of field names for describing Wikidata Entities."""
+    QID = 'qid'
+    LABEL = 'label'
+    DESCRIPTION = 'description'
