@@ -31,6 +31,7 @@ import validators
 from wikidp.config import APP
 from wikidp.const import (
     ConfKey,
+    WDEntityField,
     WIKIMEDIA_COMMONS_BASE_URL,
     WIKIMEDIA_COMMONS_API_URL,
 )
@@ -275,13 +276,13 @@ def item_detail_parse(qid, with_claims=True):
     if not item:
         return False
     label = parse_wd_response_by_key(item, 'labels', default=f"Item {qid}")
-    aliases = parse_wd_response_by_key(item, 'aliases', default=[])
+    aliases = parse_wd_response_by_key(item, WDEntityField.ALIASES, default=[])
     description = parse_wd_response_by_key(item, 'descriptions', default='')
     output_dict = {
-        'aliases': aliases,
-        'description': description,
-        'label': label,
-        'qid': qid,
+        WDEntityField.ALIASES: aliases,
+        WDEntityField.DESCRIPTION: description,
+        WDEntityField.LABEL: label,
+        WDEntityField.QID: qid,
     }
     if with_claims:
         claim_list = []
@@ -296,8 +297,12 @@ def item_detail_parse(qid, with_claims=True):
             for json_details in claim_dict:
                 val = parse_snak(pid, json_details.get('mainsnak'))
                 if val:
-                    val['references'] = _parse_references(json_details)
-                    val['qualifiers'] = _parse_qualifiers(json_details)
+                    val[WDEntityField.REFERENCES] = _parse_references(
+                        json_details
+                    )
+                    val[WDEntityField.QUALIFIERS] = _parse_qualifiers(
+                        json_details
+                    )
                     value_list.append(val)
                     if val.get('parse_type') == 'external-id':
                         add_to_ex_list = True
@@ -310,19 +315,19 @@ def item_detail_parse(qid, with_claims=True):
                 ex_list.append(parsed_claim)
             else:
                 claim_list.append(parsed_claim)
-        output_dict['external_links'] = ex_list
-        output_dict['claims'] = claim_list
-        output_dict['categories'] = categories
+        output_dict[WDEntityField.EXTERNAL_LINKS] = ex_list
+        output_dict[WDEntityField.CLAIMS] = claim_list
+        output_dict[WDEntityField.CATEGORIES] = categories
     return output_dict
 
 
 def _parse_qualifiers(json_details):
-    qualifier_set = json_details.get('qualifiers')
+    qualifier_set = json_details.get(WDEntityField.QUALIFIERS)
     return _parse_snak_set(qualifier_set)
 
 
 def _parse_references(json_details):
-    reference_list = json_details.get('references')
+    reference_list = json_details.get(WDEntityField.REFERENCES)
     if reference_list:
         reference_set = reference_list[0].get('snaks')
         return _parse_snak_set(reference_set)
@@ -371,7 +376,7 @@ def get_claims_from_json(item_json):
     Returns (Dict[str, Dict]): keys are property id's
 
     """
-    return item_json.get('claims', {})
+    return item_json.get(WDEntityField.CLAIMS, {})
 
 
 # pylint: disable=R0912

@@ -64,6 +64,13 @@ class ConfKey:
 
 class WDEntityField:
     """Enum of field names for describing Wikidata Entities."""
-    QID = 'qid'
+
+    ALIASES = 'aliases'
     LABEL = 'label'
     DESCRIPTION = 'description'
+    QID = 'qid'
+    CLAIMS = 'claims'
+    EXTERNAL_LINKS = 'external_links'
+    CATEGORIES = 'categories'
+    REFERENCES = 'references'
+    QUALIFIERS = 'qualifiers'
