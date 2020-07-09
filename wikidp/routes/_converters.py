@@ -2,7 +2,7 @@
 # coding=UTF-8
 #
 # WikiDP Wikidata Portal
-# Copyright (C) 2017
+# Copyright (C) 2020
 # All rights reserved.
 #
 # This code is distributed under the terms of the GNU General Public
@@ -13,10 +13,11 @@
 from werkzeug.routing import BaseConverter
 
 from wikidp.config import APP
-from wikidp.const import (
-    ITEM_REGEX,
-    PROPERTY_REGEX,
-)
+from wikidp.const import ConfKey
+
+
+ITEM_REGEX = APP.config[ConfKey.ITEM_REGEX]
+PROPERTY_REGEX = APP.config[ConfKey.PROPERTY_REGEX]
 
 
 class WikidataItemConverter(BaseConverter):

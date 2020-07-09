@@ -26,10 +26,12 @@ MWOAUTH = MWOAuth(consumer_key=ORG_TOKEN, consumer_secret=SECRET_TOKEN,
                   user_agent=USER_AGENT, default_return_to="profile")
 APP.register_blueprint(MWOAUTH.bp)
 
+
 @APP.route("/")
 def route_page_welcome():
     """Landing Page for first time."""
     return render_template('welcome.html')
+
 
 @APP.route('/favicon.ico')
 def route_favicon():
@@ -37,15 +39,18 @@ def route_favicon():
     return send_from_directory(APP.config['STATIC_DIR'], 'img/favicon.ico',
                                mimetype='image/vnd.microsoft.icon')
 
+
 @APP.route("/about")
 def route_page_about():
     """Render the about page."""
     return render_template('about.html')
 
+
 @APP.route("/reports")
 def route_page_reports():
     """Render the reports page."""
     return render_template('reports.html')
+
 
 @APP.route("/profile")
 def profile():
@@ -56,6 +61,7 @@ def profile():
     if username is not None:
         identity = MWOAUTH.get_user_identity(False)
     return render_template('profile.html', username=username, identity=identity)
+
 
 @APP.route("/unauthorized")
 def route_page_unauthorized():
@@ -81,7 +87,8 @@ def route_item_preview(qid):
     selected_item, options, schemas = get_item_context(qid, with_claims=True)
     if selected_item:
         return render_template('item_preview.html', item=selected_item,
-                               options=options, schemas=schemas, languages=DEFAULT_UI_LANGUAGES,
+                               options=options, schemas=schemas,
+                               languages=DEFAULT_UI_LANGUAGES,
                                page='preview')
     return abort(404)
 
@@ -92,7 +99,8 @@ def route_item_contribute(qid):
     selected_item, options, schemas = get_item_context(qid, with_claims=False)
     if selected_item:
         return render_template('item_contribute.html', item=selected_item,
-                               options=options, schemas=schemas, languages=DEFAULT_UI_LANGUAGES,
+                               options=options, schemas=schemas,
+                               languages=DEFAULT_UI_LANGUAGES,
                                page='contribute')
     return abort(404)
 
@@ -101,7 +109,9 @@ def route_item_contribute(qid):
 def route_item_checklist_by_schema(qid, schema):
     """Render the correct item checklist depending on schema."""
     properties = get_checklist_context(qid, schema)
-    return render_template('snippets/property_checklist.html', properties=properties)
+    return render_template('snippets/property_checklist.html',
+                           properties=properties)
+
 
 @APP.errorhandler(400)
 @APP.errorhandler(404)
@@ -110,18 +120,22 @@ def route_page_error__not_found(excep):
     _log_error_message('Not Found: %s', excep)
     return render_template('error.html', message="Page Not Found"), 404
 
+
 @APP.errorhandler(403)
 def route_page_error__forbidden(excep):
     """Handle HTTP 403, Forbidden."""
     _log_error_message('Forbidden: %s', excep)
-    return render_template('error.html', message="You are not authorized to view this page."), 403
+    message = "You are not authorized to view this page."
+    return render_template('error.html', message=message), 403
+
 
 @APP.errorhandler(500)
 @APP.errorhandler(Exception)
 def route_page_error__internal_error(excep):
     """Handle general server errors."""
     _log_error_message('Internal Server Error: %s', excep)
-    message = "Internal Error. Please Help us by reporting this to our admin team! Thank you."
+    message = "Internal Error. Please Help us by reporting " \
+              "this to our admin team! Thank you."
     return render_template('error.html', message=message), 500
 
 

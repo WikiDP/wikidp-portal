@@ -3,7 +3,7 @@
 # coding=UTF-8
 #
 # WikiDP Wikidata Portal
-# Copyright (C) 2017
+# Copyright (C) 2020
 # All rights reserved.
 #
 # This code is distributed under the terms of the GNU General Public

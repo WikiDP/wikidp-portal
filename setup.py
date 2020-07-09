@@ -1,8 +1,8 @@
 #!/usr/bin/python
 # coding=UTF-8
 #
-# BitCurator Access Webtools (Disk Image Access for the Web)
-# Copyright (C) 2014 - 2016
+# WikiDP Wikidata Portal
+# Copyright (C) 2020
 # All rights reserved.
 #
 # This code is distributed under the terms of the GNU General Public
@@ -15,15 +15,14 @@ from setuptools import setup, find_packages
 INSTALL_REQUIRES = [
     'setuptools',
     'flask>=0.12.3',
-    'wikidataintegrator==0.4.6',
-    'lxml==4.3.0',
-    'numpy==1.17.5',
-    'pandas==0.24.2',
-    'pywikibot',
+    'wikidataintegrator==0.6.0',
+    'lxml==4.5.0',
+    'numpy==1.18.2',
+    'pandas==1.0.3',
     'python-dateutil==2.8.1',
-    'flask-mwoauth>=0.4.76',
-    'tqdm==4.32.2',
-    'validators==0.12.6'
+    'flask-mwoauth>=0.4.81',
+    'tqdm==4.45.0',
+    'validators==0.14.3'
 ]
 PYTHON_REQUIRES = '>=3.6, <4'
 
@@ -54,7 +53,7 @@ setup(
     description='Digital preservation portal for Wikidata',
     long_description=README_TEXT,
     long_description_content_type='text/markdown',
-    author='Kenny Seals Nutt',
+    author='Kenny Seals-Nutt',
     author_email='',
     maintainer='Carl Wilson',
     maintainer_email='carl@openpreservation.org',

@@ -1,6 +1,7 @@
 $(document).ready(() => {
     // Initialize property checklist based on default schema:
     $('select#schema-select').change(load_property_checklist_by_schema).change();
+    //TODO: Only call qLabel in Prod Config
     $.qLabel.switchLanguage('en');
     $('select#option-select').change(change_item);
 });

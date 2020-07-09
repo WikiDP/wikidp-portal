@@ -2,7 +2,7 @@
 # coding=UTF-8
 #
 # WikiDP Wikidata Portal
-# Copyright (C) 2017
+# Copyright (C) 2020
 # All rights reserved.
 #
 # This code is distributed under the terms of the GNU General Public
@@ -15,6 +15,7 @@ import logging
 from wikidataintegrator import wdi_core
 
 from wikidp.const import LANG
+from wikidp.utils import get_value
 
 
 class FileFormat():
@@ -151,7 +152,7 @@ class PuidSearchResult():
         results = [PuidSearchResult(
             x['format']['value'].replace('http://www.wikidata.org/entity/', ''),
             x['formatLabel']['value'],
-            x['formatDescription']['value'],
+            get_value(x, 'formatDescription', default=''),
             x['mime']['value'] if 'mime' in x else 'unknown',
             x['puid']['value'])
                    for x in results_json['results']['bindings']]
@@ -185,8 +186,8 @@ class FileFormatExtSearchResult(PuidSearchResult):
         results = [
             cls(x['format'].get('value').replace(
                 'http://www.wikidata.org/entity/', ''),
-                x['formatLabel'].get('value'),
-                x['formatDescription'].get('value'))
+                get_value(x, 'formatLabel', default=""),
+                get_value(x, 'formatDescription', default=""))
             for x in results_json['results'].get('bindings')
         ]
         return results
