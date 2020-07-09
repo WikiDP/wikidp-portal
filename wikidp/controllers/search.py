@@ -19,12 +19,16 @@ import re
 from wikidataintegrator.wdi_core import WDItemEngine
 
 from wikidp.config import APP
-from wikidp.const import ConfKey
+from wikidp.const import (
+    ConfKey,
+    PUID_REGEX,
+    WDEntityField,
+)
 from wikidp.models import (
     FileFormatExtSearchResult,
     PuidSearchResult,
 )
-from ..utils import (
+from wikidp.utils import (
     dedupe_by_key,
     item_detail_parse,
 )
@@ -45,20 +49,27 @@ def get_search_result_context(search_string):
     """
     # Check if searching by file extension
     context = [
-        {'qid': res.format, 'label': res.label, 'description': res.description}
+        {
+            WDEntityField.QID: res.format,
+            WDEntityField.LABEL: res.label,
+            WDEntityField.DESCRIPTION: res.description,
+        }
         for res in FileFormatExtSearchResult.search(search_string)
     ]
     # Check if searching with PUID
-    if re.search(r"[x-]?fmt/\d+", search_string) is not None:
+    if re.search(PUID_REGEX, search_string):
         context.extend([
-            {'qid': res.format, 'label': res.label,
-             'description': res.description}
+            {
+                WDEntityField.QID: res.format,
+                WDEntityField.LABEL: res.label,
+                WDEntityField.DESCRIPTION: res.description,
+            }
             for res in PuidSearchResult.search_puid(search_string,
                                                     lang=WIKIDATA_LANG)
         ])
     # Search Wikidata natively
     context.extend(search_result_list(search_string))
-    return dedupe_by_key(context, 'qid')
+    return dedupe_by_key(context, WDEntityField.QID)
 
 
 def search_result_list(search_string):
