@@ -38,8 +38,6 @@ script:
   - pre-commit run --all-files --verbose
   - pytest --cov=wikidp
   - pep257 wikidp setup.py
-  - ./setup.py sdist
-  - twine check dist/*
 
 after_success:
   - coverage xml
