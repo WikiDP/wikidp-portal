@@ -1,14 +1,20 @@
 """Module to hold Web App page routing and parameter handling."""
 import logging
-import os
+from pprint import pprint
+
+import json
+import jsonpickle
 
 from flask import (
     abort,
+    jsonify,
     redirect,
     render_template,
+    request,
     send_from_directory,
 )
-from flask_mwoauth import MWOAuth
+
+from wikidataintegrator import wdi_login
 
 from wikidp.config import APP
 from wikidp.const import DEFAULT_UI_LANGUAGES
@@ -18,15 +24,18 @@ from wikidp.controllers.pages import (
 )
 
 # OAuth stuff
-ORG_TOKEN = os.environ.get('CONSUMER_TOKEN', '')
-SECRET_TOKEN = os.environ.get('SECRET_TOKEN', '')
+# ORG_TOKEN = os.environ.get('CONSUMER_TOKEN', '')
+# SECRET_TOKEN = os.environ.get('SECRET_TOKEN', '')
+# ORG_TOKEN='036a850badea78fd95ff5bb787d930ee'
+# SECRET_TOKEN='d6a9bf0957f007926073c3ec722b6d96f345c746'
+ORG_TOKEN='d587a7b9a0f79f04346dcdaa6e412549'
+SECRET_TOKEN='53f8258da37ef61aa30e31967866cc732e27dd99'
+
 USER_AGENT = 'wikidp-portal/0.0 (https://wikidp.org/portal/; admin@wikidp.org)'
 
-MWOAUTH = MWOAuth(consumer_key=ORG_TOKEN, consumer_secret=SECRET_TOKEN,
-                  user_agent=USER_AGENT, default_return_to="profile")
-APP.register_blueprint(MWOAUTH.bp)
-
-
+# MWOAUTH = MWOAuth(consumer_key=ORG_TOKEN, consumer_secret=SECRET_TOKEN,
+#                   user_agent=USER_AGENT, default_return_to="/profile")
+# APP.register_blueprint(MWOAUTH.bp)
 @APP.route("/")
 def route_page_welcome():
     """Landing Page for first time."""
@@ -51,17 +60,38 @@ def route_page_reports():
     """Render the reports page."""
     return render_template('reports.html')
 
-
-@APP.route("/profile")
+@APP.route("/profile", methods=['POST'])
 def profile():
     """Flask OAuth login."""
-    logging.debug("getting user")
-    username = MWOAUTH.get_current_user(True)
-    identity = None
-    if username is not None:
-        identity = MWOAUTH.get_user_identity(False)
-    return render_template('profile.html', username=username, identity=identity)
+    if request.method == 'POST':
+        pprint(request.json)
+        body = json.loads(request.json)
+        pprint(body)
+        if 'initiate' in body.keys():
+            authentication = wdi_login.WDLogin(consumer_key=ORG_TOKEN,
+                                               consumer_secret=SECRET_TOKEN,
+                                               callback_url=request.url_root + "profile",
+                                               user_agent=USER_AGENT)
+            request.session['authOBJ'] = jsonpickle.encode(authentication)
+            response_data = {
+                'wikimediaURL': authentication.redirect
+            }
+            return jsonify(response_data)
 
+        # parse the url from wikidata for the oauth token and secret
+        if 'url' in body.keys():
+            authentication = jsonpickle.decode(request.session['authOBJ'])
+            authentication.continue_oauth(oauth_callback_data=body['url'].encode("utf-8"))
+            request.session['login'] = jsonpickle.encode(authentication)
+            return jsonify(body)
+
+        # clear the authenitcation if user wants to revoke
+        if 'deauthenticate' in body.keys():
+            request.session['authentication'] = None
+            request.session['login'] = None
+            return jsonify({'deauthenicate': True})
+
+    return render_template('profile.html')
 
 @APP.route("/unauthorized")
 def route_page_unauthorized():
@@ -140,4 +170,4 @@ def route_page_error__internal_error(excep):
 
 
 def _log_error_message(code_type, excep):
-    logging.debug(code_type, str(excep))
+    logging.exception(code_type, excep)

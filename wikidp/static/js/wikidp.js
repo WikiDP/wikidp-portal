@@ -1,8 +1,36 @@
+var oauthController = {
+  initiate: function ($formData, callback, dataType = 'json') {
+    $.ajax({
+      url: '/profile',
+      type: 'POST',
+      data: JSON.stringify({
+        authorization: 'sending',
+        current_path: window.location.pathname,
+        initiate: true
+      }),
+      dataType: dataType,
+      contentType: false,
+      processData: false,
+      success: function (data, textStatus, jqXHR) {
+        console.log(jqXHR)
+        console.log(data)
+        // callback()
+      },
+      // HTTP Error handler
+      error: function (jqXHR, textStatus, errorThrown) {
+        // Log full error to console
+        console.log('Validation Error: ' + textStatus + errorThrown)
+        console.log(jqXHR)
+      }
+    })
+  }
+}
+
 $(document).ready(() => {
   const $pagecontainer = $('div.page-container')
   $('form#navbarSearch').submit(() => $pagecontainer.fadeOut(500))
   $('div.side-icon-div i#searchToggle').click(toggleSearchForm)
-  $('#loginBtn').click(() => { window.location.href = '/profile' })
+  $('#loginBtn').click(() => { oauthController.initiate(null, null) })
   $pagecontainer.fadeIn(500)
 })
 
