@@ -11,6 +11,7 @@ from flask import (
     redirect,
     render_template,
     request,
+    session,
     send_from_directory,
 )
 
@@ -64,15 +65,14 @@ def route_page_reports():
 def profile():
     """Flask OAuth login."""
     if request.method == 'POST':
-        pprint(request.json)
-        body = json.loads(request.json)
-        pprint(body)
+        pprint(request.get_data())
+        body = json.loads(request.get_data())
         if 'initiate' in body.keys():
             authentication = wdi_login.WDLogin(consumer_key=ORG_TOKEN,
                                                consumer_secret=SECRET_TOKEN,
                                                callback_url=request.url_root + "profile",
                                                user_agent=USER_AGENT)
-            request.session['authOBJ'] = jsonpickle.encode(authentication)
+            session['authOBJ'] = jsonpickle.encode(authentication)
             response_data = {
                 'wikimediaURL': authentication.redirect
             }

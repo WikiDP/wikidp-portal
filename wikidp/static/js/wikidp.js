@@ -12,9 +12,7 @@ var oauthController = {
       contentType: false,
       processData: false,
       success: function (data, textStatus, jqXHR) {
-        console.log(jqXHR)
-        console.log(data)
-        // callback()
+        window.location.href = data.data.wikimediaURL
       },
       // HTTP Error handler
       error: function (jqXHR, textStatus, errorThrown) {
