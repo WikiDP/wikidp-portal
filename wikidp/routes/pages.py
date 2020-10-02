@@ -5,7 +5,7 @@ import os
 import json
 import jsonpickle
 
-from mwoauth import ConsumerToken, AccessToken, identify
+from mwoauth import AccessToken
 
 from flask import (
     abort,
@@ -74,6 +74,7 @@ def authenication():
 
 @APP.route("/logout")
 def logout():
+    """Clear out session variables and redirect to profile display,"""
     session.clear()
     return redirect("profile", code=303)
 
