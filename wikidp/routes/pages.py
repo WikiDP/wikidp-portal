@@ -72,6 +72,11 @@ def authenication():
         }
     return jsonify(response_data)
 
+@APP.route("/logout")
+def logout():
+    session.clear()
+    return redirect("profile", code=303)
+
 @APP.route("/profile", methods=['POST', 'GET'])
 def profile():
     """Flask OAuth login."""
@@ -92,18 +97,14 @@ def profile():
         if 'url' in body.keys():
             authentication = jsonpickle.decode(session['authOBJ'])
             authentication.continue_oauth(oauth_callback_data=body['url'].encode("utf-8"))
+            access_token = AccessToken(authentication.s.auth.client.resource_owner_key,
+                                       authentication.s.auth.client.resource_owner_secret)
+            identity = authentication.handshaker.identify(access_token)
+            session["username"]=identity['username']
+            session["userid"]=identity['sub']
             return jsonify(body)
 
-    if not session.get('username'):
-        authentication = jsonpickle.decode(session['login'])
-        access_token = AccessToken(authentication.s.auth.client.resource_owner_key,
-                                   authentication.s.auth.client.resource_owner_secret)
-        consumer_token = ConsumerToken(ORG_TOKEN, SECRET_TOKEN)
-        identity = identify("https://www.mediawiki.org/w/index.php", consumer_token, access_token)
-        session["username"]=identity['username']
-        session["userid"]=identity['sub']
-
-    return render_template('profile.html', username=session['username'])
+    return render_template('profile.html', username=session.get('username', None))
 
 @APP.route("/unauthorized")
 def route_page_unauthorized():
