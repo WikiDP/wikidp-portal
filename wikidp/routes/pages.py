@@ -1,9 +1,11 @@
 """Module to hold Web App page routing and parameter handling."""
 import logging
-from pprint import pprint
+import os
 
 import json
 import jsonpickle
+
+from mwoauth import ConsumerToken, AccessToken, identify
 
 from flask import (
     abort,
@@ -25,12 +27,8 @@ from wikidp.controllers.pages import (
 )
 
 # OAuth stuff
-# ORG_TOKEN = os.environ.get('CONSUMER_TOKEN', '')
-# SECRET_TOKEN = os.environ.get('SECRET_TOKEN', '')
-# ORG_TOKEN='036a850badea78fd95ff5bb787d930ee'
-# SECRET_TOKEN='d6a9bf0957f007926073c3ec722b6d96f345c746'
-ORG_TOKEN='d587a7b9a0f79f04346dcdaa6e412549'
-SECRET_TOKEN='53f8258da37ef61aa30e31967866cc732e27dd99'
+ORG_TOKEN = os.environ.get('CONSUMER_TOKEN', '')
+SECRET_TOKEN = os.environ.get('SECRET_TOKEN', '')
 
 USER_AGENT = 'wikidp-portal/0.0 (https://wikidp.org/portal/; admin@wikidp.org)'
 
@@ -61,11 +59,23 @@ def route_page_reports():
     """Render the reports page."""
     return render_template('reports.html')
 
-@APP.route("/profile", methods=['POST'])
+@APP.route("/auth")
+def authenication():
+    """Returns the authorisation status as JSON."""
+    response_data = {
+        'auth' : False
+    }
+    if session.get('username'):
+        response_data = {
+            'auth' : True,
+            'username' : session['username']
+        }
+    return jsonify(response_data)
+
+@APP.route("/profile", methods=['POST', 'GET'])
 def profile():
     """Flask OAuth login."""
     if request.method == 'POST':
-        pprint(request.get_data())
         body = json.loads(request.get_data())
         if 'initiate' in body.keys():
             authentication = wdi_login.WDLogin(consumer_key=ORG_TOKEN,
@@ -80,18 +90,20 @@ def profile():
 
         # parse the url from wikidata for the oauth token and secret
         if 'url' in body.keys():
-            authentication = jsonpickle.decode(request.session['authOBJ'])
+            authentication = jsonpickle.decode(session['authOBJ'])
             authentication.continue_oauth(oauth_callback_data=body['url'].encode("utf-8"))
-            request.session['login'] = jsonpickle.encode(authentication)
             return jsonify(body)
 
-        # clear the authenitcation if user wants to revoke
-        if 'deauthenticate' in body.keys():
-            request.session['authentication'] = None
-            request.session['login'] = None
-            return jsonify({'deauthenicate': True})
+    if not session.get('username'):
+        authentication = jsonpickle.decode(session['login'])
+        access_token = AccessToken(authentication.s.auth.client.resource_owner_key,
+                                   authentication.s.auth.client.resource_owner_secret)
+        consumer_token = ConsumerToken(ORG_TOKEN, SECRET_TOKEN)
+        identity = identify("https://www.mediawiki.org/w/index.php", consumer_token, access_token)
+        session["username"]=identity['username']
+        session["userid"]=identity['sub']
 
-    return render_template('profile.html')
+    return render_template('profile.html', username=session['username'])
 
 @APP.route("/unauthorized")
 def route_page_unauthorized():
@@ -147,14 +159,14 @@ def route_item_checklist_by_schema(qid, schema):
 @APP.errorhandler(404)
 def route_page_error__not_found(excep):
     """Handle 404 resource not found problems."""
-    _log_error_message('Not Found: %s', excep)
+    logging.exception('Not Found: %s', excep)
     return render_template('error.html', message="Page Not Found"), 404
 
 
 @APP.errorhandler(403)
 def route_page_error__forbidden(excep):
     """Handle HTTP 403, Forbidden."""
-    _log_error_message('Forbidden: %s', excep)
+    logging.exception('Forbidden: %s', excep)
     message = "You are not authorized to view this page."
     return render_template('error.html', message=message), 403
 
@@ -163,11 +175,7 @@ def route_page_error__forbidden(excep):
 @APP.errorhandler(Exception)
 def route_page_error__internal_error(excep):
     """Handle general server errors."""
-    _log_error_message('Internal Server Error: %s', excep)
+    logging.exception('Internal Server Error: %s', excep)
     message = "Internal Error. Please Help us by reporting " \
               "this to our admin team! Thank you."
     return render_template('error.html', message=message), 500
-
-
-def _log_error_message(code_type, excep):
-    logging.exception(code_type, excep)

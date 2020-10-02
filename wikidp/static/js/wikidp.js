@@ -1,5 +1,29 @@
 var oauthController = {
-  initiate: function ($formData, callback, dataType = 'json') {
+  authorized: null,
+  initiate: function () {
+    $.ajax({
+      url: '/auth',
+      type: 'GET',
+      dataType: 'json',
+      contentType: false,
+      processData: false,
+      success: function (data, textStatus, jqXHR) {
+        console.log(data)
+        if (data.auth === false) {
+          oauthController.authorize(null)
+        } else {
+          window.location.href = '/profile'
+        }
+      },
+      // HTTP Error handler
+      error: function (jqXHR, textStatus, errorThrown) {
+        // Log full error to console
+        console.log('Validation Error: ' + textStatus + errorThrown)
+        console.log(jqXHR)
+      }
+    })
+  },
+  authorize: function (callback) {
     $.ajax({
       url: '/profile',
       type: 'POST',
@@ -8,11 +32,33 @@ var oauthController = {
         current_path: window.location.pathname,
         initiate: true
       }),
-      dataType: dataType,
+      dataType: 'json',
       contentType: false,
       processData: false,
       success: function (data, textStatus, jqXHR) {
-        window.location.href = data.data.wikimediaURL
+        console.log(data)
+        window.location.href = data.wikimediaURL
+      },
+      // HTTP Error handler
+      error: function (jqXHR, textStatus, errorThrown) {
+        // Log full error to console
+        console.log('Validation Error: ' + textStatus + errorThrown)
+        console.log(jqXHR)
+      }
+    })
+  },
+  forward: function (callback) {
+    $.ajax({
+      type: 'POST',
+      data: JSON.stringify({
+        url: window.location.pathname + window.location.search
+      }),
+      dataType: 'json',
+      contentType: false,
+      processData: false,
+      success: function (data, textStatus, jqXHR) {
+        oauthController.authorized = true
+        console.log(data)
       },
       // HTTP Error handler
       error: function (jqXHR, textStatus, errorThrown) {
@@ -30,6 +76,10 @@ $(document).ready(() => {
   $('div.side-icon-div i#searchToggle').click(toggleSearchForm)
   $('#loginBtn').click(() => { oauthController.initiate(null, null) })
   $pagecontainer.fadeIn(500)
+  const urlParams = new URLSearchParams(window.location.search)
+  if (urlParams.has('oauth_verifier')) {
+    oauthController.forward(null)
+  }
 })
 
 function toggleSearchForm () {
