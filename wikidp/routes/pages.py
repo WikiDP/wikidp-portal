@@ -61,7 +61,7 @@ def route_page_reports():
 
 @APP.route("/auth")
 def authenication():
-    """Returns the authorisation status as JSON."""
+    """Return the authorisation status as JSON."""
     response_data = {
         'auth' : False
     }
@@ -74,7 +74,7 @@ def authenication():
 
 @APP.route("/logout")
 def logout():
-    """Clear out session variables and redirect to profile display,"""
+    """Clear out session variables and redirect to profile display."""
     session.clear()
     return redirect("profile", code=303)
 
