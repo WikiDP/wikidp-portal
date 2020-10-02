@@ -2,13 +2,22 @@
 import logging
 import os
 
+import json
+import jsonpickle
+
+from mwoauth import AccessToken
+
 from flask import (
     abort,
+    jsonify,
     redirect,
     render_template,
+    request,
+    session,
     send_from_directory,
 )
-from flask_mwoauth import MWOAuth
+
+from wikidataintegrator import wdi_login
 
 from wikidp.config import APP
 from wikidp.const import DEFAULT_UI_LANGUAGES
@@ -20,13 +29,12 @@ from wikidp.controllers.pages import (
 # OAuth stuff
 ORG_TOKEN = os.environ.get('CONSUMER_TOKEN', '')
 SECRET_TOKEN = os.environ.get('SECRET_TOKEN', '')
+
 USER_AGENT = 'wikidp-portal/0.0 (https://wikidp.org/portal/; admin@wikidp.org)'
 
-MWOAUTH = MWOAuth(consumer_key=ORG_TOKEN, consumer_secret=SECRET_TOKEN,
-                  user_agent=USER_AGENT, default_return_to="profile")
-APP.register_blueprint(MWOAUTH.bp)
-
-
+# MWOAUTH = MWOAuth(consumer_key=ORG_TOKEN, consumer_secret=SECRET_TOKEN,
+#                   user_agent=USER_AGENT, default_return_to="/profile")
+# APP.register_blueprint(MWOAUTH.bp)
 @APP.route("/")
 def route_page_welcome():
     """Landing Page for first time."""
@@ -51,17 +59,53 @@ def route_page_reports():
     """Render the reports page."""
     return render_template('reports.html')
 
+@APP.route("/auth")
+def authenication():
+    """Return the authorisation status as JSON."""
+    response_data = {
+        'auth' : False
+    }
+    if session.get('username'):
+        response_data = {
+            'auth' : True,
+            'username' : session['username']
+        }
+    return jsonify(response_data)
 
-@APP.route("/profile")
+@APP.route("/logout")
+def logout():
+    """Clear out session variables and redirect to profile display."""
+    session.clear()
+    return redirect("profile", code=303)
+
+@APP.route("/profile", methods=['POST', 'GET'])
 def profile():
     """Flask OAuth login."""
-    logging.debug("getting user")
-    username = MWOAUTH.get_current_user(True)
-    identity = None
-    if username is not None:
-        identity = MWOAUTH.get_user_identity(False)
-    return render_template('profile.html', username=username, identity=identity)
+    if request.method == 'POST':
+        body = json.loads(request.get_data())
+        if 'initiate' in body.keys():
+            authentication = wdi_login.WDLogin(consumer_key=ORG_TOKEN,
+                                               consumer_secret=SECRET_TOKEN,
+                                               callback_url=request.url_root + "profile",
+                                               user_agent=USER_AGENT)
+            session['authOBJ'] = jsonpickle.encode(authentication)
+            response_data = {
+                'wikimediaURL': authentication.redirect
+            }
+            return jsonify(response_data)
 
+        # parse the url from wikidata for the oauth token and secret
+        if 'url' in body.keys():
+            authentication = jsonpickle.decode(session['authOBJ'])
+            authentication.continue_oauth(oauth_callback_data=body['url'].encode("utf-8"))
+            access_token = AccessToken(authentication.s.auth.client.resource_owner_key,
+                                       authentication.s.auth.client.resource_owner_secret)
+            identity = authentication.handshaker.identify(access_token)
+            session["username"]=identity['username']
+            session["userid"]=identity['sub']
+            return jsonify(body)
+
+    return render_template('profile.html', username=session.get('username', None))
 
 @APP.route("/unauthorized")
 def route_page_unauthorized():
@@ -117,14 +161,14 @@ def route_item_checklist_by_schema(qid, schema):
 @APP.errorhandler(404)
 def route_page_error__not_found(excep):
     """Handle 404 resource not found problems."""
-    _log_error_message('Not Found: %s', excep)
+    logging.exception('Not Found: %s', excep)
     return render_template('error.html', message="Page Not Found"), 404
 
 
 @APP.errorhandler(403)
 def route_page_error__forbidden(excep):
     """Handle HTTP 403, Forbidden."""
-    _log_error_message('Forbidden: %s', excep)
+    logging.exception('Forbidden: %s', excep)
     message = "You are not authorized to view this page."
     return render_template('error.html', message=message), 403
 
@@ -133,11 +177,7 @@ def route_page_error__forbidden(excep):
 @APP.errorhandler(Exception)
 def route_page_error__internal_error(excep):
     """Handle general server errors."""
-    _log_error_message('Internal Server Error: %s', excep)
+    logging.exception('Internal Server Error: %s', excep)
     message = "Internal Error. Please Help us by reporting " \
               "this to our admin team! Thank you."
     return render_template('error.html', message=message), 500
-
-
-def _log_error_message(code_type, excep):
-    logging.debug(code_type, str(excep))
