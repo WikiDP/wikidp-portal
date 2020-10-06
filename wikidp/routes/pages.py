@@ -5,8 +5,6 @@ import os
 import json
 import jsonpickle
 
-from mwoauth import AccessToken
-
 from flask import (
     abort,
     jsonify,
@@ -26,15 +24,6 @@ from wikidp.controllers.pages import (
     get_item_context,
 )
 
-# OAuth stuff
-ORG_TOKEN = os.environ.get('CONSUMER_TOKEN', '')
-SECRET_TOKEN = os.environ.get('SECRET_TOKEN', '')
-
-USER_AGENT = 'wikidp-portal/0.0 (https://wikidp.org/portal/; admin@wikidp.org)'
-
-# MWOAUTH = MWOAuth(consumer_key=ORG_TOKEN, consumer_secret=SECRET_TOKEN,
-#                   user_agent=USER_AGENT, default_return_to="/profile")
-# APP.register_blueprint(MWOAUTH.bp)
 @APP.route("/")
 def route_page_welcome():
     """Landing Page for first time."""
@@ -78,33 +67,8 @@ def logout():
     session.clear()
     return redirect("profile", code=303)
 
-@APP.route("/profile", methods=['POST', 'GET'])
+@APP.route("/profile")
 def profile():
-    """Flask OAuth login."""
-    if request.method == 'POST':
-        body = json.loads(request.get_data())
-        if 'initiate' in body.keys():
-            authentication = wdi_login.WDLogin(consumer_key=ORG_TOKEN,
-                                               consumer_secret=SECRET_TOKEN,
-                                               callback_url=request.url_root + "profile",
-                                               user_agent=USER_AGENT)
-            session['authOBJ'] = jsonpickle.encode(authentication)
-            response_data = {
-                'wikimediaURL': authentication.redirect
-            }
-            return jsonify(response_data)
-
-        # parse the url from wikidata for the oauth token and secret
-        if 'url' in body.keys():
-            authentication = jsonpickle.decode(session['authOBJ'])
-            authentication.continue_oauth(oauth_callback_data=body['url'].encode("utf-8"))
-            access_token = AccessToken(authentication.s.auth.client.resource_owner_key,
-                                       authentication.s.auth.client.resource_owner_secret)
-            identity = authentication.handshaker.identify(access_token)
-            session["username"]=identity['username']
-            session["userid"]=identity['sub']
-            return jsonify(body)
-
     return render_template('profile.html', username=session.get('username', None))
 
 @APP.route("/unauthorized")
