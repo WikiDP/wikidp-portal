@@ -5,4 +5,26 @@
             <input type="text" name="optionList" value="{{options}}"/>
         </form>
     </script>
+  <script
+    id="wikidp-item-options"
+    type="text/template"
+  >
+    <select
+      aria-label="Select an alternative wikidata item option"
+      class="text-medium"
+      id="option-select"
+    >
+      {{#options}}
+        <option
+          class="item-option"
+          data-label="{{ label }}"
+          data-qid="{{ qid }}"
+          title="{{ description }}"
+          value="{{ qid }}"
+        >
+          {{ label }} ({{ qid }})
+        </option>
+      {{/options}}
+    </select>
+  </script>
 {% endraw %}

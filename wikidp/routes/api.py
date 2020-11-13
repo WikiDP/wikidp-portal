@@ -53,6 +53,22 @@ def route_api_get_item_summary(qid):
     return jsonify(item)
 
 
+@APP.route("/api/items", methods=['GET', 'POST'])
+def route_api_get_item_summary_list():
+    """
+    Get a list of Wikidata Item.
+
+    Returns (Response): JSON list with id, label, description, and aliases
+
+    """
+    if request.method == 'GET':
+        qids = request.args.get('qids').split(',')
+    else:
+        qids = request.get_json()
+    items = [item_detail_parse(qid, with_claims=False) for qid in qids]
+    return jsonify(items)
+
+
 @APP.route("/api/<item:qid>/claims/write", methods=['POST'])
 def route_api_write_claims_to_item(qid):
     """User posts a JSON object of claims to contribute to an item."""

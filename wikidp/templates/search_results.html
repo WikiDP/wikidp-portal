@@ -48,23 +48,21 @@
 form.submit();
 })
 }
-	function selectResult(qid){
-		var list = $('li.option-li')
-		var options = []
-		for (i = 0; i < list.length; i++){
-			// console.log($(list[i]).data('qid'), $(list[i]).data('label'))
-			options.push([$(list[i]).data('qid'), $(list[i]).data('label'), $(list[i]).data('description') ])
-		}
-		options = JSON.stringify(options)
-		// console.log(options)
-		// console.log(qid)
-		var form = $('<form action="/preview" method="post">' +
-  						'<input type="text" name="qid" value="' + qid + '" />' +
-  						'<input type="text" name="optionList" '+"value='"+options+"' />" +
-  					'</form>').hide(0);
-		pageTransition(form);
-		// return $.post("/preview", {qid:qid})
-	}
+  const selectResult = (qid) => {
+    const _options = [];
+    $('.option-li').each(function() {
+      _options.push($(this).data('qid'));
+    });
+    const options = JSON.stringify(_options);
+    const formHTML = ```
+      <form action="/preview" method="post">
+        <input type="text" name="qid" value="${qid}" />
+        <input type="text" name="optionList" value=${options} />
+      </form>
+    ```;
+    const $form = $(formHTML).hide(0);
+    pageTransition($form);
+  }
 
 </script>
 {% endblock page_content %}
