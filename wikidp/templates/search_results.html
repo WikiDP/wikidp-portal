@@ -54,12 +54,12 @@ form.submit();
       _options.push($(this).data('qid'));
     });
     const options = JSON.stringify(_options);
-    const formHTML = ```
+    const formHTML = `
       <form action="/preview" method="post">
         <input type="text" name="qid" value="${qid}" />
         <input type="text" name="optionList" value=${options} />
       </form>
-    ```;
+    `;
     const $form = $(formHTML).hide(0);
     pageTransition($form);
   }
