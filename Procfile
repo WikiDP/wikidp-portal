@@ -1,1 +1,1 @@
-web: flask run --port=${PORT}
+web: gunicorn wikidp:APP
