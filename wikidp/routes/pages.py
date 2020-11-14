@@ -32,6 +32,7 @@ SECRET_TOKEN = os.environ.get('SECRET_TOKEN', '')
 
 USER_AGENT = 'wikidp-portal/0.0 (https://wikidp.org/portal/; admin@wikidp.org)'
 
+
 # MWOAUTH = MWOAuth(consumer_key=ORG_TOKEN, consumer_secret=SECRET_TOKEN,
 #                   user_agent=USER_AGENT, default_return_to="/profile")
 # APP.register_blueprint(MWOAUTH.bp)
@@ -59,6 +60,7 @@ def route_page_reports():
     """Render the reports page."""
     return render_template('reports.html')
 
+
 @APP.route("/auth")
 def authenication():
     """Return the authorisation status as JSON."""
@@ -72,11 +74,13 @@ def authenication():
         }
     return jsonify(response_data)
 
+
 @APP.route("/logout")
 def logout():
     """Clear out session variables and redirect to profile display."""
     session.clear()
     return redirect("profile", code=303)
+
 
 @APP.route("/profile", methods=['POST', 'GET'])
 def profile():
@@ -101,11 +105,12 @@ def profile():
             access_token = AccessToken(authentication.s.auth.client.resource_owner_key,
                                        authentication.s.auth.client.resource_owner_secret)
             identity = authentication.handshaker.identify(access_token)
-            session["username"]=identity['username']
-            session["userid"]=identity['sub']
+            session["username"] = identity['username']
+            session["userid"] = identity['sub']
             return jsonify(body)
 
     return render_template('profile.html', username=session.get('username', None))
+
 
 @APP.route("/unauthorized")
 def route_page_unauthorized():

@@ -66,14 +66,26 @@ def load_schema(schema_name):
         with open(SCHEMA_DIRECTORY_PATH+schema_name) as data_file:
             return json.load(data_file)
     except FileNotFoundError:
-        return False
+        return None
 
 
 def get_schema_properties(schema_name):
-    """Get all of the properties of a particular schema."""
+    """
+    Get property constraints of a particular schema.
+
+    Args:
+        schema_name (str): Relative file name of schema.
+
+    Examples:
+        >>> get_schema_properties('file_format_id_pattern')
+        { "P31": {}, "P279": {}, ... }
+
+    Returns (Optional[Dict[str, Dict]]]):
+
+    """
     data = load_schema(schema_name)
-    if data is False:
-        return False
+    if not data:
+        return None
     props = []
     for shape in data.get('shapes', []):
         shape_expression = shape.get('expression')

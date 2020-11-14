@@ -1,4 +1,3 @@
-
 #!/usr/bin/python
 # coding=UTF-8
 #
@@ -20,8 +19,14 @@ from wikidp.controllers import search as search_controller
 
 @APP.route("/search", methods=['POST'])
 def route_process_site_search():
-    """Process a search request into a state-saving url."""
-    return redirect('/search?string='+request.form['userInput'].strip())
+    """
+    Process a search request into a state-saving url.
+
+    Returns (Response):
+
+    """
+    query = request.form['userInput'].strip()
+    return redirect(f'/search?q={query}')
 
 
 @APP.route("/search")
@@ -29,12 +34,17 @@ def route_site_search():
     """
     Display the most likely results of a users search.
 
-    if only one result returned, the user is automatic redirected to preview that item.
+    Notes:
+        if only one result returned,
+        then user is automatic redirected to preview that item.
+
+    Returns (Response):
+
     """
-    search_string = request.args.get('string', default=0, type=str)
+    search_string = request.args.get('q', default='', type=str)
     context = search_controller.get_search_result_context(search_string)
     if len(context) == 1:
-        return redirect('/{}'.format(context[0].get('qid')))
+        return redirect(f'/{context[0]["qid"]}')
     return render_template('search_results.html', options=context)
 
 

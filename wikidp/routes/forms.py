@@ -12,22 +12,48 @@
 # This is a python __init__ script to create the app and import the
 # main package contents
 """Module for application form routes."""
+import json
+
 from flask import (
     redirect,
     request,
 )
+
 from wikidp.config import APP
+
+
+def _get_page_redirect(action):
+    """
+    Get the Redirect with Formatted Deep-linking.
+
+    Args:
+        action (Literal['contribute', 'preview']):
+
+    Returns (Response):
+
+    """
+    qid = request.form['qid']
+    options = ",".join(json.loads(request.form['optionList']))
+    return redirect(f'/{qid}/{action}?qid={qid}&options={options}')
 
 
 @APP.route("/preview", methods=['POST'])
 def route_form_preview_item():
-    """Show a preview of a selected search result."""
-    return redirect('/'+request.form['qid']+'/preview'+'?options='+request.form['optionList'])
+    """
+    Show a preview of a selected search result.
+
+    Returns (Response):
+
+    """
+    return _get_page_redirect('preview')
 
 
 @APP.route("/contribute", methods=['POST'])
 def route_form_contribute_item():
-    """Process contribute page into a state-saving url."""
-    qid = request.form['qid']
-    return redirect('/{qid}/contribute?qid={qid}&options={opts}'
-                    .format(qid=qid, opts=request.form['optionList']))
+    """
+    Process contribute page into a state-saving url.
+
+    Returns (Response):
+
+    """
+    return _get_page_redirect('contribute')
