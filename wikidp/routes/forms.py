@@ -12,11 +12,12 @@
 # This is a python __init__ script to create the app and import the
 # main package contents
 """Module for application form routes."""
+import json
+
 from flask import (
     redirect,
     request,
 )
-import json
 
 from wikidp.config import APP
 
