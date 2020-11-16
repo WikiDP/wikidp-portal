@@ -1,0 +1,19 @@
+{% extends "page.html" %}
+{% block title %}Profile{% endblock %}
+{% block page_content %}
+
+<div class="middle center white" id="content-frame">
+	{% if username  %}
+		<p>You are currently logged in as {{ username }}</p>
+		<a href="logout"><button type="button" name="button">Logout</button></a>
+	{% else %}
+  	<p>You are not currently logged in.</p>
+		<p>Login is carried out via Wikimedia OAuth and you will need an account to continue.</p>
+		<button onclick="oauthController.initiate(null)">Login</button>
+	{% endif %}
+</div>
+
+{% block page_scripts %}
+{% endblock page_scripts %}
+
+{% endblock page_content %}

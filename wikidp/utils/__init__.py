@@ -1,3 +1,18 @@
+#!/usr/bin/python
+# coding=UTF-8
+#
+# WikiDP Wikidata Portal
+# Copyright (C) 2020
+# All rights reserved.
+#
+# This code is distributed under the terms of the GNU General Public
+# License, Version 3. See the text file "COPYING" for further details
+# about the terms of this license.
+#
+# This is a python __init__ script to create the app and import the
+# main package contents
+"""General purpose utilities for wikidp."""
+from collections import namedtuple
 from datetime import datetime
 import json
 import logging
@@ -9,18 +24,16 @@ from os.path import (
 )
 import re
 from string import Template
-
 from urllib import request as urllib_request
 
 import validators
 
-from wikidataintegrator.wdi_core import WDItemEngine
-
+from wikidp.config import APP
 from wikidp.const import (
-    ITEM_REGEX,
-    PROPERTY_REGEX,
-    LANG,
-    FALLBACK_LANG,
+    ConfKey,
+    WDEntityField,
+    WIKIMEDIA_COMMONS_BASE_URL,
+    WIKIMEDIA_COMMONS_API_URL,
 )
 from wikidp.sparql import (
     ALL_LANGUAGES_QUERY,
@@ -29,18 +42,32 @@ from wikidp.sparql import (
     PROPERTY_QUERY,
 )
 
+from . import (
+    wd_int_utils,
+)
+
+ITEM_REGEX = APP.config[ConfKey.ITEM_REGEX]
+PROPERTY_REGEX = APP.config[ConfKey.PROPERTY_REGEX]
+WIKIDATA_FB_LANG = APP.config[ConfKey.WIKIDATA_FB_LANG]
+WIKIDATA_LANG = APP.config[ConfKey.WIKIDATA_LANG]
+
+RequestToken = namedtuple("RequestToken", ['key', 'secret'])
+
+
+class OAuthException(Exception):
+    """OAuth Exception Class."""
+
 
 def dedupe_by_key(dict_list, key):
     """
     Remove duplicates from a list based on matching key's value.
+
     Args:
         dict_list (List[Dict]):
         key (str):
 
     Returns (List[Dict]):
-
     """
-
     output = []
     found_values = set()
     for item in dict_list:
@@ -51,55 +78,51 @@ def dedupe_by_key(dict_list, key):
     return output
 
 
-def flatten_string(_string):
+def _flatten_string(_string):
     return " ".join(_string.split())
 
 
-def file_to_label(filename):
-    output = remove_extension_from_filename(filename)
+def _file_to_label(filename):
+    output = _remove_extension_from_filename(filename)
     return output.replace('_', ' ').title()
 
 
 def get_pid_from_string(input_string):
+    """Parse and return a property id from a string value."""
     regex_search = re.search(PROPERTY_REGEX, input_string)
     return regex_search.group() if regex_search else False
 
 
 def get_qid_from_string(input_string):
+    """Parse and return an item id from a string value."""
     regex_search = re.search(ITEM_REGEX, input_string)
     return regex_search.group() if regex_search else False
 
 
-def entity_id_to_int(entity):
+def _entity_id_to_int(entity):
     return int(entity[1:])
 
 
 def get_property(pid):
+    """Return the first value from a list of properties."""
     prop_response = get_property_details_by_pid_list([pid])
     return prop_response[0] if prop_response else None
 
 
 def convert_list_to_value_string(lst):
     """
-        Arg: lst, ex: ['P31', 'P5', 'P123']
-        Returns: "(wd:P31)(wd:P5)(wd:P123)"
+    Convert a list of values to a string.
+
+    Arg: lst, ex: ['P31', 'P5', 'P123']
+    Returns: "(wd:P31)(wd:P5)(wd:P123)"
     """
     return '(wd:{0})'.format(')(wd:'.join(map(str, lst)))
-
-
-def format_wikidata_bindings(bindings):
-    return [{k: v.get('value') for k, v in res.items()} for res in bindings]
-
-
-def process_query_string(query):
-    result = WDItemEngine.execute_sparql_query(query)
-    bindings = result['results'].get('bindings')
-    return format_wikidata_bindings(bindings)
 
 
 def get_all_languages():
     """
     Get list of all Wikimedia languages from Wikidata.
+
     Returns (List[Dict[str, str]]):
 
     Examples:
@@ -117,31 +140,35 @@ def get_all_languages():
         ]
 
     """
-    query = flatten_string(ALL_LANGUAGES_QUERY)
-    return process_query_string(query)
+    query = _flatten_string(ALL_LANGUAGES_QUERY)
+    return wd_int_utils.process_query_string(query)
 
 
 def get_all_qualifier_properties():
-    query = flatten_string(ALL_QUALIFIER_PROPERTIES)
-    return process_query_string(query)
+    """Return all of the qualifiers for a particular property."""
+    query = _flatten_string(ALL_QUALIFIER_PROPERTIES)
+    return wd_int_utils.process_query_string(query)
 
 
 def get_allowed_qualifiers_by_pid(pid):
+    """Return all legal quailifiers for a partiular property."""
     value = convert_list_to_value_string([pid])
     query = PROPERTY_ALLOWED_QUALIFIERS_TEMPLATE.substitute(values=value)
-    return process_query_string(query)
+    return wd_int_utils.process_query_string(query)
 
 
 def get_property_details_by_pid_list(pid_list):
+    """Return property details from a property id list."""
     values = convert_list_to_value_string(pid_list)
     query = PROPERTY_QUERY_TEMPLATE.substitute(values=values)
-    return process_query_string(query)
+    return wd_int_utils.process_query_string(query)
 
 
 def get_directory_filenames_with_subdirectories(directory_path):
+    """Return a a dictionary of filenames from a directory hierarchy."""
     output = []
     for item in listdir(directory_path):
-        i = {'name': item, 'label': file_to_label(item)}
+        i = {'name': item, 'label': _file_to_label(item)}
         this_path = join(directory_path, item)
         if isfile(this_path):
             i['type'] = 'file'
@@ -152,12 +179,12 @@ def get_directory_filenames_with_subdirectories(directory_path):
     return output
 
 
-def remove_extension_from_filename(filename_string):
+def _remove_extension_from_filename(filename_string):
     return splitext(filename_string)[0]
 
 
 def time_formatter(time):
-    """Converts wikidata's time json to a human readable string"""
+    """Convert wikidata's time json to a human readable string."""
     try:
         formatted_time = datetime.strptime(time, '+%Y-%m-%dT%H:%M:%SZ')
         return formatted_time.strftime("%A, %B %-d, %Y")
@@ -171,28 +198,45 @@ def get_wikimedia_image_url_from_title(title):
     #    For example, the title of the image for Q267193 [Sublime Text]
     #    is "Скриншот sublime text 2.png"
     title = title.replace(" ", "_")
-    url = ("https://commons.wikimedia.org/w/api.php?action=query&prop"
-           "=imageinfo&iiprop=url&titles=File:{}&format=json").format(title)
+    url_params = "action=query&prop=imageinfo&iiprop=url&" \
+                 f"titles=File:{title}&format=json"
+    url = f"{WIKIMEDIA_COMMONS_API_URL}?{url_params}"
     try:
         url = urllib_request.urlopen(url)
         base = json.loads(url.read().decode())["query"]["pages"]
         # Return just the first item
         for item in base:
             return base[item]["imageinfo"][0]["url"]
-        return "https://commons.wikimedia.org/wiki/File:"+title
-    except (UnicodeEncodeError, KeyError, Exception):
-        return "https://commons.wikimedia.org/wiki/File:"+title
+    except (UnicodeEncodeError, KeyError):
+        logging.warning("Unable to process Wikimedia image '%s'", title)
+    return f"{WIKIMEDIA_COMMONS_BASE_URL}/wiki/File:{title}"
+
+
+def get_value(data, key, default=None):
+    """
+    Get the value from a Data dictionary.
+
+    Args:
+        data (Dict):
+        key (str):
+        default (Optional[Any]):
+
+    Returns:
+
+    """
+    return data.get(key, {}).get('value', default)
 
 
 def parse_wd_response_by_key(item, key, default=None):
     """
-    Parse WikiData Response dictionary into a python list of values
-    Args:
-        item (dict): Returned output of using wikidataintegrator's wd_json_representation
-        key (str): Desired key to extract values of from item
-        default (optional): Expected return if value does not exist for fallback language
+    Parse WikiData Response dictionary into a python list of values.
 
-    Returns ([str]): list of values
+    Args:
+        item (dict): output of wikidataintegrator's wd_json_representation
+        key (str): Desired key to extract values of from item
+        default (optional): Fallback return value
+
+    Returns (List[str]):
     """
     value_dict = item.get(key)
     if value_dict:
@@ -207,45 +251,58 @@ def parse_wd_response_by_key(item, key, default=None):
 
 def get_lang(_dict, default=None):
     """
-    Get language value of a dictionary, fallback language if not available
+    Get language value of a dictionary, fallback language if not available.
+
     Args:
         _dict (dict): Dictionary for getting value
-        default (optional): Expected return if value does not exist for fallback language
+        default (optional): Expected return if value does not exist for
+            fallback language
 
     Returns: value of dictionary's language key or default
-
     """
     if not _dict:
-        pass
-    value = _dict.get(LANG)
-    if value:
-        return value
-    return _dict.get(FALLBACK_LANG, default)
+        return default
+    return _dict.get(WIKIDATA_LANG) or _dict.get(WIKIDATA_FB_LANG, default)
 
 
+# pylint: disable=R0914
 def item_detail_parse(qid, with_claims=True):
-    """Uses the JSON representation of wikidataintegrator to parse the item ID specified (qid)
-    and returns a new dictionary of previewing information and a dictionary of property counts"""
-    item = get_item_json(qid)
+    """
+    Get Wikidata information by QID.
+
+    Returns (Dict): overview of key information
+    """
+    item = wd_int_utils.get_item_json(qid)
     if not item:
         return False
-    label = parse_wd_response_by_key(item, 'labels', default="Item {}".format(qid))
-    aliases = parse_wd_response_by_key(item, 'aliases', default=[])
+    label = parse_wd_response_by_key(item, 'labels', default=f"Item {qid}")
+    aliases = parse_wd_response_by_key(item, WDEntityField.ALIASES, default=[])
     description = parse_wd_response_by_key(item, 'descriptions', default='')
-    output_dict = {'qid': qid, 'label': label, 'aliases': aliases, 'description': description}
+    output_dict = {
+        WDEntityField.ALIASES: aliases,
+        WDEntityField.DESCRIPTION: description,
+        WDEntityField.LABEL: label,
+        WDEntityField.QID: qid,
+    }
     if with_claims:
         claim_list = []
         ex_list = []
         categories = []
         claims = get_claims_from_json(item)
-        for pid, claim_dict in sorted(claims.items(), key=lambda x: entity_id_to_int(x[0])):
+        sorted_claims = sorted(claims.items(),
+                               key=lambda x: _entity_id_to_int(x[0]))
+        for pid, claim_dict in sorted_claims:
             value_list = []
             add_to_ex_list = False
             for json_details in claim_dict:
                 val = parse_snak(pid, json_details.get('mainsnak'))
                 if val:
-                    val['references'] = parse_references(json_details)
-                    val['qualifiers'] = parse_qualifiers(json_details)
+                    val[WDEntityField.REFERENCES] = _parse_references(
+                        json_details
+                    )
+                    val[WDEntityField.QUALIFIERS] = _parse_qualifiers(
+                        json_details
+                    )
                     value_list.append(val)
                     if val.get('parse_type') == 'external-id':
                         add_to_ex_list = True
@@ -254,27 +311,30 @@ def item_detail_parse(qid, with_claims=True):
                     elif pid in ['P31', 'P279']:
                         categories.append(val)
             parsed_claim = {'pid': pid, 'values': value_list}
-            ex_list.append(parsed_claim) if add_to_ex_list else claim_list.append(parsed_claim)
-        output_dict['external_links'] = ex_list
-        output_dict['claims'] = claim_list
-        output_dict['categories'] = categories
+            if add_to_ex_list:
+                ex_list.append(parsed_claim)
+            else:
+                claim_list.append(parsed_claim)
+        output_dict[WDEntityField.EXTERNAL_LINKS] = ex_list
+        output_dict[WDEntityField.CLAIMS] = claim_list
+        output_dict[WDEntityField.CATEGORIES] = categories
     return output_dict
 
 
-def parse_qualifiers(json_details):
-    qualifier_set = json_details.get('qualifiers')
-    return parse_snak_set(qualifier_set)
+def _parse_qualifiers(json_details):
+    qualifier_set = json_details.get(WDEntityField.QUALIFIERS)
+    return _parse_snak_set(qualifier_set)
 
 
-def parse_references(json_details):
-    reference_list = json_details.get('references')
+def _parse_references(json_details):
+    reference_list = json_details.get(WDEntityField.REFERENCES)
     if reference_list:
         reference_set = reference_list[0].get('snaks')
-        return parse_snak_set(reference_set)
+        return _parse_snak_set(reference_set)
     return []
 
 
-def parse_snak_set(snak_set):
+def _parse_snak_set(snak_set):
     parsed_snaks = []
     if snak_set:
         for pid, snak_list in snak_set.items():
@@ -288,33 +348,17 @@ def parse_snak_set(snak_set):
     return parsed_snaks
 
 
-def get_item_json(qid):
-    """
-    Get item json dictionary from qid
-    Args:
-        qid (str): Wikidata Identifier, ex: "Q1234"
-
-    Returns:
-        Dict: Returned value of WDItemEngine().wd_json_representation
-    """
-    try:
-        item = WDItemEngine(wd_item_id=qid)
-        return item.wd_json_representation
-    except (ValueError, ConnectionAbortedError, Exception):
-        logging.exception("Exception reading QID: %s", qid)
-        return None
-
-
 def get_item_property_counts(qid):
     """
-    Count the number of values in a claim by property
+    Count the number of values in a claim by property.
+
     Args:
         qid (str): Wikidata Identifier, ex: "Q1234"
 
-    Returns:
-        Dict: {k(str): v(int)} where k is Wikidata Property identifier string and v is count
+    Returns (Dict[str, Dict]): keys are property id's
+
     """
-    selected_item = get_item_json(qid)
+    selected_item = wd_int_utils.get_item_json(qid)
     claims = get_claims_from_json(selected_item)
     counts = {}
     for pid, values in claims.items():
@@ -324,19 +368,20 @@ def get_item_property_counts(qid):
 
 def get_claims_from_json(item_json):
     """
-    Get claim dictionary from WD Item Json Representation
+    Get claim dictionary from WD Item Json Representation.
+
     Args:
-        item_json (dict): Returned value of WDItemEngine().wd_json_representation
+        item_json (dict): see WDItemEngine.wd_json_representation
 
-    Returns:
-        Dictionary of {k:v} where k is property id and v is list of value dictionaries
+    Returns (Dict[str, Dict]): keys are property id's
+
     """
-    return item_json.get('claims', {})
+    return item_json.get(WDEntityField.CLAIMS, {})
 
 
+# pylint: disable=R0912
 def parse_snak(pid, snak):
-    """ Uses the json_details dictionary of a single claim and outputs
-    the parsed data into the output_dict. """
+    """Extract UI-friendly Information from Wikidata Snak."""
     try:
         if snak['snaktype'] == 'novalue' or 'datavalue' not in snak:
             return None
@@ -345,12 +390,14 @@ def parse_snak(pid, snak):
         data_type = snak['datavalue'].get('type')
         data_value = snak['datavalue'].get('value')
 
-        #  In the event the value is an image file name, convert the title to the image's url
+        #  In the event the value is an image file name,
+        #  convert the title to the image's url
         if pid in ["P18", "P154"]:
             val = get_wikimedia_image_url_from_title(data_value)
             parse_type = 'image'
         elif parse_type == 'external-id':
-            val = {'url': format_url_from_property(pid, data_value), 'label': data_value}
+            val = {'url': format_url_from_property(pid, data_value),
+                   'label': data_value}
         elif data_type == 'string':
             val = data_value
             if validators.url(val):
@@ -371,31 +418,38 @@ def parse_snak(pid, snak):
             except ValueError:
                 val = float(num)
         elif data_type == 'monolingualtext':
-            val = '"{}" (language: {})'.format(data_value.get('text', ''),
-                                               data_value.get('language', 'unknown'))
+            val = '"{}" (language: {})'.format(
+                data_value.get('text', ''),
+                data_value.get('language', 'unknown')
+            )
         else:
             val = "Unable To Parse Value {}".format(data_type)
         return {'value': val, 'parse_type': parse_type, 'type': data_type}
-    except (KeyError, Exception):
+    except KeyError:
         logging.exception("Unexpected exception parsing claims.")
         return None
 
 
 def format_url_from_property(pid, value):
-    """Inputs property identifier (P###) for a given url type, looks up that
-    wikidata property id's url format (P1630) and creates a url with the value using the format"""
+    """
+    Input property identifier (P###) for a given url type.
+
+    Looks up that wikidata property id's url format (P1630) and creates a url
+    with the value using the format.
+    """
     value = value.strip()
     prop = get_property(pid)
-    if 'formatter_url' in prop:
+    if prop and 'formatter_url' in prop:
         return prop.get("formatter_url").replace("$1", value)
     return None
 
 
-def create_query_template(_string):
-    flat_str = flatten_string(_string)
+def _create_query_template(_string):
+    flat_str = _flatten_string(_string)
     return Template(flat_str)
 
 
 # Register Template Queries Here
-PROPERTY_QUERY_TEMPLATE = create_query_template(PROPERTY_QUERY)
-PROPERTY_ALLOWED_QUALIFIERS_TEMPLATE = create_query_template(PROPERTY_ALLOWED_QUALIFIERS)
+PROPERTY_QUERY_TEMPLATE = _create_query_template(PROPERTY_QUERY)
+PROPERTY_ALLOWED_QUALIFIERS_TEMPLATE = _create_query_template(
+    PROPERTY_ALLOWED_QUALIFIERS)

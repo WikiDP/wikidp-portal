@@ -2,7 +2,7 @@
 # coding=UTF-8
 #
 # WikiDP Wikidata Portal
-# Copyright (C) 2017
+# Copyright (C) 2020
 # All rights reserved.
 #
 # This code is distributed under the terms of the GNU General Public
@@ -79,7 +79,8 @@ def test_route_page_selected_item(client):
     response = client.get('/'+settings.SAMPLE_QID, follow_redirects=True)
     assert response.status_code == 200
     assert bytes(settings.SAMPLE_QID, encoding='utf-8') in response.data
-    response = client.get('/'+settings.SAMPLE_QID_NOT_EXIST, follow_redirects=True)
+    response = client.get('/'+settings.SAMPLE_QID_NOT_EXIST,
+                          follow_redirects=True)
     assert response.status_code == 404
 
 
@@ -127,22 +128,18 @@ def test_route_item_checklist_by_schema__fake_schema(client):
 # FORMS TEST
 def test_route_form_preview_item(client):
     """Test the client loads the contribute of sample item  """
-    response = client.post('/preview', follow_redirects=True,
-                           data={'qid': 'Q7715973', 'optionList': '[["Q7715973", "TEST ELEMENT", "test description"]]'})
+    data = {'qid': 'Q7715973', 'optionList': '["Q7715973"]'}
+    response = client.post('/preview', follow_redirects=True, data=data)
     assert response.status_code == 200
     assert b'Q7715973' in response.data
-    assert b'TEST ELEMENT' in response.data
-    assert b'test description' in response.data
 
 
 def test_route_form_contribute_item(client):
     """Test the client loads the contribute of sample item  """
-    response = client.post('/contribute', follow_redirects=True,
-                           data={'qid': 'Q7715973', 'optionList': '[["Q7715973", "TEST ELEMENT", "test description"]]'})
+    data = {'qid': 'Q7715973', 'optionList': '["Q7715973"]'}
+    response = client.post('/contribute', follow_redirects=True, data=data)
     assert response.status_code == 200
     assert b'Q7715973' in response.data
-    assert b'TEST ELEMENT' in response.data
-    assert b'test description' in response.data
 
 
 # SEARCH TESTS
@@ -162,14 +159,14 @@ def test_route_process_site_search__by_puid(client):
 
 def test_route_site_search__by_label(client):
     """Test the client loads the contribute of sample item  """
-    response = client.get('/search?string=debian')
+    response = client.get('/search?q=debian')
     assert response.status_code == 200
     assert b'Q7715973' in response.data
 
 
 def test_route_site_search__by_puid(client):
     """Test the client loads the contribute of sample item  """
-    response = client.get('/search?string=fmt/354', follow_redirects=True)
+    response = client.get('/search?q=fmt/354', follow_redirects=True)
     assert response.status_code == 200
     assert b'Q26543628' in response.data
 

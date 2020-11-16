@@ -1,1 +1,1 @@
-web: python wikidp/__init__.py
+web: gunicorn wikidp:APP
