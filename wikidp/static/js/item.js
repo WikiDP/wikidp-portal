@@ -1,5 +1,6 @@
 $(document).ready(() => {
     // Initialize property checklist based on default schema:
+    loadOptionSelector();
     $('select#schema-select').change(load_property_checklist_by_schema).change();
     //TODO: Only call qLabel in Prod Config
     $.qLabel.switchLanguage('en');
@@ -61,18 +62,33 @@ function change_item(event){
 }
 
 
-function render_item_page(item_id, page){
-    let list = $('option.item-option');
-	let options = [];
-	for (let i = 0; i < list.length; i++){
-	    let $item = $(list[i]).data();
-        options.push([
-            $item.qid.replace("'","&#39;"),
-            $item.label.replace("'","&#39;"),
-            $item.description.replace("'","&#39;")
-        ])
-    }
-    options = JSON.stringify(options);
-    let $form = get_template('#wikidp-change-item-form', {qid:item_id, options:options, page:page}).hide(0);
-    pageTransition($form);
+function render_item_page(qid, page){
+  const _options = [];
+  $('option.item-option').each(function() {
+    _options.push($(this).data('qid').replace("'","&#39;"));
+  });
+  const options = JSON.stringify(_options);
+  const ctx = { options, page, qid };
+  const $form = get_template('#wikidp-change-item-form', ctx).hide(0);
+  pageTransition($form);
 }
+
+const get_item_options = () => {
+  const data = JSON.stringify(QID_OPTIONS);
+  return $.ajax({
+    data,
+    dataType: 'json',
+    type: 'POST',
+    contentType: 'application/json',
+    url: '/api/items',
+  });
+}
+
+const loadOptionSelector = async () => {
+  const options = await get_item_options();
+  const ctx = { options };
+  const $html = get_template('#wikidp-item-options',ctx);
+  $html.val(get_page_qid());
+  $html.change(change_item);
+  $('#item-options-container').html($html);
+};

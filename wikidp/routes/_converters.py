@@ -25,7 +25,7 @@ class WikidataItemConverter(BaseConverter):
 
     def __init__(self, url_map):
         """Use default settings with just applied regex."""
-        super(WikidataItemConverter, self).__init__(url_map)
+        super().__init__(url_map)
         self.regex = ITEM_REGEX
 
     def to_python(self, value):
@@ -42,7 +42,7 @@ class WikidataPropertyConverter(BaseConverter):
 
     def __init__(self, url_map):
         """Use default settings with just applied regex."""
-        super(WikidataPropertyConverter, self).__init__(url_map)
+        super().__init__(url_map)
         self.regex = PROPERTY_REGEX
 
     def to_python(self, value):

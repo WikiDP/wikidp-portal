@@ -164,8 +164,7 @@ class FileFormatExtSearchResult(PuidSearchResult):
 
     def __init__(self, wd_id, label, description):
         """Constructor for a File Format Extension search result instance."""
-        super(FileFormatExtSearchResult, self).__init__(wd_id, label,
-                                                        description, None, None)
+        super().__init__(wd_id, label, description, None, None)
 
     @staticmethod
     def _build_query(search_string="", lang="en"):

@@ -16,15 +16,9 @@
     <!-- selected item -->
     <div class="selected-item-div">
         <label class="sidebar-header" for="option-select">selected item</label>
-        <select id="option-select" class="text-medium"  aria-label="Select an alternative wikidata item option">
-            {% for option in options %}
-                <option class="item-option" data-qid="{{option[0]}}" data-label="{{option[1]}}" title="{{option[2]}}"
-                        data-description="{{option[2]}}" value="{{option[0]}}"
-                        {% if option[0] == item.qid %}selected{% endif %}>
-                    {{option[1]}}<span class="select-item-id"> ({{option[0]}})</span>
-                </option>
-            {% endfor %}
-        </select>
+        <div id="item-options-container">
+          <i class="fa fa-spinner fa-spin"></i> Loading
+        </div>
     </div>
     <!-- schema gallery -->
     <div class="schema-gallery-div">
