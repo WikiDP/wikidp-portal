@@ -1,23 +1,14 @@
 """Module to hold Web App page routing and parameter handling."""
 import logging
-import os
-
-import json
-import jsonpickle
-
-from mwoauth import ConsumerToken, AccessToken, identify
 
 from flask import (
     abort,
     jsonify,
     redirect,
     render_template,
-    request,
     session,
     send_from_directory,
 )
-
-from wikidataintegrator import wdi_login
 
 from wikidp.config import APP
 from wikidp.const import DEFAULT_UI_LANGUAGES
@@ -26,15 +17,6 @@ from wikidp.controllers.pages import (
     get_item_context,
 )
 
-# OAuth stuff
-ORG_TOKEN = os.environ.get('CONSUMER_TOKEN', '')
-SECRET_TOKEN = os.environ.get('SECRET_TOKEN', '')
-
-USER_AGENT = 'wikidp-portal/0.0 (https://wikidp.org/portal/; admin@wikidp.org)'
-
-# MWOAUTH = MWOAuth(consumer_key=ORG_TOKEN, consumer_secret=SECRET_TOKEN,
-#                   user_agent=USER_AGENT, default_return_to="/profile")
-# APP.register_blueprint(MWOAUTH.bp)
 @APP.route("/")
 def route_page_welcome():
     """Landing Page for first time."""
@@ -47,7 +29,6 @@ def route_favicon():
     return send_from_directory(APP.config['STATIC_DIR'], 'img/favicon.ico',
                                mimetype='image/vnd.microsoft.icon')
 
-
 @APP.route("/about")
 def route_page_about():
     """Render the about page."""
@@ -59,63 +40,15 @@ def route_page_reports():
     """Render the reports page."""
     return render_template('reports.html')
 
-@APP.route("/auth")
-def authenication():
-    """Returns the authorisation status as JSON."""
-    response_data = {
-        'auth' : False
-    }
-    if session.get('username'):
-        response_data = {
-            'auth' : True,
-            'username' : session['username']
-        }
-    return jsonify(response_data)
-
-@APP.route("/profile", methods=['POST', 'GET'])
-def profile():
-    """Flask OAuth login."""
-    if request.method == 'POST':
-        body = json.loads(request.get_data())
-        if 'initiate' in body.keys():
-            authentication = wdi_login.WDLogin(consumer_key=ORG_TOKEN,
-                                               consumer_secret=SECRET_TOKEN,
-                                               callback_url=request.url_root + "profile",
-                                               user_agent=USER_AGENT)
-            session['authOBJ'] = jsonpickle.encode(authentication)
-            response_data = {
-                'wikimediaURL': authentication.redirect
-            }
-            return jsonify(response_data)
-
-        # parse the url from wikidata for the oauth token and secret
-        if 'url' in body.keys():
-            authentication = jsonpickle.decode(session['authOBJ'])
-            authentication.continue_oauth(oauth_callback_data=body['url'].encode("utf-8"))
-            return jsonify(body)
-
-    if not session.get('username'):
-        authentication = jsonpickle.decode(session['login'])
-        access_token = AccessToken(authentication.s.auth.client.resource_owner_key,
-                                   authentication.s.auth.client.resource_owner_secret)
-        consumer_token = ConsumerToken(ORG_TOKEN, SECRET_TOKEN)
-        identity = identify("https://www.mediawiki.org/w/index.php", consumer_token, access_token)
-        session["username"]=identity['username']
-        session["userid"]=identity['sub']
-
-    return render_template('profile.html', username=session['username'])
-
 @APP.route("/unauthorized")
 def route_page_unauthorized():
     """Display a 403 error page."""
     return abort(403)
 
-
 @APP.route("/error")
 def route_page_error():
     """Display a 500 error page."""
     return abort(500)
-
 
 @APP.route("/<item:qid>")
 def route_page_selected_item(qid):
