@@ -103,7 +103,6 @@ $(document).ready(() => {
   const $pagecontainer = $('div.page-container')
   $('form#navbarSearch').submit(() => $pagecontainer.fadeOut(500))
   $('div.side-icon-div i#searchToggle').click(toggleSearchForm)
-  $('#loginBtn').click(() => { oauthController.initiate(null, null) })
   $pagecontainer.fadeIn(500)
   const urlParams = new URLSearchParams(window.location.search)
   if (urlParams.has('oauth_verifier')) {

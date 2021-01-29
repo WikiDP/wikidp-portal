@@ -10,6 +10,7 @@
 # about the terms of this license.
 #
 """Flask MWOAuth and WikiDataIntegrator come together."""
+import logging
 import os
 
 import json
@@ -34,52 +35,87 @@ CONSUMER_TOKEN = ConsumerToken(os.environ.get('CONSUMER_TOKEN', ''),
 
 USER_AGENT = 'wikidp-portal/0.0 (https://wikidp.org/portal/; admin@wikidp.org)'
 
+@APP.route("/", methods=['POST', 'GET'])
+def route_page_welcome():
+    """Landing Page for first time."""
+    if request.method == 'POST':
+        body = json.loads(request.get_data())
+        # parse the url from wikidata for the oauth token and secret
+        if 'url' in body.keys():
+            if is_authenticated():
+                return jsonify(body)
+
+            wdi_login_obj = get_wdi_login()
+            wdi_login_obj.continue_oauth(oauth_callback_data=body['url'].encode("utf-8"))
+            store_wdi_login(wdi_login_obj)
+            login()
+            return jsonify(body)
+    return render_template('welcome.html')
+
 @APP.route("/profile", methods=['POST', 'GET'])
 def profile():
     """Flask OAuth login."""
+    logging.info("Checking user profile")
     if request.method == 'POST':
+        logging.info("POST so getting data")
         body = json.loads(request.get_data())
         if 'initiate' in body.keys():
-            authentication = wdi_login.WDLogin(consumer_key=CONSUMER_TOKEN.key,
+            wdi_login_obj = wdi_login.WDLogin(consumer_key=CONSUMER_TOKEN.key,
                                                consumer_secret=CONSUMER_TOKEN.secret,
-                                               callback_url=request.url_root + "profile",
+                                               callback_url='oob',
                                                user_agent=USER_AGENT)
-            session['authOBJ'] = jsonpickle.encode(authentication)
+            store_wdi_login(wdi_login_obj)
             response_data = {
-                'wikimediaURL': authentication.redirect
+                'wikimediaURL': wdi_login_obj.redirect
             }
             return jsonify(response_data)
-
-        # parse the url from wikidata for the oauth token and secret
-        if 'url' in body.keys():
-            if session.get("username"):
-                return jsonify(body)
-
-            authentication = jsonpickle.decode(session['authOBJ'])
-            authentication.continue_oauth(oauth_callback_data=body['url'].encode("utf-8"))
-            session['authOBJ'] = jsonpickle.encode(authentication)
-            access_token = AccessToken(
-                authentication.s.auth.client.resource_owner_key,
-                authentication.s.auth.client.resource_owner_secret
-            )
-            identity = identify("https://www.mediawiki.org/w/index.php",
-                                CONSUMER_TOKEN, access_token)
-            session["username"]=identity['username']
-            session["userid"]=identity['sub']
-            return jsonify(body)
     elif request.method == 'GET' and request.args.get('logout'):
-        session.pop('username')
+        logout()
 
     return render_template('profile.html', username=session.get('username', ''))
 
 @APP.route("/auth")
 def authenication():
+    """Simple GET service that returns a tiny dictionary informing the caller
+    as to whether the current session user is authenticated, accompanied by their
+    user name if they are."""
+    is_user_authenticated = is_authenticated()
     response_data = {
-        'auth' : False
+        'auth' : is_user_authenticated,
+        'username' : session.get('username', '')
     }
-    if session.get('username'):
-        response_data = {
-            'auth' : True,
-            'username' : session['username']
-        }
     return jsonify(response_data)
+
+def identify_user():
+    """Return the user identity object obtained from the session WDI login."""
+    # Get the WDI login object
+    wdi_login_obj = get_wdi_login()
+    access_token = AccessToken(
+        wdi_login_obj.s.auth.client.resource_owner_key,
+        wdi_login_obj.s.auth.client.resource_owner_secret
+    )
+    return identify("https://www.mediawiki.org/w/index.php",
+                    CONSUMER_TOKEN, access_token)
+
+def is_authenticated():
+    """Return true if a user is authenticated, otherwise false."""
+    if session.get('username'):
+        return True
+    return False
+
+def store_wdi_login(wdi_login_obj):
+    """Returns the WDI login object from session."""
+    session['wdilogin'] = jsonpickle.encode(wdi_login_obj)
+
+def get_wdi_login():
+    """Returns the WDI login object from session."""
+    return jsonpickle.decode(session['wdilogin'])
+
+def login():
+    """Get the current user and store the username in the session."""
+    identity = identify_user()
+    session["username"] = identity['username']
+
+def logout():
+    """Remove the current user from the session."""
+    session.pop('username')

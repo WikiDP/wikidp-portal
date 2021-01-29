@@ -6,22 +6,35 @@ from flask import (
     jsonify,
     redirect,
     render_template,
-    session,
     send_from_directory,
 )
 
 from wikidp.config import APP
+from wikidp.routes.oauth import identify_user, get_wdi_login
 from wikidp.const import DEFAULT_UI_LANGUAGES
 from wikidp.controllers.pages import (
     get_checklist_context,
     get_item_context,
 )
 
-@APP.route("/")
-def route_page_welcome():
-    """Landing Page for first time."""
-    return render_template('welcome.html')
-
+@APP.route("/oauth-write-test")
+def write():
+    # One-off test to ensure pipes are running, add an alias to WikiDP item
+    identity = identify_user()
+    for key in identity.keys():
+        logging.info('KEY: %s VALUE: %s', key, identity.get(key))
+    from wikidataintegrator import wdi_core
+    item = wdi_core.WDItemEngine(wd_item_id="Q51139559")
+    item.set_aliases(['WikiDP Application'], append=True)
+    assert item.get_label() == "Wikidata for Digital Preservation" # verify the api is working by getting this item
+    wdi_login = get_wdi_login()
+    assert wdi_login.get_edit_token()  # verify edit token exists, this is what WDI calls
+    assert "user" in identity.get('groups')  # verify user in user group
+    assert "autoconfirmed" in identity.get('groups')  # verify user in user group
+    assert "edit" in identity.get('rights')  # verify user in user group
+    assert "editpage" in identity.get('grants')  # verify user in user group
+    updated = item.write(wdi_login)  # fails due to no permissions
+    return jsonify(updated)
 
 @APP.route('/favicon.ico')
 def route_favicon():
