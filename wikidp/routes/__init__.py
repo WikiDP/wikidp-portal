@@ -17,6 +17,7 @@ from . import (
     _filters,
     api,
     forms,
+    oauth,
     pages,
     search,
 )

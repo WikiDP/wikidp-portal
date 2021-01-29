@@ -883,3 +883,7 @@ div.about-page, div.reports-page {
 .jumbotron img {
   float: left;
 }
+
+button.login {
+  color: black;
+}

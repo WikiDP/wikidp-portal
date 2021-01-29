@@ -5,10 +5,10 @@
 <div class="middle center white" id="content-frame">
 	{% if username  %}
 		<p>You are currently logged in as {{ username }}</p>
-		<button class="login" onclick="window.location.href='/profile?logout=True';">Logout</button>
+		<a href="logout">Logout</a>
 	{% else %}
 		<p>You are not currently logged in.</p>
-		<button class="login" onclick="oauthController.initiate(null, null)">Login using Wikidata OAuth</button>
+		<a href="login">Login using Wikidata OAuth</a>
 	{% endif %}
 </div>
 
