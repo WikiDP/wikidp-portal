@@ -73,6 +73,7 @@ def load_schema(schema_name):
 def parse_predicate(expression):
     """
     Get the Property Id from an expression's predicate.
+
     Args:
         expression (Dict):
 
@@ -112,7 +113,7 @@ def parse_expressions(schema):
                 if pid:
                     prop_map[pid] = prop_map[pid]
         for prop in props:
-            prop_map[prop] = qualifiers
+            prop_map[prop].update(qualifiers)
     return prop_map
 
 
