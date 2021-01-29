@@ -46,7 +46,16 @@ def get_item_context(qid, with_claims=True):
 
 
 def get_checklist_context(qid, schema):
-    """Create a property checklist from a schema."""
+    """
+    Create a property checklist render context from a schema.
+
+    Args:
+        qid (str):
+        schema (str):
+
+    Returns (List[Dict]):
+
+    """
     checklist = get_property_checklist_from_schema(schema)
     if checklist:
         counts = get_item_property_counts(qid)
@@ -55,8 +64,9 @@ def get_checklist_context(qid, schema):
             "label": prop['propertyLabel'],
             "description": prop['propertyDescription'],
             "type": prop["value_type"],
-            "count": counts.get(prop['id'], 0)
-            } for prop in checklist]
+            "count": counts.get(prop['id'], 0),
+            "qualifiers": prop["qualifiers"],
+        } for prop in checklist]
         return output
     return []
 

@@ -10,6 +10,7 @@
 # about the terms of this license.
 #
 """Flask application routes for Wikidata portal."""
+from collections import defaultdict
 from flask import (
     json,
     jsonify,
@@ -69,6 +70,52 @@ def load_schema(schema_name):
         return None
 
 
+def parse_predicate(expression):
+    """
+    Get the Property Id from an expression's predicate.
+    Args:
+        expression (Dict):
+
+    Returns (Tuple[Optional[str], bool]):
+
+    """
+    predicate = expression.get("predicate", "")
+    pid = get_pid_from_string(predicate)
+    if pid:
+        return pid, "qualifier" in predicate
+    return None, False
+
+
+def parse_expressions(schema):
+    """
+    Parse Shape Expressions of a Schema.
+
+    Args:
+        schema (Dict):
+
+    Returns (defaultdict[str, set]):
+
+    """
+    prop_map = defaultdict(set)
+    for shape in schema.get('shapes', []):
+        outer_expression = shape.get('expression', {})
+        props = set()
+        qualifiers = set()
+        for expression in outer_expression.get('expressions', []):
+            pid, is_qualifier = parse_predicate(expression)
+            if pid and is_qualifier:
+                qualifiers.add(pid)
+            elif pid:
+                props.add(pid)
+            for inner_expression in expression.get('expressions', []):
+                pid, _ = parse_predicate(inner_expression)
+                if pid:
+                    prop_map[pid] = prop_map[pid]
+        for prop in props:
+            prop_map[prop] = qualifiers
+    return prop_map
+
+
 def get_schema_properties(schema_name):
     """
     Get property constraints of a particular schema.
@@ -78,39 +125,61 @@ def get_schema_properties(schema_name):
 
     Examples:
         >>> get_schema_properties('file_format_id_pattern')
-        { "P31": {}, "P279": {}, ... }
+        { "P31": {"P123"}, "P279": {}, ... }
 
-    Returns (Optional[Dict[str, Dict]]]):
+    Returns (Optional[defaultdict[str, set]]):
 
     """
     data = load_schema(schema_name)
     if not data:
         return None
-    props = []
-    for shape in data.get('shapes', []):
-        shape_expression = shape.get('expression')
-        if shape_expression:
-            expression_list = shape_expression.get('expressions')
-            if expression_list:
-                props.extend(exp['predicate'] for exp in expression_list
-                             if 'predicate' in exp)
-            predicate = shape_expression.get('predicate')
-            if predicate:
-                props.append(predicate)
-    output = []
-    for prop in props:
-        pid = get_pid_from_string(prop)
-        if pid and pid not in output:
-            output.append(pid)
-    return output
+    return parse_expressions(data)
+
+
+def flatten_prop_map(prop_map):
+    """
+    Extract all Ids from a property map.
+
+    Args:
+        prop_map (defaultdict[str, set]):
+
+    Returns:
+
+    """
+    prop_ids = set()
+    for prop, qualifiers in prop_map.items():
+        prop_ids.add(prop)
+        prop_ids.update(qualifiers)
+    return prop_ids
 
 
 def get_property_checklist_from_schema(schema_name):
-    """Create a property checklist from a schema."""
-    pid_list = get_schema_properties(schema_name)
-    if pid_list:
-        return get_property_details_by_pid_list(pid_list)
-    return []
+    """
+    Create a property checklist from a schema.
+
+    Args:
+        schema_name (str):
+
+    Returns (List[Dict]):
+
+    """
+    prop_map = get_schema_properties(schema_name)
+    if not prop_map:
+        return []
+    all_prop_ids = flatten_prop_map(prop_map)
+    all_prop_data = {
+        prop.get("id"): prop
+        for prop in get_property_details_by_pid_list(all_prop_ids)
+    }
+    checklist = []
+    for pid, qualifiers in prop_map.items():
+        data = all_prop_data[pid]
+        data["qualifiers"] = [
+            all_prop_data[qualifier]
+            for qualifier in qualifiers
+        ]
+        checklist.append(data)
+    return checklist
 
 
 def write_claims_to_item(qid, json_data):
