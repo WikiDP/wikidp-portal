@@ -10,7 +10,7 @@ var oauthController = {
       success: function (data, textStatus, jqXHR) {
         console.log(data)
         if (data.auth === false) {
-          sessionStorage.setItem('returnTo', window.location.pathname)
+          sessionStorage.setItem('returnTo', window.location.pathname  + window.location.search)
           oauthController.authorize(null)
         } else {
           window.location.href = '/profile'
