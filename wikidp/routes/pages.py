@@ -1,53 +1,46 @@
 """Module to hold Web App page routing and parameter handling."""
 import logging
-import os
-
-import json
-import jsonpickle
-
-from mwoauth import AccessToken
 
 from flask import (
     abort,
     jsonify,
     redirect,
     render_template,
-    request,
-    session,
     send_from_directory,
 )
 
-from wikidataintegrator import wdi_login
-
 from wikidp.config import APP
+from wikidp.routes.oauth import identify_user, get_wdi_login
 from wikidp.const import DEFAULT_UI_LANGUAGES
 from wikidp.controllers.pages import (
     get_checklist_context,
     get_item_context,
 )
 
-# OAuth stuff
-ORG_TOKEN = os.environ.get('CONSUMER_TOKEN', '')
-SECRET_TOKEN = os.environ.get('SECRET_TOKEN', '')
-
-USER_AGENT = 'wikidp-portal/0.0 (https://wikidp.org/portal/; admin@wikidp.org)'
-
-
-# MWOAUTH = MWOAuth(consumer_key=ORG_TOKEN, consumer_secret=SECRET_TOKEN,
-#                   user_agent=USER_AGENT, default_return_to="/profile")
-# APP.register_blueprint(MWOAUTH.bp)
-@APP.route("/")
-def route_page_welcome():
-    """Landing Page for first time."""
-    return render_template('welcome.html')
-
+@APP.route("/oauth-write-test")
+def write():
+    # One-off test to ensure pipes are running, add an alias to WikiDP item
+    identity = identify_user()
+    for key in identity.keys():
+        logging.info('KEY: %s VALUE: %s', key, identity.get(key))
+    from wikidataintegrator import wdi_core
+    item = wdi_core.WDItemEngine(wd_item_id="Q51139559")
+    item.set_aliases(['WikiDP Application'], append=True)
+    assert item.get_label() == "Wikidata for Digital Preservation" # verify the api is working by getting this item
+    wdi_login = get_wdi_login()
+    assert wdi_login.get_edit_token()  # verify edit token exists, this is what WDI calls
+    assert "user" in identity.get('groups')  # verify user in user group
+    assert "autoconfirmed" in identity.get('groups')  # verify user in user group
+    assert "edit" in identity.get('rights')  # verify user in user group
+    assert "editpage" in identity.get('grants')  # verify user in user group
+    updated = item.write(wdi_login)  # fails due to no permissions
+    return jsonify(updated)
 
 @APP.route('/favicon.ico')
 def route_favicon():
     """Serve the favicon file."""
     return send_from_directory(APP.config['STATIC_DIR'], 'img/favicon.ico',
                                mimetype='image/vnd.microsoft.icon')
-
 
 @APP.route("/about")
 def route_page_about():
@@ -60,69 +53,15 @@ def route_page_reports():
     """Render the reports page."""
     return render_template('reports.html')
 
-
-@APP.route("/auth")
-def authenication():
-    """Return the authorisation status as JSON."""
-    response_data = {
-        'auth' : False
-    }
-    if session.get('username'):
-        response_data = {
-            'auth' : True,
-            'username' : session['username']
-        }
-    return jsonify(response_data)
-
-
-@APP.route("/logout")
-def logout():
-    """Clear out session variables and redirect to profile display."""
-    session.clear()
-    return redirect("profile", code=303)
-
-
-@APP.route("/profile", methods=['POST', 'GET'])
-def profile():
-    """Flask OAuth login."""
-    if request.method == 'POST':
-        body = json.loads(request.get_data())
-        if 'initiate' in body.keys():
-            authentication = wdi_login.WDLogin(consumer_key=ORG_TOKEN,
-                                               consumer_secret=SECRET_TOKEN,
-                                               callback_url=request.url_root + "profile",
-                                               user_agent=USER_AGENT)
-            session['authOBJ'] = jsonpickle.encode(authentication)
-            response_data = {
-                'wikimediaURL': authentication.redirect
-            }
-            return jsonify(response_data)
-
-        # parse the url from wikidata for the oauth token and secret
-        if 'url' in body.keys():
-            authentication = jsonpickle.decode(session['authOBJ'])
-            authentication.continue_oauth(oauth_callback_data=body['url'].encode("utf-8"))
-            access_token = AccessToken(authentication.s.auth.client.resource_owner_key,
-                                       authentication.s.auth.client.resource_owner_secret)
-            identity = authentication.handshaker.identify(access_token)
-            session["username"] = identity['username']
-            session["userid"] = identity['sub']
-            return jsonify(body)
-
-    return render_template('profile.html', username=session.get('username', None))
-
-
 @APP.route("/unauthorized")
 def route_page_unauthorized():
     """Display a 403 error page."""
     return abort(403)
 
-
 @APP.route("/error")
 def route_page_error():
     """Display a 500 error page."""
     return abort(500)
-
 
 @APP.route("/<item:qid>")
 def route_page_selected_item(qid):

@@ -1,5 +1,5 @@
 var oauthController = {
-  authorized: null,
+  authorized: false,
   initiate: function () {
     $.ajax({
       url: '/auth',
@@ -10,6 +10,7 @@ var oauthController = {
       success: function (data, textStatus, jqXHR) {
         console.log(data)
         if (data.auth === false) {
+          sessionStorage.setItem('returnTo', window.location.pathname  + window.location.search)
           oauthController.authorize(null)
         } else {
           window.location.href = '/profile'
@@ -47,7 +48,29 @@ var oauthController = {
       }
     })
   },
-  forward: function (callback) {
+  authCheck: function () {
+    $.ajax({
+      url: '/auth',
+      type: 'GET',
+      dataType: 'json',
+      contentType: false,
+      processData: false,
+      success: function (data, textStatus, jqXHR) {
+        if (data.auth === false) {
+          oauthController.forward()
+        } else {
+          window.location.href = '/profile'
+        }
+      },
+      // HTTP Error handler
+      error: function (jqXHR, textStatus, errorThrown) {
+        // Log full error to console
+        console.log('Validation Error: ' + textStatus + errorThrown)
+        console.log(jqXHR)
+      }
+    })
+  },
+  forward: function () {
     $.ajax({
       type: 'POST',
       data: JSON.stringify({
@@ -57,11 +80,17 @@ var oauthController = {
       contentType: false,
       processData: false,
       success: function (data, textStatus, jqXHR) {
-        oauthController.authorized = true
+        var gotoURL = sessionStorage.getItem('returnTo') || null
+        sessionStorage.removeItem('returnTo')
+        if (gotoURL) {
+          window.location = gotoURL
+        }
+
         console.log(data)
       },
       // HTTP Error handler
       error: function (jqXHR, textStatus, errorThrown) {
+        alert('forward.fail')
         // Log full error to console
         console.log('Validation Error: ' + textStatus + errorThrown)
         console.log(jqXHR)
@@ -74,11 +103,10 @@ $(document).ready(() => {
   const $pagecontainer = $('div.page-container')
   $('form#navbarSearch').submit(() => $pagecontainer.fadeOut(500))
   $('div.side-icon-div i#searchToggle').click(toggleSearchForm)
-  $('#loginBtn').click(() => { oauthController.initiate(null, null) })
   $pagecontainer.fadeIn(500)
   const urlParams = new URLSearchParams(window.location.search)
   if (urlParams.has('oauth_verifier')) {
-    oauthController.forward(null)
+    oauthController.authCheck()
   }
 })
 
