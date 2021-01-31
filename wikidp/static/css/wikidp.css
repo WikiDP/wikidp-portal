@@ -540,12 +540,15 @@ img.property-image{
   opacity: 1;
   padding: 20px 0;
 }
-#saveClaimsBtn {
+.contribute-action-btn {
   background: none;
   border: 2px solid;
   padding: 19px 20%;
   font-weight: bold;
-  margin: 50px 0 100px;
+  margin: 50px 0 10px;
+}
+.contribute-action-btn:hover {
+  background: #ffffff2b;
 }
 .claim-value {
   width: calc(80% - 30px);

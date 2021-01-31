@@ -39,8 +39,10 @@ DEFAULT_UI_LANGUAGES = [
     ("hi", "हिन्दी (Hindi)"),
     ("lb", "Lëtzebuergesch (Luxembourgish)")
 ]
+WIKIDATA_ENTITY_BASE_URL = "https://wikidata.org/entity"
 WIKIMEDIA_COMMONS_BASE_URL = "https://commons.wikimedia.org"
 WIKIMEDIA_COMMONS_API_URL = f"{WIKIMEDIA_COMMONS_BASE_URL}/w/api.php"
+OAUTH_MEDIAWIKI_URI = "https://www.mediawiki.org/w/index.php"
 
 
 # pylint: disable=R0903
@@ -55,11 +57,14 @@ class ConfKey:
     STATIC_DIR = "STATIC_DIR"
     MEDIAWIKI_API_URL = 'MEDIAWIKI_API_URL'
     SPARQL_ENDPOINT_URL = 'SPARQL_ENDPOINT_URL'
+    USER_AGENT = 'USER_AGENT'
     WIKIBASE_LANGUAGE = 'WIKIBASE_LANGUAGE'
     WIKIDATA_FB_LANG = 'WIKIDATA_FB_LANG'
     WIKIDATA_LANG = 'WIKIDATA_LANG'
     WIKIDATA_PASSWORD = 'WIKIDATA_PASSWORD'
     WIKIDATA_USER_NAME = 'WIKIDATA_USER_NAME'
+    WIKIDP_CONSUMER_KEY = 'WIKIDP_CONSUMER_KEY'
+    WIKIDP_CONSUMER_SECRET = 'WIKIDP_CONSUMER_SECRET'
 
 
 class WDEntityField:
@@ -74,3 +79,4 @@ class WDEntityField:
     CATEGORIES = 'categories'
     REFERENCES = 'references'
     QUALIFIERS = 'qualifiers'
+    URL = 'url'

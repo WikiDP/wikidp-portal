@@ -45,6 +45,12 @@ class BaseConfig:
     WIKIDATA_LANG = os.getenv('WIKIDP_LANG', 'en')
     WIKIDATA_PASSWORD = os.getenv('WIKIDP_BOT_PASSWORD', '<password>')
     WIKIDATA_USER_NAME = os.getenv('WIKIDP_BOT_USER', '<username>')
+    WIKIDP_CONSUMER_KEY = os.environ.get('WIKIDP_CONSUMER_KEY', '')
+    WIKIDP_CONSUMER_SECRET = os.environ.get('WIKIDP_CONSUMER_SECRET', '')
+    USER_AGENT = os.environ.get(
+        'USER_AGENT',
+        'wikidp-portal/0.0 (https://wikidp.org/portal/; admin@wikidp.org)'
+    )
 
 
 # pylint: disable=R0903

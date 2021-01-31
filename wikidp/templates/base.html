@@ -10,7 +10,9 @@
       <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}" type="image/x-icon" />
       <title>{% block title %}{% endblock %} | WikiDP </title>
       <!-- jQuery -->
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
       <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+      <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
       <!-- Bootstrap -->
       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
       <!-- Optional theme -->
@@ -24,7 +26,7 @@
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>  <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
       <script src="{{ url_for('static',filename='vendor/jquery.qlabel.js') }}"></script>
       <!-- Load local stylesheet default stylesheet -->
-      <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/wikidp.css') }}?v=2021.01.27" />
+      <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/wikidp.css', cb="20210201") }}" />
     </head>
     <body class="no-pad">
 
@@ -33,7 +35,7 @@
 
       <!-- Include all compiled plugins (below), or include individual files as needed -->
       <!-- Latest compiled and minified JavaScript -->
-      <script src="{{ url_for('static', filename='js/wikidp.js') }}" type="text/javascript"></script>
+      <script src="{{ url_for('static', filename='js/wikidp.js', cb="20210201") }}" type="text/javascript"></script>
       {% block page_scripts %}{% endblock %}
     </body>
 </html>

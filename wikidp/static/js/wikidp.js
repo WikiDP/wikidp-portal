@@ -116,15 +116,13 @@ function toggleSearchForm () {
   $icon.toggleClass('fa-search').toggleClass('fa-times-circle-o').fadeIn('slow')
 }
 
-function get_item_summary (qid, callback) {
+const getItemSummary = (qid, callback) => {
   $.get(`/api/${qid}/summary`, (item) => {
     if (callback) return callback(item)
     return item
   }).fail((error) => console.log(error))
 }
 
-function selector_to_data_array (selector) {
-  const output = []
-  $(selector).each((index, elem) => output.push($(elem).data()))
-  return output
-}
+const selectorToDataArray = (selector) => $(selector).map(
+  (index, elem) => $(elem).data()
+);
