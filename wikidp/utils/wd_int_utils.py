@@ -12,11 +12,15 @@
 # This is a python __init__ script to create the app and import the
 # main package contents
 """Module to hold all WikiDataIntegrator routines for dependency management."""
+from datetime import datetime
 import logging
 from wikidataintegrator.wdi_core import WDItemEngine
 
 from wikidp.config import APP
-from wikidp.const import ConfKey
+from wikidp.const import (
+    ConfKey,
+    WIKIDATA_DATETIME_FORMAT,
+)
 
 MEDIAWIKI_API_URL = APP.config[ConfKey.MEDIAWIKI_API_URL]
 SPARQL_ENDPOINT_URL = APP.config[ConfKey.SPARQL_ENDPOINT_URL]
@@ -52,3 +56,17 @@ def get_item_json(qid):
     except (ValueError, ConnectionAbortedError, KeyError):
         logging.exception("Exception reading QID: %s", qid)
         return None
+
+
+def format_date(date_string):
+    """
+    Format Date String for WDI.
+
+    Args:
+        date_string (str): ex '2020-01-01'
+
+    Returns (str):
+
+    """
+    date = datetime.fromisoformat(date_string)
+    return date.strftime(WIKIDATA_DATETIME_FORMAT)

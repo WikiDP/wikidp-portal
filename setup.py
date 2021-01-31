@@ -15,7 +15,7 @@ from setuptools import setup, find_packages
 INSTALL_REQUIRES = [
     'setuptools',
     'flask>=0.12.3',
-    'wikidataintegrator==0.6.0',
+    'wikidataintegrator==0.8.4',
     'lxml==4.5.0',
     'jsonpickle==1.4.1',
     'numpy==1.18.2',

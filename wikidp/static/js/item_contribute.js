@@ -132,7 +132,7 @@ const initializeClaim = (uuidSelector) => {
         $dateInput.datepicker({
           changeMonth: true,
           changeYear: true,
-          dateFormat: '+yy-mm-dd',
+          dateFormat: 'yy-mm-dd',
         });
         break;
       case 'Url':

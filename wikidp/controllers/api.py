@@ -33,6 +33,7 @@ from wikidp.utils import (
     get_pid_from_string,
     get_property_details_by_pid_list,
 )
+from wikidp.utils.wd_int_utils import format_date
 
 WD_DATATYPE_MAP = {
     "ExternalId": WDExternalID,
@@ -245,7 +246,8 @@ def wd_datatype(data_type, value, *args, **kwargs):
     wd_datatype_class = WD_DATATYPE_MAP[data_type]
     assert wd_datatype_class, f"Invalid Datatype '{wd_datatype_class}'"
     if issubclass(wd_datatype_class, WDTime):
-        return wd_datatype_class(time=value, *args, **kwargs)
+        time = format_date(value)
+        return wd_datatype_class(time=time, *args, **kwargs)
     return wd_datatype_class(value=value, *args, **kwargs)
 
 
