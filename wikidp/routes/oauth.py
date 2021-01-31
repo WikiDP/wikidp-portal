@@ -80,15 +80,20 @@ def profile():
 @APP.route("/auth")
 def route_authentication():
     """
-    Simple GET service that returns a tiny dictionary informing the caller
-    as to whether the current session user is authenticated, accompanied by
-    their user name if they are.
+    Get Authentication.
+
+    Notes:
+        - Simple GET service that returns a tiny dictionary informing the
+        caller as to whether the current session user is authenticated,
+        accompanied by their user name if they are.
+
+    Returns (Response):
 
     """
     is_user_authenticated = is_authenticated()
     response_data = {
         'auth': is_user_authenticated,
-        'username': session.get('username', '')
+        'username': session.get('username', ''),
     }
     return jsonify(response_data)
 

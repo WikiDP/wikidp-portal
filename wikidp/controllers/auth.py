@@ -1,4 +1,4 @@
-""" Methods regarding user authentication and authorization. """
+"""Methods for user authentication and authorization."""
 from flask import session
 import jsonpickle
 from mwoauth import (
@@ -41,12 +41,27 @@ def is_authenticated():
 
 
 def store_wdi_login(wdi_login_obj):
-    """Returns the WDI login object from session."""
+    """
+    Store the WDI login object into the session.
+
+    Args:
+        wdi_login_obj (WDLogin):
+
+    Returns:
+
+    """
     session['wdilogin'] = jsonpickle.encode(wdi_login_obj)
 
 
 def get_wdi_login():
-    """Returns the WDI login object from session."""
+    """
+    Get the WDI login object from session.
+
+    Args:
+
+    Returns (WDLogin):
+
+    """
     return jsonpickle.decode(session['wdilogin'])
 
 
