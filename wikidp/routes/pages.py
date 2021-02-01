@@ -9,6 +9,8 @@ from flask import (
     send_from_directory,
 )
 
+from wikidataintegrator import wdi_core
+
 from wikidp.config import APP
 from wikidp.routes.oauth import identify_user, get_wdi_login
 from wikidp.const import DEFAULT_UI_LANGUAGES
@@ -19,14 +21,14 @@ from wikidp.controllers.pages import (
 
 @APP.route("/oauth-write-test")
 def write():
+    """Test function to ensure OAuth write is working properly."""
     # One-off test to ensure pipes are running, add an alias to WikiDP item
     identity = identify_user()
     for key in identity.keys():
         logging.info('KEY: %s VALUE: %s', key, identity.get(key))
-    from wikidataintegrator import wdi_core
     item = wdi_core.WDItemEngine(wd_item_id="Q51139559")
     item.set_aliases(['WikiDP Application'], append=True)
-    assert item.get_label() == "Wikidata for Digital Preservation" # verify the api is working by getting this item
+    assert item.get_label() == "Wikidata for Digital Preservation" # verify api works
     wdi_login = get_wdi_login()
     assert wdi_login.get_edit_token()  # verify edit token exists, this is what WDI calls
     assert "user" in identity.get('groups')  # verify user in user group
