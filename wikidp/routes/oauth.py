@@ -77,9 +77,13 @@ def profile():
 
 @APP.route("/auth")
 def authenication():
-    """Simple GET service that returns a tiny dictionary informing the caller
+    """
+    Return a simple JSON structure confirming user authenication.
+
+    Simple GET service that returns a tiny dictionary informing the caller
     as to whether the current session user is authenticated, accompanied by their
-    user name if they are."""
+    user name if they are.
+    """
     is_user_authenticated = is_authenticated()
     response_data = {
         'auth' : is_user_authenticated,
@@ -105,11 +109,11 @@ def is_authenticated():
     return False
 
 def store_wdi_login(wdi_login_obj):
-    """Returns the WDI login object from session."""
+    """Return the WDI login object from session."""
     session['wdilogin'] = jsonpickle.encode(wdi_login_obj)
 
 def get_wdi_login():
-    """Returns the WDI login object from session."""
+    """Return the WDI login object from session."""
     return jsonpickle.decode(session['wdilogin'])
 
 def login():
