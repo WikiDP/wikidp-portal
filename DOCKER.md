@@ -56,8 +56,6 @@ From the project root directory:
 ```
 $ docker build -t wikidp .
 
-...
-
 Successfully built 3625ea189aea
 Successfully tagged wikidp:latest
 
@@ -69,5 +67,5 @@ wikidp        latest      3625ea189aea        About a minute ago   95.4MB
 
 ### Run the demonstration server container
 ```
-docker run --name wikidp wikidp
+docker run --restart always -p 5000:5000 -e CONSUMER_TOKEN='consumer-id'-e SECRET_TOKEN='consumer-secret' --name wikidp wikidp/portal:master
 ```

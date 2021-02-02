@@ -32,8 +32,8 @@ from wikidp.config import APP
 # OAuth stuff
 CONSUMER_TOKEN = ConsumerToken(os.environ.get('CONSUMER_TOKEN', ''),
                                os.environ.get('SECRET_TOKEN', ''))
-
-USER_AGENT = 'wikidp-portal/0.0 (https://wikidp.org/portal/; admin@wikidp.org)'
+WIKIDATA_API = 'https://www.wikidata.org/w/api.php'
+USER_AGENT = 'wikidp-portal/0.0 (https://www.wikidp.org/; admin@wikidp.org)'
 
 @APP.route("/", methods=['POST', 'GET'])
 def route_page_welcome():
@@ -61,9 +61,10 @@ def profile():
         body = json.loads(request.get_data())
         if 'initiate' in body.keys():
             wdi_login_obj = wdi_login.WDLogin(consumer_key=CONSUMER_TOKEN.key,
-                                               consumer_secret=CONSUMER_TOKEN.secret,
-                                               callback_url='oob',
-                                               user_agent=USER_AGENT)
+                                              consumer_secret=CONSUMER_TOKEN.secret,
+                                              callback_url='oob',
+                                              mediawiki_api_url=WIKIDATA_API,
+                                              user_agent=USER_AGENT)
             store_wdi_login(wdi_login_obj)
             response_data = {
                 'wikimediaURL': wdi_login_obj.redirect
@@ -76,9 +77,13 @@ def profile():
 
 @APP.route("/auth")
 def authenication():
-    """Simple GET service that returns a tiny dictionary informing the caller
+    """
+    Return a simple JSON structure confirming user authenication.
+
+    Simple GET service that returns a tiny dictionary informing the caller
     as to whether the current session user is authenticated, accompanied by their
-    user name if they are."""
+    user name if they are.
+    """
     is_user_authenticated = is_authenticated()
     response_data = {
         'auth' : is_user_authenticated,
@@ -94,7 +99,7 @@ def identify_user():
         wdi_login_obj.s.auth.client.resource_owner_key,
         wdi_login_obj.s.auth.client.resource_owner_secret
     )
-    return identify("https://www.mediawiki.org/w/index.php",
+    return identify(WIKIDATA_API,
                     CONSUMER_TOKEN, access_token)
 
 def is_authenticated():
@@ -104,11 +109,11 @@ def is_authenticated():
     return False
 
 def store_wdi_login(wdi_login_obj):
-    """Returns the WDI login object from session."""
+    """Return the WDI login object from session."""
     session['wdilogin'] = jsonpickle.encode(wdi_login_obj)
 
 def get_wdi_login():
-    """Returns the WDI login object from session."""
+    """Return the WDI login object from session."""
     return jsonpickle.decode(session['wdilogin'])
 
 def login():
