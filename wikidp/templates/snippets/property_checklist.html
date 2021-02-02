@@ -1,15 +1,36 @@
-{% if properties|count > 0%}
-    {#    TODO: Connect this to qlabel for translation support #}
-    {% for property in properties %}
-        <li class="sidebar-property-li white click {% if property.count > 0 %}property-ok{% endif %}" data-id="{{property.id}}"
-            data-label="{{property.label}}" data-count="{{property.count}}" data-value_type="{{property.type}}"
-            data-description="{{property.description}}" onclick="sidebar_property_click(this)">
-            <span title="{{property.label}} ({{property.id}}): {{property.description}}"
-                  data-content-start="{{property.label}} ({{property.id}}) " data-content-end="">
-            </span>
-            <div class="sidebar-property-count">: {{property.count}} </div>
-        </li>
-    {% endfor %}
+{% if properties|count > 0 %}
+  {#    TODO: Connect this to qlabel for translation support #}
+  {% for property in properties %}
+    <li
+      class="sidebar-property-li white click {% if property.count > 0 %}property-ok{% endif %}"
+      data-id="{{property.id}}"
+      data-label="{{property.label}}"
+      data-count="{{property.count}}"
+      data-value_type="{{property.type}}"
+      data-description="{{property.description}}"
+      onclick="sidebar_property_click(this)"
+    >
+      <span
+        title="{{property.label}} ({{property.id}}): {{property.description}}"
+        data-content-start="{{property.label}} ({{property.id}}) "
+        data-content-end=""
+      >
+      </span>
+      <div class="sidebar-property-count">
+        : {{property.count}}
+      </div>
+      {% for qualifier in property.qualifiers %}
+        <span
+          class="sidebar-qualifier"
+          data-content-end=""
+          data-content-start="↳ {{qualifier.propertyLabel}} ({{qualifier.id}}) "
+          title="{{qualifier.propertyLabel}} ({{qualifier.id}}): {{qualifier.propertyDescription}}"
+        >
+        </span>
+        <br/>
+      {% endfor %}
+    </li>
+  {% endfor %}
 {% else %}
     no suggested properties in this schema
 {% endif %}

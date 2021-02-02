@@ -350,6 +350,9 @@ select#languageSelect {
   content: '\e013';
   color: white;
 }
+.sidebar-property-li .sidebar-qualifier {
+  text-indent: 5px;
+}
 #sidebar-property-list span::before, #sidebar-property-list span::after {
   display: inline-block;
   max-width: 75%;
