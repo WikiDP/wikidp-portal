@@ -80,7 +80,7 @@ def profile():
 @APP.route("/auth")
 def route_authentication():
     """
-    Get Authentication.
+    Get a simple JSON structure confirming user authentication.
 
     Notes:
         - Simple GET service that returns a tiny dictionary informing the

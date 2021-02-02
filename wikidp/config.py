@@ -49,7 +49,7 @@ class BaseConfig:
     WIKIDP_CONSUMER_SECRET = os.environ.get('WIKIDP_CONSUMER_SECRET', '')
     USER_AGENT = os.environ.get(
         'USER_AGENT',
-        'wikidp-portal/0.0 (https://wikidp.org/portal/; admin@wikidp.org)'
+        'wikidp-portal/0.0 (https://www.wikidp.org/; admin@wikidp.org)'
     )
 
 

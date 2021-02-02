@@ -42,7 +42,6 @@ DEFAULT_UI_LANGUAGES = [
 WIKIDATA_ENTITY_BASE_URL = "https://wikidata.org/entity"
 WIKIMEDIA_COMMONS_BASE_URL = "https://commons.wikimedia.org"
 WIKIMEDIA_COMMONS_API_URL = f"{WIKIMEDIA_COMMONS_BASE_URL}/w/api.php"
-OAUTH_MEDIAWIKI_URI = "https://www.mediawiki.org/w/index.php"
 WIKIDATA_DATETIME_FORMAT = '+%Y-%m-%dT%H:%M:%SZ'
 
 
