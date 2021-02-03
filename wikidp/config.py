@@ -33,6 +33,7 @@ class BaseConfig:
     HOST = HOST
     ITEM_REGEX = r'(Q|q)\d+'
     MEDIAWIKI_API_URL = "https://www.wikidata.org/w/api.php"
+    OAUTH_MEDIAWIKI_URL = "https://www.mediawiki.org/w/index.php"
     SPARQL_ENDPOINT_URL = "https://query.wikidata.org/sparql"
     # Bind to PORT if defined, otherwise default to 5000.
     PORT = int(os.environ.get('PORT', 5000))

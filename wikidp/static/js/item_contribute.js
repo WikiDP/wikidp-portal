@@ -135,6 +135,17 @@ const initializeClaim = (uuidSelector) => {
           dateFormat: 'yy-mm-dd',
         });
         break;
+      case 'Quantity':
+        template = `
+          <input
+            class="claim-value text-medium"
+            placeholder="enter quantity"
+            step="any"
+            type="number"
+          />
+        `;
+        $div.append($(template));
+        break;
       case 'Url':
         template = `
           <input
@@ -167,7 +178,6 @@ const initializeClaim = (uuidSelector) => {
         break;
       case 'ExternalId':
       case 'Monolingualtext':
-      case 'Quantity':
       case 'String':
       default:
         $div.append($(template));

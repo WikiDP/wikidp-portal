@@ -12,6 +12,7 @@ from wikidp.config import APP
 from wikidp.const import ConfKey
 
 MEDIAWIKI_API_URL = APP.config[ConfKey.MEDIAWIKI_API_URL]
+OAUTH_MEDIAWIKI_URL = APP.config[ConfKey.OAUTH_MEDIAWIKI_URL]
 WIKIDP_CONSUMER_KEY = APP.config[ConfKey.WIKIDP_CONSUMER_KEY]
 WIKIDP_CONSUMER_SECRET = APP.config[ConfKey.WIKIDP_CONSUMER_SECRET]
 WIKIDP_CONSUMER_TOKEN = ConsumerToken(WIKIDP_CONSUMER_KEY,
@@ -27,7 +28,7 @@ def identify_user():
         wdi_login_obj.s.auth.client.resource_owner_key,
         wdi_login_obj.s.auth.client.resource_owner_secret
     )
-    return identify(MEDIAWIKI_API_URL, WIKIDP_CONSUMER_TOKEN, access_token)
+    return identify(OAUTH_MEDIAWIKI_URL, WIKIDP_CONSUMER_TOKEN, access_token)
 
 
 def is_authenticated():
