@@ -32,6 +32,7 @@ from wikidp.config import APP
 # OAuth stuff
 CONSUMER_TOKEN = ConsumerToken(os.environ.get('CONSUMER_TOKEN', ''),
                                os.environ.get('SECRET_TOKEN', ''))
+OAUTH_MEDIAWIKI_URL = 'https://www.wikidata.org/w/index.php'
 WIKIDATA_API = 'https://www.wikidata.org/w/api.php'
 USER_AGENT = 'wikidp-portal/0.0 (https://www.wikidp.org/; admin@wikidp.org)'
 
@@ -99,7 +100,7 @@ def identify_user():
         wdi_login_obj.s.auth.client.resource_owner_key,
         wdi_login_obj.s.auth.client.resource_owner_secret
     )
-    return identify(WIKIDATA_API,
+    return identify(OAUTH_MEDIAWIKI_URL,
                     CONSUMER_TOKEN, access_token)
 
 def is_authenticated():
