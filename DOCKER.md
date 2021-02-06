@@ -67,5 +67,5 @@ wikidp        latest      3625ea189aea        About a minute ago   95.4MB
 
 ### Run the demonstration server container
 ```
-docker run --restart always -p 5000:5000 -e CONSUMER_TOKEN='consumer-id'-e SECRET_TOKEN='consumer-secret' --name wikidp wikidp/portal:master
+docker run --restart always -p 5000:5000 -e WIKIDP_CONSUMER_KEY='consumer-id'-e WIKIDP_CONSUMER_SECRET='consumer-secret' --name wikidp wikidp/portal:master
 ```
