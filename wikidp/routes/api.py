@@ -23,6 +23,7 @@ from wikidp.controllers.api import (
     get_property_checklist_from_schema,
     write_claims_to_item,
 )
+from wikidp.controllers.auth import get_wdi_login
 from wikidp.controllers.search import search_result_list
 from wikidp.utils import (
     get_all_languages,
@@ -73,8 +74,10 @@ def route_api_get_item_summary_list():
 def route_api_write_claims_to_item(qid):
     """User posts a JSON object of claims to contribute to an item."""
     logging.debug("Processing user POST request.")
+    wdi_login = get_wdi_login()
+    assert wdi_login, "Must be Authenticated"
     json_data = request.get_json()
-    return write_claims_to_item(qid, json_data)
+    return write_claims_to_item(qid, json_data, wdi_login)
 
 
 @APP.route("/api/<prop:pid>", methods=['GET', 'POST'])

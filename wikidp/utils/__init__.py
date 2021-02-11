@@ -32,6 +32,7 @@ from wikidp.config import APP
 from wikidp.const import (
     ConfKey,
     WDEntityField,
+    WIKIDATA_ENTITY_BASE_URL,
     WIKIMEDIA_COMMONS_BASE_URL,
     WIKIMEDIA_COMMONS_API_URL,
 )
@@ -265,12 +266,25 @@ def get_lang(_dict, default=None):
     return _dict.get(WIKIDATA_LANG) or _dict.get(WIKIDATA_FB_LANG, default)
 
 
-# pylint: disable=R0914
+def format_item_url(qid):
+    """
+    Format Wikidata URL from Id.
+
+    Args:
+        qid (str):
+
+    Returns (str):
+
+    """
+    return f"{WIKIDATA_ENTITY_BASE_URL}/{qid}"
+
+
 def item_detail_parse(qid, with_claims=True):
     """
     Get Wikidata information by QID.
 
     Returns (Dict): overview of key information
+
     """
     item = wd_int_utils.get_item_json(qid)
     if not item:
@@ -278,47 +292,53 @@ def item_detail_parse(qid, with_claims=True):
     label = parse_wd_response_by_key(item, 'labels', default=f"Item {qid}")
     aliases = parse_wd_response_by_key(item, WDEntityField.ALIASES, default=[])
     description = parse_wd_response_by_key(item, 'descriptions', default='')
-    output_dict = {
+    context = {
         WDEntityField.ALIASES: aliases,
         WDEntityField.DESCRIPTION: description,
         WDEntityField.LABEL: label,
         WDEntityField.QID: qid,
+        WDEntityField.URL: format_item_url(qid),
     }
     if with_claims:
-        claim_list = []
-        ex_list = []
-        categories = []
-        claims = get_claims_from_json(item)
-        sorted_claims = sorted(claims.items(),
-                               key=lambda x: _entity_id_to_int(x[0]))
-        for pid, claim_dict in sorted_claims:
-            value_list = []
-            add_to_ex_list = False
-            for json_details in claim_dict:
-                val = parse_snak(pid, json_details.get('mainsnak'))
-                if val:
-                    val[WDEntityField.REFERENCES] = _parse_references(
-                        json_details
-                    )
-                    val[WDEntityField.QUALIFIERS] = _parse_qualifiers(
-                        json_details
-                    )
-                    value_list.append(val)
-                    if val.get('parse_type') == 'external-id':
-                        add_to_ex_list = True
-                    # Determining the 'category' of the item
-                    # from the 'instance of' and 'subclass of' properties
-                    elif pid in ['P31', 'P279']:
-                        categories.append(val)
-            parsed_claim = {'pid': pid, 'values': value_list}
-            if add_to_ex_list:
-                ex_list.append(parsed_claim)
-            else:
-                claim_list.append(parsed_claim)
-        output_dict[WDEntityField.EXTERNAL_LINKS] = ex_list
-        output_dict[WDEntityField.CLAIMS] = claim_list
-        output_dict[WDEntityField.CATEGORIES] = categories
-    return output_dict
+        _add_claim_data_item_context(context, item)
+    return context
+
+
+def _add_claim_data_item_context(context, item):
+    claim_list = []
+    ex_list = []
+    categories = []
+    claims = get_claims_from_json(item)
+    sorted_claims = sorted(claims.items(),
+                           key=lambda x: _entity_id_to_int(x[0]))
+    for pid, claim_dict in sorted_claims:
+        value_list = []
+        add_to_ex_list = False
+        for json_details in claim_dict:
+            val = parse_snak(pid, json_details.get('mainsnak'))
+            if val:
+                val[WDEntityField.REFERENCES] = _parse_references(
+                    json_details
+                )
+                val[WDEntityField.QUALIFIERS] = _parse_qualifiers(
+                    json_details
+                )
+                value_list.append(val)
+                if val.get('parse_type') == 'external-id':
+                    add_to_ex_list = True
+                # Determining the 'category' of the item
+                # from the 'instance of' and 'subclass of' properties
+                elif pid in ['P31', 'P279']:
+                    categories.append(val)
+        parsed_claim = {'pid': pid, 'values': value_list}
+        if add_to_ex_list:
+            ex_list.append(parsed_claim)
+        else:
+            claim_list.append(parsed_claim)
+    context[WDEntityField.EXTERNAL_LINKS] = ex_list
+    context[WDEntityField.CLAIMS] = claim_list
+    context[WDEntityField.CATEGORIES] = categories
+    return context
 
 
 def _parse_qualifiers(json_details):
