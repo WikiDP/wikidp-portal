@@ -2,7 +2,7 @@
 # coding=UTF-8
 #
 # WikiDP Wikidata Portal
-# Copyright (C) 2020
+# Copyright (C) 2021
 # All rights reserved.
 #
 # This code is distributed under the terms of the GNU General Public
@@ -10,48 +10,52 @@
 # about the terms of this license.
 #
 """Flask MWOAuth and WikiDataIntegrator come together."""
-import logging
-import os
-
 import json
-import jsonpickle
-
-from mwoauth import ConsumerToken, AccessToken, identify
+import logging
 
 from flask import (
     jsonify,
+    redirect,
     render_template,
     request,
     session,
 )
-
-from wikidataintegrator import wdi_login
+from wikidataintegrator.wdi_core import WDItemEngine
 
 from wikidp.config import APP
+from wikidp.controllers.auth import (
+    build_wdi_login,
+    get_wdi_login,
+    identify_user,
+    is_authenticated,
+    login,
+    logout,
+    store_wdi_login,
+)
 
-# OAuth stuff
-CONSUMER_TOKEN = ConsumerToken(os.environ.get('CONSUMER_TOKEN', ''),
-                               os.environ.get('SECRET_TOKEN', ''))
-OAUTH_MEDIAWIKI_URL = 'https://www.wikidata.org/w/index.php'
-WIKIDATA_API = 'https://www.wikidata.org/w/api.php'
-USER_AGENT = 'wikidp-portal/0.0 (https://www.wikidp.org/; admin@wikidp.org)'
 
-@APP.route("/", methods=['POST', 'GET'])
-def route_page_welcome():
-    """Landing Page for first time."""
-    if request.method == 'POST':
-        body = json.loads(request.get_data())
-        # parse the url from wikidata for the oauth token and secret
-        if 'url' in body.keys():
-            if is_authenticated():
-                return jsonify(body)
+@APP.route("/", methods=['POST'])
+def route_page_login():
+    """
+    Handle the user login via Oauth.
 
-            wdi_login_obj = get_wdi_login()
-            wdi_login_obj.continue_oauth(oauth_callback_data=body['url'].encode("utf-8"))
-            store_wdi_login(wdi_login_obj)
-            login()
-            return jsonify(body)
-    return render_template('welcome.html')
+    Returns (Response): JSON Response
+
+    """
+    body = json.loads(request.get_data())
+    if 'url' not in body:
+        return redirect('/')
+
+    # parse the url from wikidata for the oauth token and secret
+    if is_authenticated():
+        return jsonify(body)
+    wdi_login_obj = get_wdi_login()
+    callback = body['url'].encode("utf-8")
+    wdi_login_obj.continue_oauth(oauth_callback_data=callback)
+    store_wdi_login(wdi_login_obj)
+    login()
+    return jsonify(body)
+
 
 @APP.route("/profile", methods=['POST', 'GET'])
 def profile():
@@ -61,11 +65,7 @@ def profile():
         logging.info("POST so getting data")
         body = json.loads(request.get_data())
         if 'initiate' in body.keys():
-            wdi_login_obj = wdi_login.WDLogin(consumer_key=CONSUMER_TOKEN.key,
-                                              consumer_secret=CONSUMER_TOKEN.secret,
-                                              callback_url='oob',
-                                              mediawiki_api_url=WIKIDATA_API,
-                                              user_agent=USER_AGENT)
+            wdi_login_obj = build_wdi_login()
             store_wdi_login(wdi_login_obj)
             response_data = {
                 'wikimediaURL': wdi_login_obj.redirect
@@ -76,52 +76,45 @@ def profile():
 
     return render_template('profile.html', username=session.get('username', ''))
 
-@APP.route("/auth")
-def authenication():
-    """
-    Return a simple JSON structure confirming user authenication.
 
-    Simple GET service that returns a tiny dictionary informing the caller
-    as to whether the current session user is authenticated, accompanied by their
-    user name if they are.
+@APP.route("/auth")
+def route_authentication():
+    """
+    Get a simple JSON structure confirming user authentication.
+
+    Notes:
+        - Simple GET service that returns a tiny dictionary informing the
+        caller as to whether the current session user is authenticated,
+        accompanied by their user name if they are.
+
+    Returns (Response):
+
     """
     is_user_authenticated = is_authenticated()
     response_data = {
-        'auth' : is_user_authenticated,
-        'username' : session.get('username', '')
+        'auth': is_user_authenticated,
+        'username': session.get('username', ''),
     }
     return jsonify(response_data)
 
-def identify_user():
-    """Return the user identity object obtained from the session WDI login."""
-    # Get the WDI login object
-    wdi_login_obj = get_wdi_login()
-    access_token = AccessToken(
-        wdi_login_obj.s.auth.client.resource_owner_key,
-        wdi_login_obj.s.auth.client.resource_owner_secret
-    )
-    return identify(OAUTH_MEDIAWIKI_URL,
-                    CONSUMER_TOKEN, access_token)
 
-def is_authenticated():
-    """Return true if a user is authenticated, otherwise false."""
-    if session.get('username'):
-        return True
-    return False
-
-def store_wdi_login(wdi_login_obj):
-    """Return the WDI login object from session."""
-    session['wdilogin'] = jsonpickle.encode(wdi_login_obj)
-
-def get_wdi_login():
-    """Return the WDI login object from session."""
-    return jsonpickle.decode(session['wdilogin'])
-
-def login():
-    """Get the current user and store the username in the session."""
+@APP.route("/oauth-write-test")
+def _temp_route_oauth_write_test():
+    # One-off test to ensure pipes are running, add an alias to WikiDP item
     identity = identify_user()
-    session["username"] = identity['username']
-
-def logout():
-    """Remove the current user from the session."""
-    session.pop('username')
+    for key in identity.keys():
+        logging.info('KEY: %s VALUE: %s', key, identity.get(key))
+    item = WDItemEngine(wd_item_id="Q51139559")
+    item.set_aliases(['WikiDP Application'], append=True)
+    # verify the api is working by getting this item
+    assert item.get_label() == "Wikidata for Digital Preservation"
+    wdi_login = get_wdi_login()
+    # verify edit token exists, this is what WDI calls
+    assert wdi_login.get_edit_token()
+    assert "user" in identity.get('groups')  # verify user in user group
+    # verify user in user group
+    assert "autoconfirmed" in identity.get('groups')
+    assert "edit" in identity.get('rights')  # verify user in user group
+    assert "editpage" in identity.get('grants')  # verify user in user group
+    updated = item.write(wdi_login)  # fails due to no permissions
+    return jsonify(updated)
