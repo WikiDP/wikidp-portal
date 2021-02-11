@@ -1,6 +1,6 @@
 setuptools
 flask>=1.1.2
-wikidataintegrator==0.6.5
+wikidataintegrator==0.8.4
 lxml==4.6.2
 jsonpickle==1.4.1
 numpy==1.19.0

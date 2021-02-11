@@ -42,8 +42,8 @@ function load_property_checklist_by_schema(event){
     $.get(`/${qid}/checklist/${schema}`, (response) => {
         $('ul#sidebar-property-list').html(response);
         //  TODO: Move to item_contribute.
-        if (typeof initialize_statement_property_selector !== 'undefined') {
-            initialize_statement_property_selector();
+        if (typeof initializeStatementPropertySelector !== 'undefined') {
+            initializeStatementPropertySelector();
         }
     })
 }

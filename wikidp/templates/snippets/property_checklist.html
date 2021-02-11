@@ -19,16 +19,18 @@
       <div class="sidebar-property-count">
         : {{property.count}}
       </div>
-      {% for qualifier in property.qualifiers %}
-        <span
-          class="sidebar-qualifier"
-          data-content-end=""
-          data-content-start="↳ {{qualifier.propertyLabel}} ({{qualifier.id}}) "
-          title="{{qualifier.propertyLabel}} ({{qualifier.id}}): {{qualifier.propertyDescription}}"
-        >
-        </span>
-        <br/>
-      {% endfor %}
+      <div>
+        {% for qualifier in property.qualifiers %}
+          <span
+            class="sidebar-qualifier"
+            data-content-end=""
+            data-content-start="↳ {{qualifier.propertyLabel}} ({{qualifier.id}}) "
+            title="{{qualifier.propertyLabel}} ({{qualifier.id}}): {{qualifier.propertyDescription}}"
+          >
+          </span>
+          <br/>
+        {% endfor %}
+      </div>
     </li>
   {% endfor %}
 {% else %}

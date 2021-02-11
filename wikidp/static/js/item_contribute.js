@@ -8,54 +8,79 @@ $(document).ready(() => {
 });
 
 
-function initialize_statement_property_selector(){
-    let opts = selector_to_data_array('.sidebar-property-li');
-    render_property_picker('#statement-div', 'Statement', opts, false, false, statement_property_change);
+const initializeStatementPropertySelector = () => {
+  const options = selectorToDataArray('.sidebar-property-li');
+  renderPropertyPicker(
+    '#statement-div',
+    'Statement',
+    options,
+    false,
+    false,
+    handleStatementPropertyChange,
+  );
+};
+
+
+const handleStatementPropertyChange = (uuid, propertyId) => {
+  clear_claim_constructor();
+  $('.add-claim-btn, .add-qualifier-btn').fadeOut('slow').remove();
+  bindAddButton(uuid);
+  fetch_qualifier_properties(propertyId, (data) => {
+    $('<button class="add-qualifier-btn glow" />')
+      .html('add qualifier')
+      .prependTo('#statement-actions')
+      .click(() => renderPropertyPicker(
+        '#statement-div',
+        'Qualifier',
+        data,
+        true,
+        true,
+        null,
+      ));
+  });
 }
 
 
-function statement_property_change(uuid, property_id){
-    clear_claim_constructor();
-    $('.add-claim-btn, .add-qualifier-btn').fadeOut('slow').remove();
-    bindAddButton(uuid);
-    fetch_qualifier_properties(property_id, (data) => {
-        $('<button class="add-qualifier-btn glow" />').html('add qualifier').prependTo('#statement-actions')
-            .click(() => render_property_picker('#statement-div', 'Qualifier', data, true, true, null));
-    });
-}
-
-
-function render_property_picker(append_to_elem, property_type, options, removable, append_multiple, callback){
-    let uuid = 'create-claim-property' + ($('.property-selector').length+1);
-    let uuid_selector = '#'+uuid;
-    let $elem = get_template('#wikidp-contribute-input', {type:property_type, uuid: uuid});
-    $(uuid_selector, $elem).selectize({
-        options: options,
-        labelField:'label',
-        valueField: 'id',
-        placeholder:"select a property",
-        searchField:['label', 'id'],
-        render: {
-            option: (item) => get_template('#wikidp-property-autocomplete', item)
-        },
-        onChange: (value) => {
-            if (value !== ''){
-                initializeClaim(uuid_selector);
-                if (callback) return callback(uuid_selector, value);
-            }
-        }
-    });
-    if (removable){
-        let $close = $('<i class="fa fa-times contribute-input-close"/>').click(() => $elem.slideUp('slow').remove());
-        $elem.append($close);
+const renderPropertyPicker = (
+  appendTo,
+  propertyType,
+  options,
+  removable,
+  multiple,
+  callback,
+) => {
+  const uuid = `create-claim-property-${propertyType}-${new Date().getTime()}`;
+  const uuidSelector = `#${uuid}`;
+  const ctx = { type: propertyType, uuid };
+  const $elem = get_template('#wikidp-contribute-input', ctx);
+  $(uuidSelector, $elem).selectize({
+    options,
+    labelField:'label',
+    valueField: 'id',
+    placeholder: 'select a property',
+    searchField: ['label', 'id'],
+    render: {
+      option: (item) => get_template('#wikidp-property-autocomplete', item)
+    },
+    onChange: (value) => {
+      if (value !== ''){
+        initializeClaim(uuidSelector);
+        if (callback) return callback(uuidSelector, value);
+      }
     }
-    if (append_multiple) {
-        $elem.hide(0).appendTo(append_to_elem).slideDown('slow');
-    }
-    else {
-        $(append_to_elem).hide(0).html($elem).slideDown('slow');
-    }
-    return $elem;
+  });
+  if (removable){
+    const closeHtml = '<i class="fa fa-times contribute-input-close" />';
+    const $close = $(closeHtml).click(() => $elem.slideUp('slow').remove());
+    $elem.append($close);
+  }
+  if (multiple) {
+    $elem.hide(0).appendTo(appendTo).slideDown('slow');
+  }
+  else {
+    $(appendTo).hide(0).html($elem).slideDown('slow');
+  }
+  return $elem;
 }
 
 
@@ -66,10 +91,11 @@ function set_property_picker(selector, value){
 }
 
 
-function sidebar_property_click(elm){
-    let pid = $(elm).data('id');
-    set_property_picker('.property-selector:first', pid);
-}
+const sidebar_property_click = (elm) => {
+  const pid = $(elm).data('id');
+  console.log(elm, pid);
+  set_property_picker('.property-selector.Statement-selectize', pid);
+};
 
 
 function get_property_from_selectize($elm){
@@ -77,44 +103,88 @@ function get_property_from_selectize($elm){
     return $elm.data().selectize.options[val];
 }
 
+const setAddClaimButton = (bool, msg= 'add claim') => {
+  const $btn = $('.add-claim-btn').html(msg);
+  if (bool){
+    return $btn.addClass('btn-on').removeClass('btn-off')
+      .attr('disabled', false);
+  }
+  return $btn.addClass('btn-off').removeClass('btn-on').attr('disabled', true);
+}
 
-function set_add_claim_button(bool){
-    let $btn = $('.add-claim-btn');
-    if (bool){
-        return $btn.addClass('btn-on').removeClass('btn-off').attr('disabled', false);
+const toQid = (idNumber) => `Q${idNumber}`;
+
+const initializeClaim = (uuidSelector) => {
+  const $selector = $(uuidSelector);
+  const { value_type: type } = get_property_from_selectize($selector);
+  let template = `
+    <input
+      class="claim-value text-medium"
+      placeholder="enter value here"
+    />
+  `;
+  const $div = $(`${uuidSelector}-value-div`).fadeOut(400, () => {
+    $div.empty();
+    switch (type) {
+      case 'Time':
+        const $dateInput = $(template);
+        $div.append($dateInput);
+        $dateInput.datepicker({
+          changeMonth: true,
+          changeYear: true,
+          dateFormat: 'yy-mm-dd',
+        });
+        break;
+      case 'Quantity':
+        template = `
+          <input
+            class="claim-value text-medium"
+            placeholder="enter quantity"
+            step="any"
+            type="number"
+          />
+        `;
+        $div.append($(template));
+        break;
+      case 'Url':
+        template = `
+          <input
+            class="claim-value text-medium"
+            placeholder="https://example.com"
+            type="url"
+          />
+        `;
+        $div.append($(template));
+        break;
+      case 'WikibaseItem':
+        template = `
+          <input
+            class="claim-value text-medium"
+            placeholder="1234"
+            type="number"
+          />
+        `;
+        const $input = $(template).on('input', debounce(
+          () => {
+            setAddClaimButton(false, 'fetching...');
+            getItemSummary(toQid($input.val()), (item) => {
+              $input.data('item', item);
+              setAddClaimButton(true);
+            });
+          },
+          250
+        ));
+        $div.append('Q', $input);
+        break;
+      case 'ExternalId':
+      case 'Monolingualtext':
+      case 'String':
+      default:
+        $div.append($(template));
     }
-    return $btn.addClass('btn-off').removeClass('btn-on').attr('disabled', true);
+    $div.fadeIn('slow');
+  });
 }
-
-
-function initializeClaim(uuid_selector) {
-    let prop = get_property_from_selectize($(uuid_selector));
-    let type = prop.value_type;
-    let $div = $(uuid_selector+'-value-div').fadeOut(400, () => {
-        $div.empty();
-        switch (type) {
-            case 'WikibaseItem':
-                let $input = $('<input class="claim-value text-medium" placeholder="1234" type="number"/>').change(() => {
-                    set_add_claim_button(false);
-                    get_item_summary('Q'+$input.val(), (item) => {
-                        $input.data('item', item);
-                        set_add_claim_button(true);
-                    })
-                });
-                $div.append('Q', $input);
-                break;
-            case 'url':
-                $div.append('https://', $('<input class="claim-value text-medium" placeholder="www.website.com" type="url"/>'));
-                break;
-            case 'ExternalId':
-            case 'String':
-            default:
-                $div.append($('<input class="claim-value text-medium" placeholder="enter value here"/>'));
-        }
-        $div.fadeIn('slow');
-    });
-}
-
 
 function fetch_qualifier_properties(pid, callback){
     $.getJSON('/api/' + pid + '/qualifiers', function (data) {
@@ -149,21 +219,44 @@ function render_added_claim(data) {
     clear_claim_constructor();
 }
 
+const getClaims = () => $('.added-claim-li');
+const getClaimMessage = () => $('#claimsMessage');
+const getSaveBtn = () => $('#saveClaimsBtn');
+const getSaveContainer = () => $('#saveClaimsLi');
+const getItemLinkLi = () => $('#goToClaimsLi');
 
 function serializeClaimList(){
-    return $('.added-claim-li').map((index, elem) => $(elem).data('claim')).get();
+    return getClaims().map((index, elem) => $(elem).data('claim')).get();
 }
 
+const clearClaims = () => getClaims().remove();
+const clearClaimMessage = () => getClaimMessage().html('');
+const hideSave = () => {
+  getSaveBtn().attr('disabled', true);
+  getSaveContainer().hide();
+}
+const hideItemLink = () => getItemLinkLi().hide();
+const enableSave = () => {
+  getSaveBtn().attr('disabled', false).show();
+  getSaveContainer().show();
+};
+const resetForm = () => {
+  clearClaims();
+  clearClaimMessage();
+  hideSave();
+  hideItemLink();
+}
 
 function claimFormValidation(){
-    let uuid = $(this).data('uuid');
-    let claim_data = get_claim_data_from_input(uuid);
-    claim_data.qualifiers = $('select.Qualifier-selectize').map((index, elem) => {
-            let uuid = $(elem).attr('id');
-            return uuid ? get_claim_data_from_input('#'+uuid) : null;
-        }).get();
-    render_added_claim(claim_data);
-    return $('#saveClaimsLi').show();
+  const uuid = $(this).data('uuid');
+  const claimData = get_claim_data_from_input(uuid);
+  claimData.qualifiers = $('select.Qualifier-selectize').map((index, elem) => {
+    let uuid = $(elem).attr('id');
+    return uuid ? get_claim_data_from_input('#'+uuid) : null;
+  }).get();
+  render_added_claim(claimData);
+  enableSave();
+  $('#clearClaimsLi').show();
 }
 
 
@@ -191,19 +284,32 @@ function get_claim_data_from_input(uuid){
 }
 
 
-function save_claims(){
-    let qid = get_page_qid();
-    let data = serializeClaimList();
-    $.ajax({
-        type: 'POST',
-        url: "/api/"+qid+"/claims/write",
-        dataType: 'json',
-        contentType: 'application/json; charset=utf-8',
-        data: JSON.stringify(data),
-        success: (response) => console.log(response),
-        error: (error) => console.log(error)
-    })
-}
+const saveClaims = () => {
+  const $saveBtn = $('#saveClaimsBtn').attr('disabled', true).html('Saving...');
+  const qid = get_page_qid();
+  const data = serializeClaimList();
+  const $messageLi = $('#claimsMessage');
+  $.ajax({
+    type: 'POST',
+    url: `/api/${qid}/claims/write`,
+    dataType: 'json',
+    contentType: 'application/json; charset=utf-8',
+    data: JSON.stringify(data),
+    success: (response) => {
+      console.log(response);
+      const { message } = response;
+      $saveBtn.hide().html('SAVE TO WIKIDATA');
+      $messageLi.html(message);
+      getItemLinkLi().show();
+    },
+    error: (error) => {
+      console.error(error);
+      $messageLi.html('There was an Issue Saving this Data to Wikidata.');
+      enableSave();
+      $saveBtn.html('SAVE TO WIKIDATA');
+    }
+  });
+};
 
 
 function lookupItem(string){
@@ -227,3 +333,22 @@ function bind_clipboard_to_element(element_id){
     let elem = document.getElementById(element_id);
     return new Clipboard(elem).on('success', (res) => console.log(res)).on('error', (error) => console.log(error));
 }
+
+// Returns a function, that, as long as it continues to be invoked, will not
+// be triggered. The function will be called after it stops being called for
+// N milliseconds. If `immediate` is passed, trigger the function on the
+// leading edge, instead of the trailing.
+const debounce = (func, wait, immediate) => {
+	let timeout;
+	return (...arguments) => {
+		const context = this, args = arguments;
+		const later = () => {
+			timeout = null;
+			if (!immediate) func.apply(context, args);
+		};
+		const callNow = immediate && !timeout;
+		clearTimeout(timeout);
+		timeout = setTimeout(later, wait);
+		if (callNow) func.apply(context, args);
+	};
+};

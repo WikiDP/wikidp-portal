@@ -33,6 +33,7 @@ class BaseConfig:
     HOST = HOST
     ITEM_REGEX = r'(Q|q)\d+'
     MEDIAWIKI_API_URL = "https://www.wikidata.org/w/api.php"
+    OAUTH_MEDIAWIKI_URL = "https://www.wikidata.org/w/index.php"
     SPARQL_ENDPOINT_URL = "https://query.wikidata.org/sparql"
     # Bind to PORT if defined, otherwise default to 5000.
     PORT = int(os.environ.get('PORT', 5000))
@@ -45,6 +46,12 @@ class BaseConfig:
     WIKIDATA_LANG = os.getenv('WIKIDP_LANG', 'en')
     WIKIDATA_PASSWORD = os.getenv('WIKIDP_BOT_PASSWORD', '<password>')
     WIKIDATA_USER_NAME = os.getenv('WIKIDP_BOT_USER', '<username>')
+    WIKIDP_CONSUMER_KEY = os.environ.get('WIKIDP_CONSUMER_KEY', '')
+    WIKIDP_CONSUMER_SECRET = os.environ.get('WIKIDP_CONSUMER_SECRET', '')
+    USER_AGENT = os.environ.get(
+        'USER_AGENT',
+        'wikidp-portal/0.0 (https://www.wikidp.org/; admin@wikidp.org)'
+    )
 
 
 # pylint: disable=R0903
