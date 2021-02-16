@@ -12,35 +12,69 @@
         </div>
     </script>
 
-    <script id="wikidp-added-claim-li" type="text/template">
-        <li class="added-claim-li white {{type}} text-medium" data-pid="{{pid}}" data-value="{{value}}" data-type="{{type}}">
-            <div class="row-div">
-                <div class="added-property-div">
-                    {{pidLabel}}
-                    <a class="wd-id glow" href="https://wikidata.org/wiki/Property:{{pid}}" target="_blank">
-                        ({{pid}})
-                    </a>
-                </div>
-                <div class="added-value-div">
-                    <span class="added-label">{{label}}</span>
-                    {{#description}}
-                        <br/>
-                        <i class="text-small"> &mdash; {{description}} &mdash; </i>
-                    {{/description}}
-                    {{#aliases}}
-                        <br/>
-                        <span class="sub-aka text-small"><b>Also Referred To As:</b> {{aliases}}</span>
-                    {{/aliases}}
-                    <br/>
-                    {{#qualifiers}}
-                        <div class="claim-li-qualifier" data-value="{{value}}" data-property_id="{{pid}}">
-                            {{pidLabel}}: {{ label }}
-                        </div>
-                    {{/qualifiers}}
-                </div>
+  <script
+    id="wikidp-added-claim-li"
+    type="text/template"
+  >
+    <li
+      class="added-claim-li white {{ type }} text-medium"
+      data-pid="{{ pid }}"
+      data-type="{{ type }}"
+      data-value="{{ value }}"
+    >
+      <div class="row-div">
+        <div class="added-property-div">
+          {{ pidLabel }}
+          <a
+            class="wd-id glow"
+            href="https://wikidata.org/wiki/Property:{{ pid }}"
+            target="_blank"
+          >
+              ({{ pid }})
+          </a>
+        </div>
+        <div class="added-value-div">
+          <span class="added-label">
+            {{ label }}
+          </span>
+          {{#description}}
+            <br/>
+            <i class="text-small">
+              &mdash; {{ description }} &mdash;
+            </i>
+          {{/description}}
+          {{#aliases}}
+            <br/>
+            <span class="sub-aka text-small">
+              <b>
+                Also Referred To As:
+              </b>
+              {{ aliases }}
+            </span>
+          {{/aliases}}
+          <br/>
+          {{#qualifiers}}
+            <div
+              class="claim-li-qualifier"
+              data-property_id="{{ pid }}"
+              data-value="{{ value }}"
+            >
+              {{ pidLabel }}: {{ label }}
             </div>
-        </li>
-    </script>
+          {{/qualifiers}}
+          {{#references}}
+            <div
+              class="claim-li-reference"
+              data-property_id="{{ pid }}"
+              data-value="{{ value }}"
+            >
+              {{ pidLabel }}: {{ label }}
+            </div>
+          {{/references}}
+        </div>
+      </div>
+    </li>
+  </script>
 
     <script id="wikidp-property-autocomplete" type="text/template">
         <div>

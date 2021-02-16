@@ -20,26 +20,31 @@ const initializeStatementPropertySelector = () => {
   );
 };
 
-
 const handleStatementPropertyChange = (uuid, propertyId) => {
   clear_claim_constructor();
-  $('.add-claim-btn, .add-qualifier-btn').fadeOut('slow').remove();
+  $('.add-claim-btn, .statement-action-btn').fadeOut('slow').remove();
   bindAddButton(uuid);
-  fetch_qualifier_properties(propertyId, (data) => {
-    $('<button class="add-qualifier-btn glow" />')
-      .html('add qualifier')
-      .prependTo('#statement-actions')
-      .click(() => renderPropertyPicker(
-        '#statement-div',
-        'Qualifier',
-        data,
-        true,
-        true,
-        null,
-      ));
+  fetchQualifierProperties(propertyId, (data) => {
+    renderMetaActionBtn('Qualifier', data);
   });
-}
+  fetchReferenceProperties((data) => {
+    renderMetaActionBtn('Reference', data);
+  });
+};
 
+const renderMetaActionBtn = (propertyType, data) => (
+  $(`<button class="add-${propertyType}-btn statement-action-btn glow" />`)
+    .html(`add ${propertyType}`)
+    .prependTo('#statement-actions')
+    .click(() => renderPropertyPicker(
+      '#statement-div',
+      propertyType,
+      data,
+      true,
+      true,
+      null,
+    ))
+);
 
 const renderPropertyPicker = (
   appendTo,
@@ -98,10 +103,10 @@ const sidebar_property_click = (elm) => {
 };
 
 
-function get_property_from_selectize($elm){
-    let val = $elm.val();
-    return $elm.data().selectize.options[val];
-}
+const getPropertyFromSelectize = ($elm) => {
+  const val = $elm.val();
+  return $elm.data().selectize.options[val];
+};
 
 const setAddClaimButton = (bool, msg= 'add claim') => {
   const $btn = $('.add-claim-btn').html(msg);
@@ -116,7 +121,7 @@ const toQid = (idNumber) => `Q${idNumber}`;
 
 const initializeClaim = (uuidSelector) => {
   const $selector = $(uuidSelector);
-  const { value_type: type } = get_property_from_selectize($selector);
+  const { value_type: type } = getPropertyFromSelectize($selector);
   let template = `
     <input
       class="claim-value text-medium"
@@ -186,14 +191,21 @@ const initializeClaim = (uuidSelector) => {
   });
 }
 
-function fetch_qualifier_properties(pid, callback){
-    $.getJSON('/api/' + pid + '/qualifiers', function (data) {
-        if (data.length && callback){
-            return callback(data);
-        }
-    });
-}
+const fetchQualifierProperties = (pid, callback) => {
+  $.getJSON(`/api/${pid}/qualifiers`, (data) => {
+    if (data.length && callback){
+      return callback(data);
+    }
+  });
+};
 
+const fetchReferenceProperties = (callback) => {
+  $.getJSON('/api/property/references', (data) => {
+    if (data.length && callback){
+      return callback(data);
+    }
+  });
+};
 
 function clear_claim_constructor(){
     $('.contribute-input-div:not(:first)').remove();
@@ -209,14 +221,14 @@ function bindAddButton(uuid){
 }
 
 
-function render_added_claim(data) {
-    let $list_item = get_template('#wikidp-added-claim-li', data);
-    $list_item.hide(0).data('claim', data);
-    $('ul#added-claims').prepend($list_item).scrollTop(0);
-    $list_item.slideDown(750);
-    $('#statement-actions button').fadeOut('slow').remove();
-    set_property_picker('.property-selector:first', null);
-    clear_claim_constructor();
+const renderAddedClaim = (data) => {
+  const $listItem = get_template('#wikidp-added-claim-li', data);
+  $listItem.hide(0).data('claim', data);
+  $('ul#added-claims').prepend($listItem).scrollTop(0);
+  $listItem.slideDown(750);
+  $('#statement-actions button').fadeOut('slow').remove();
+  set_property_picker('.property-selector:first', null);
+  clear_claim_constructor();
 }
 
 const getClaims = () => $('.added-claim-li');
@@ -249,40 +261,50 @@ const resetForm = () => {
 
 function claimFormValidation(){
   const uuid = $(this).data('uuid');
-  const claimData = get_claim_data_from_input(uuid);
-  claimData.qualifiers = $('select.Qualifier-selectize').map((index, elem) => {
-    let uuid = $(elem).attr('id');
-    return uuid ? get_claim_data_from_input('#'+uuid) : null;
-  }).get();
-  render_added_claim(claimData);
+  const claimData = getClaimDataFromInput(uuid);
+  claimData.qualifiers = getMetaActionData('select.Qualifier-selectize');
+  claimData.references = getMetaActionData('select.Reference-selectize');
+  renderAddedClaim(claimData);
   enableSave();
   $('#clearClaimsLi').show();
 }
 
+const getMetaActionData = (selector) => $(selector).map((index, elem) => {
+  const uuid = $(elem).attr('id');
+  return uuid ? getClaimDataFromInput(`#${uuid}`) : null;
+}).get();
 
-function get_claim_data_from_input(uuid){
-    let $input = $(uuid + '-value-div .claim-value');
-    let value = $input.val();
-    if (value.length){
-        let prop = get_property_from_selectize($(uuid));
-        let val_type = prop.value_type;
-        let claim_data = {type:val_type, value:value, label:value, pid:prop.id, pidLabel:prop.label};
-        switch(val_type){
-            case 'WikibaseItem':
-                let item = $input.data('item');
-                claim_data.value = item.qid;
-                claim_data.label = item.label;
-                claim_data.description = item.description;
-                claim_data.aliases = item.aliases.join(", ");
-                return claim_data;
-            default:
-                // TO DO: HAVE A CASE FOR EX-IDS AND URL'S
-                return claim_data;
-        }
+const getClaimDataFromInput = (uuid) => {
+  const $input = $(`${uuid}-value-div .claim-value`);
+  const value = $input.val();
+  if (value.length){
+    const {
+      id: pid,
+      label: pidLabel,
+      value_type: type,
+    } = getPropertyFromSelectize($(uuid));
+    const claimData = {
+      label: value,
+      pid,
+      pidLabel,
+      type,
+      value,
+    };
+    switch(type){
+      case 'WikibaseItem':
+        const item = $input.data('item');
+        claimData.value = item.qid;
+        claimData.label = item.label;
+        claimData.description = item.description;
+        claimData.aliases = item.aliases.join(", ");
+        return claimData;
+      default:
+        // TO DO: HAVE A CASE FOR EX-IDS AND URL'S
+        return claimData;
     }
-    return null;
-}
-
+  }
+  return null;
+};
 
 const saveClaims = () => {
   const $saveBtn = $('#saveClaimsBtn').attr('disabled', true).html('Saving...');

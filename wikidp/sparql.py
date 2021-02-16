@@ -42,6 +42,21 @@ ALL_QUALIFIER_PROPERTIES = """
     ORDER BY ASC(xsd:integer(STRAFTER(STR(?property), 'P')))
 """
 
+ALL_REFERENCE_PROPERTIES = """
+    SELECT (STRAFTER(STR(?property), 'entity/') as ?id)
+    ?property ?propertyType ?propertyLabel  ?propertyAltLabel
+    (?propertyLabel as ?label) ?propertyDescription
+    (?propertyDescription as ?description)
+    (STRAFTER(STR(?propertyType), '#') as ?value_type)
+    WHERE {
+        ?property wikibase:propertyType ?propertyType .
+        ?property wdt:P31 wd:Q18608359 .
+        SERVICE wikibase:label {
+            bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en".
+        }
+    }
+"""
+
 PROPERTY_ALLOWED_QUALIFIERS = """
     SELECT (STRAFTER(STR(?property), 'entity/') as ?id) ?property ?propertyType ?propertyLabel  ?propertyAltLabel
     (?propertyLabel as ?label) ?propertyDescription (?propertyDescription as ?description)

@@ -16,6 +16,7 @@ from flask import (
     jsonify,
 )
 from wikidataintegrator.wdi_core import (
+    WDCommonsMedia,
     WDExternalID,
     WDItemEngine,
     WDItemID,
@@ -36,6 +37,7 @@ from wikidp.utils import (
 from wikidp.utils.wd_int_utils import format_date
 
 WD_DATATYPE_MAP = {
+    "CommonsMedia": WDCommonsMedia,
     "ExternalId": WDExternalID,
     "Monolingualtext": WDMonolingualText,
     "Quantity": WDQuantity,
@@ -195,9 +197,9 @@ def write_claims_to_item(qid, json_data, wdi_login):
                         data=data, append_value=props)
     qid = item.write(wdi_login)
     return jsonify({
-        "message": f"Successfully Contributed {len(data)} "
-                   f"Statements to Wikidata Item '{item.get_label()}' ({qid}).",
-        "status": "success"
+        "message": f"Successfully Contributed {len(data)} Statement(s) "
+                   f"to Wikidata Item '{item.get_label()}' ({qid}).",
+        "status": "success",
     })
 
 
