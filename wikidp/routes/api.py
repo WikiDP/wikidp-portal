@@ -28,6 +28,7 @@ from wikidp.controllers.search import search_result_list
 from wikidp.utils import (
     get_all_languages,
     get_all_qualifier_properties,
+    get_all_reference_properties,
     get_allowed_qualifiers_by_pid,
     get_property,
     item_detail_parse,
@@ -98,6 +99,18 @@ def route_api_get_allowed_qualifiers_by_pid(pid):
 def route_api_get_all_qualifier_properties():
     """Return JSON representation of all property qualifiers."""
     output = get_all_qualifier_properties()
+    return jsonify(output)
+
+
+@APP.route("/api/property/references", methods=['GET', 'POST'])
+def route_api_get_all_reference_properties():
+    """
+    Get JSON representation of all reference properties.
+
+    Returns (Response):
+
+    """
+    output = get_all_reference_properties()
     return jsonify(output)
 
 

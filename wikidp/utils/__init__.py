@@ -39,6 +39,7 @@ from wikidp.const import (
 from wikidp.sparql import (
     ALL_LANGUAGES_QUERY,
     ALL_QUALIFIER_PROPERTIES,
+    ALL_REFERENCE_PROPERTIES,
     PROPERTY_ALLOWED_QUALIFIERS,
     PROPERTY_QUERY,
 )
@@ -148,6 +149,17 @@ def get_all_languages():
 def get_all_qualifier_properties():
     """Return all of the qualifiers for a particular property."""
     query = _flatten_string(ALL_QUALIFIER_PROPERTIES)
+    return wd_int_utils.process_query_string(query)
+
+
+def get_all_reference_properties():
+    """
+    Fetch all Reference Properties from Wikidata.
+
+    Returns (List[Dict]):
+
+    """
+    query = _flatten_string(ALL_REFERENCE_PROPERTIES)
     return wd_int_utils.process_query_string(query)
 
 
