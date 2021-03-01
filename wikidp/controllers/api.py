@@ -28,7 +28,10 @@ from wikidataintegrator.wdi_core import (
 )
 
 from wikidp.config import APP
-from wikidp.const import ConfKey
+from wikidp.const import (
+    ConfKey,
+    DEFAULT_PID_LIST,
+)
 from wikidp.models import FileFormat
 from wikidp.utils import (
     get_pid_from_string,
@@ -143,12 +146,18 @@ def flatten_prop_map(prop_map):
     return prop_ids
 
 
-def get_property_checklist_from_schema(schema_name):
+def get_property_checklist_from_schema(schema_name, include_default=True):
     """
     Create a property checklist from a schema.
 
+    Notes:
+        - We also include a baseline default list (optionally used
+        by the arg flag) in order to add props to the contribute picker.
+        These extra props are "hidden" in the checklist UI.
+
     Args:
         schema_name (str):
+        include_default (Optional[bool]): If True, include the default PID list
 
     Returns (List[Dict]):
 
@@ -157,6 +166,8 @@ def get_property_checklist_from_schema(schema_name):
     if not prop_map:
         return []
     all_prop_ids = flatten_prop_map(prop_map)
+    if include_default:
+        all_prop_ids.update(DEFAULT_PID_LIST)
     all_prop_data = {
         prop.get("id"): prop
         for prop in get_property_details_by_pid_list(all_prop_ids)
@@ -169,6 +180,13 @@ def get_property_checklist_from_schema(schema_name):
             for qualifier in qualifiers
         ]
         checklist.append(data)
+    if include_default:
+        for pid in DEFAULT_PID_LIST:
+            if pid not in prop_map:
+                data = all_prop_data[pid]
+                data["qualifiers"] = []
+                data["hidden"] = True  # hide in checklist UI
+                checklist.append(data)
     return checklist
 
 

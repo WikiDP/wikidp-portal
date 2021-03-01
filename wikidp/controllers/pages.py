@@ -62,6 +62,7 @@ def get_checklist_context(qid, schema):
         output = [{
             "id": prop['id'],
             "label": prop['propertyLabel'],
+            "hidden": prop.get('hidden', False),
             "description": prop['propertyDescription'],
             "type": prop["value_type"],
             "count": counts.get(prop['id'], 0),

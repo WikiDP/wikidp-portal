@@ -346,6 +346,9 @@ select#languageSelect {
   margin-left: -17px;
   color: rgba(0, 0, 0, 0.2);
 }
+.sidebar-property-li.hidden {
+  display: none !important;
+}
 .sidebar-property-li.property-ok:before {
   content: '\e013';
   color: white;
