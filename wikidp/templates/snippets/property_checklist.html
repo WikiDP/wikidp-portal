@@ -2,7 +2,7 @@
   {#    TODO: Connect this to qlabel for translation support #}
   {% for property in properties %}
     <li
-      class="sidebar-property-li white click {% if property.count > 0 %}property-ok{% endif %}"
+      class="sidebar-property-li white click {% if property.hidden %}hidden{% elif property.count > 0 %}property-ok{% endif %}"
       data-id="{{property.id}}"
       data-label="{{property.label}}"
       data-count="{{property.count}}"
