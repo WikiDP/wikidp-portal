@@ -44,7 +44,8 @@ WILL NOT BE ABLE TO RETRIEVE THEM AGAIN**.
 ![Wikimedia OAuth form part three](./oauth-4.png)
 
 Now you will have to wait for confirmation from the Wikimedia team, this usually takes
-24-48 hours maximum and will be returned to you via email. Once the
+24-48 hours maximum and will be returned to you via email. Once you receive the
+confirmation you can set up your development environment.
 
 Using your Token for Development
 --------------------------------
