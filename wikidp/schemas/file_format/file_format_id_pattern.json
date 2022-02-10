@@ -1,10 +1,10 @@
 {
   "type": "Schema",
-  "start": "http://shex.io/webapps/shex.js/doc/shex-simple.html#file_format_with_identification_pattern",
+  "start": "https://rawgit.com/shexSpec/shex.js/extends/packages/shex-webapp/doc/shex-simple.html#file_format_with_identification_pattern",
   "shapes": [
     {
       "type": "Shape",
-      "id": "http://shex.io/webapps/shex.js/doc/shex-simple.html#file_format_with_identification_pattern",
+      "id": "https://rawgit.com/shexSpec/shex.js/extends/packages/shex-webapp/doc/shex-simple.html#file_format_with_identification_pattern",
       "expression": {
         "type": "EachOf",
         "expressions": [
@@ -106,7 +106,7 @@
           {
             "type": "TripleConstraint",
             "predicate": "http://www.wikidata.org/prop/P4152",
-            "valueExpr": "http://shex.io/webapps/shex.js/doc/shex-simple.html#id_pattern",
+            "valueExpr": "https://rawgit.com/shexSpec/shex.js/extends/packages/shex-webapp/doc/shex-simple.html#id_pattern",
             "min": 1,
             "max": -1
           }
@@ -118,7 +118,7 @@
     },
     {
       "type": "Shape",
-      "id": "http://shex.io/webapps/shex.js/doc/shex-simple.html#id_pattern",
+      "id": "https://rawgit.com/shexSpec/shex.js/extends/packages/shex-webapp/doc/shex-simple.html#id_pattern",
       "expression": {
         "type": "EachOf",
         "expressions": [
@@ -151,6 +151,16 @@
                 "http://www.wikidata.org/entity/Q1148480",
                 "http://www.wikidata.org/entity/Q35436009"
               ]
+            },
+            "min": 1,
+            "max": -1
+          },
+          {
+            "type": "TripleConstraint",
+            "predicate": "http://www.wikidata.org/prop/qualifier/P3294",
+            "valueExpr": {
+              "type": "NodeConstraint",
+              "nodeKind": "iri"
             },
             "min": 1,
             "max": -1
