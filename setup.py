@@ -18,7 +18,7 @@ INSTALL_REQUIRES = [
     'wikidataintegrator==0.8.4',
     'lxml==4.6.3',
     'jsonpickle==1.4.1',
-    'numpy==1.18.2',
+    'numpy==1.22.0',
     'pandas==1.0.3',
     'python-dateutil==2.8.1',
     'flask-mwoauth>=0.4.81',
